@@ -20,7 +20,7 @@ module SSHKit
         
         puts out
 
-        if out.empty? || ( cheftacular['repositories'][options['repository']].has_key?('not_a_migration_message') && out == cheftacular['repositories'][options['repository']]['not_a_migration_message']
+        if out.empty? || ( cheftacular['repositories'][options['repository']].has_key?('not_a_migration_message') && out == cheftacular['repositories'][options['repository']]['not_a_migration_message'] )
           puts("Nothing to migrate for #{ options['role'] }...")
         end
 
