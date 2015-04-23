@@ -95,3 +95,6 @@ pickle-email-*.html
 ###
 /lib/chef-repo/.chef
 .chef/encrypted_data_bag_secret
+
+#gem data
+*.gem

@@ -66,4 +66,4 @@ Note: You can substitute cft for cftr, cheftacular, or cftclr.
 
 ## Additional Reading
 
-For more information about these commands and the several commands only available if you are running them from the chef-repo directly, please see the [Cheftacular Scripts Readme](SCRIPTS_README.md)
+For more information about these commands and the several commands only available if you are running them from the chef-repo directly, please see the [Cheftacular Scripts Readme](https://github.com/SocialCentivPublic/cheftacular/blob/master/lib/cheftacular/README.md)
