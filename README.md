@@ -12,17 +12,7 @@ applications where non-devops engineers need to be able to deploy or interact wi
 
     1. This gem does not require any custom configurations in the .chef folder
 
-2. Check the cheftacular.yml file for an idea on how to set your configurations for the gem.
-
-3. Run `cft configurate` to tell the gem to attempt to create all of its dependent data. READ THE NOTES BELOW!
-
-    1. This will attempt to create several data bags and populate them with data that the chef server may or may not have
-
-    2. Your old data bags (things that stored sudo passwords and such) most likely won't be compatible with the exact way cheftacular expects its auth bags to look
-
-        1. If this is the case, you'll need to write some scripts using [ridley](https://github.com/reset/ridley) to populate the bags
-
-4. Run `cft chef_data_check` to see how well setup your bags are. You won't be able to utilize this gem effectively until this command says everything is ok.
+2. Check the cheftacular.yml file in the examples folder for an idea on how to set your configurations for the gem.
 
 ## Usage (Chef)
 
