@@ -54,7 +54,6 @@ class Cheftacular
         target_serv_index = nil
 
         @config[@options['env']]['addresses_bag_hash']['addresses'].each do |serv_hash|
-          puts "TARGET::#{ serv_hash['name'] }::#{ @options['node_name'] }::#{ @config[@options['env']]['addresses_bag_hash']['addresses'].index(serv_hash) }"
           target_serv_index = @config[@options['env']]['addresses_bag_hash']['addresses'].index(serv_hash) if serv_hash['name'] == @options['node_name']
         end
 
@@ -64,7 +63,7 @@ class Cheftacular
           domain_obj = PublicSuffix.parse @config[@options['env']]['addresses_bag_hash']['addresses'][target_serv_index]['dn']
 
           #delete the domain on rax if its a domain we host there for its environment
-          @config['stateless_action'].cloud "domain", "destroy_record:#{ domain_obj.tld }:#{ domain_obj.trd }" if domain_obj.tld == get_tld_from_node_name
+          @config['stateless_action'].cloud "domain", "destroy_record:#{ domain_obj.tld }:#{ domain_obj.trd }" if domain_obj.tld == @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld']
 
           @config[@options['env']]['addresses_bag_hash']['addresses'][target_serv_index] = nil
           @config[@options['env']]['addresses_bag_hash']['addresses'] = @config[@options['env']]['addresses_bag_hash']['addresses'].compact
