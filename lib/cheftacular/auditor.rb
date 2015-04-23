@@ -40,6 +40,8 @@ class Cheftacular
 
       ret_hash
     rescue StandardError => exception
+      @config['helper'].cleanup_file_caches('current-audit-only')
+      
       @config['helper'].exception_output "Unable to finish parsing auditing hash", exception
     end
   end

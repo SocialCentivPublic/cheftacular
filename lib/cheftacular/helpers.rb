@@ -239,7 +239,7 @@ class Cheftacular
       current_file_path 'node_cache'
     end
 
-    def cleanup_file_caches mode='old'
+    def cleanup_file_caches mode='old', check_current_day_entry=false
       base_dir = File.join( @config['locs']['app-root'], 'tmp', declassify )
 
       Dir.entries(base_dir).each do |entry|
@@ -248,10 +248,10 @@ class Cheftacular
         case mode
         when 'old'
           FileUtils.rm("#{ base_dir }/#{ entry }") if File.file?("#{ base_dir }/#{ entry }") && !entry.include?(Time.now.strftime("%Y%m%d"))
-
-          check_current_day_entry = false
         when 'current'
           check_current_day_entry = true
+        when 'current-audit-only'
+          FileUtils.rm("#{ base_dir }/#{ entry }") if File.file?("#{ base_dir }/#{ entry }") && entry.include?(Time.now.strftime("%Y%m%d"))
         end
 
 

@@ -13,13 +13,15 @@ class Cheftacular
 
   class StatelessAction
     def help inference_modes=[]
-      target_command = @options['command'] == 'help' ? ARGV[1] : ARGV[0]
-      target_command = @config['cheftacular']['mode'] if target_command == 'current'
+      target_command   = @options['command'] == 'help' ? ARGV[1] : ARGV[0]
+      target_command   = @config['cheftacular']['mode'] if target_command == 'current'
+      target_command ||= ''
 
       case target_command
       when 'action'                  then inference_modes << 'action'
       when 'application' || 'devops' then inference_modes << 'both'
       when 'stateless_action'        then inference_modes << 'stateless_action'
+      when ''                        then inference_modes << 'both'
       end
 
       if @config['helper'].is_command? target_command
@@ -38,7 +40,7 @@ class Cheftacular
 
       end if inference_modes.include?('action') || inference_modes.include?('both')
 
-      @config['stateless_action_documentation'].instance_methods(false).each do |method|
+      @config['stateless_action_documentation'].public_methods(false).each do |method|
         @config['stateless_action_documentation'].send(method)
 
       end if inference_modes.include?('stateless_action') || inference_modes.include?('both')
@@ -49,14 +51,12 @@ class Cheftacular
 
       puts @config['helper'].compile_documentation_lines('stateless_action').flatten.join("\n\n") if target_command == 'stateless_action'
 
-      puts @config['helper'].compile_documentation_lines('application').flatten.join("\n\n") if target_command == 'application'
+      puts @config['helper'].compile_documentation_lines('application').flatten.join("\n\n") if target_command == 'application' || target_command.empty?
 
       puts @config['helper'].compile_documentation_lines('devops').flatten.join("\n\n") if target_command == 'devops'
 
       if inference_modes.empty? && @config['helper'].is_not_command_or_stateless_command?(target_command)
         methods = @config['action_documentation'].public_methods(false) + @config['action_documentation'].public_methods(false)
-
-        puts methods.sort
 
         sorted_methods = methods.uniq.sort_by { |method| @config['helper'].compare_strings(target_command, method.to_s)}
 

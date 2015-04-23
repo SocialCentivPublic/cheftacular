@@ -1,2 +1,116 @@
 
-#TODO fill in example cheftacular.yml file
+mode:                   'devops'                   # valid modes are devops, application, and server. Server mode is very similar to devops and only useful if you want your servers to be able to run cheftacular commands
+initial_environment:    'staging'                  # the initial environment all commands are run in without an env setting flag
+ruby_version:           'ruby-2.1.2'               # Default ruby version to run commands against, only matters explicitly if your repo does not have a .ruby-version file
+deploy_user:            'deploy'                   # User on the remote systems that all remote commands will be done with
+cheftacular_chef_user:  'mychefuser'               # Chef user on the chef user. You must have a CHEFUSERNAME.pem file in your .chef directory to authenticate
+chef_server_url:        'https://chef.example.com' # can be any address that has a valid chef server behind it
+ssl_verify:             'false'                    # Only matters if using a CA authority for your chef cert
+wrapper_cookbooks:      'MyCookbook'               # comma delim string of wrapper cookbooks to do clean_cookbooks on
+strict_version_checks:  'false'                    # when true, the gem will check rubygems once per day to see if there's a new version and prevent execution until this new version is bundled
+auditing:               'true'                     # when true, the gem will collect and send auditing data about all commands that are passed to the gem. This data is stored in a chef data bag
+base_file_path:         '/var/www/vhosts'          # The base file path the repos are stored on for each server
+default_swap_location:  '/mnt/1GB.swap'            # default location of the swapfile build file on all systems (used for cft restart_swap)
+backup_directory:       '/mnt/my/backup/directory' # This is only used for the backup stateless command, can be left blank if other backup plans are being used
+backup_filesystem:      'backup_gem'               # valid entries are backup_gem | raw
+backup_server:          'first_production_slave'   # tells the backup command what server to fetch the backup data from. The string 'first_production_slave' is parsed into a TLD / local ip
+chef_client_version:    '11.16.4'                  # version of chef-client to bootstrap on the remote servers
+data_bag_key_file:      'data_bag_key'             # name of the data bag key file in the ~/.chef folder for workstations
+server_pass_length:     20
+default_flavor_name:    '1 GB Performance'         # When booting servers, this flavor name is used if a flavor is not set in some way
+preferred_cloud:        'rackspace'                # preferred cloud to interact with (uses the default -> authentication bag as storage for the auth creds)
+preferred_cloud_region: 'dfw'                      # preferred cloud region to interact with
+preferred_cloud_os:     'ubuntu'                   # can be centos|coreos|debian|fedora|redhat|ubuntu|vyatta . Bear in mind not all OSes have supported bootstraps at the moment
+preferred_cloud_image:  'Ubuntu 14.04 LTS (Trusty Tahr) (PV)' # preferred cloud image to install, can use custom built images here as well. The string is matched to a valid image but specific is better
+virtualization_mode:    'PV'                       # on rackspace cloud, set your default virtualization mode to this (only PV or PVHVM are supported)
+
+#RVM
+install_rvm_on_boot:    'false'                    # 'true'|'false' If true, this will cause RVM to be installed for the deploy_user on boot, this makes managing RVM via cookbook impossible.
+rvm_gpg_key:            ''
+
+# the first comma in the list of log_locs is what is tailable, the others are only loggable
+role_maps: # role maps for log tailing
+  sensu_server_role:    
+    role_name:    'sensu_server'
+    log_location: '/var/log/sensu/sensu-server.log'
+  graphite_server_role: 
+    role_name:    'graphite_server'
+    log_location: '/var/log/carbon-cache/current'
+  worker_server_role:
+    role_name:    'worker'
+    log_location: '/var/log/syslog,|current_repo_location|/log/delayed_job.log' # commas will pull logs from multiple locations. |current_repo_location| acts as an alias for a role's default repo location
+
+repositories:
+  myrepo:                                          # this row is reserved for nicknames, preferably nicknames that eliminate any hyphens in the repo_name
+    repo_name:                 'my-main-rails-repository'
+    database:                  'postgresql'        # Valid values are currently only 'postgresql' or 'mysql'
+    application_database_user: 'databaseguy'       # Name of the database user on the remote server (useful if each app has it's own database user)
+    stack:                     'ruby_on_rails'     # Currently supported: 'ruby_on_rails'|'wordpress'|'nodejs'
+    db_primary_host_role:      'db_primary'
+    #custom_database_name:      ''                 # this key only needs to exist if your database is named differently from REPONAME_ENV
+    restore_backup_file_name:  'PostgreSQL-mymainrailsrepository.sql' # the file that the backup is usually stored in for the backup directory
+    not_a_migration_message:   ''                  # If you have some text that will always show up after migrations, put it here so the system doesn't think it needs to run deploys after a migration again
+    #backup_server:             'first_production_slave' #this key only needs to be set if the backup server (for this database) is different than the global setting backup_server
+    has_split_branches:        'false'             # if you have branches like split-a and split-c, you can use this to access them when defined in the run_list_environments hash 
+    specific_chef_passwords:                       # Special keys that you want auto-generated for their repo by for the ENV chef_passwords bag, the value for them is their length
+      pg_root_pass:         20
+      pg_app_pass:          20
+  all:                                             # This key should always exist
+    repo_name: 'all'
+    database:  'none'                              # We don't want to run migrations on an all deploy
+    stack:     'all'
+
+#if you are assigning environments with run lists *in addition to* chef environments, use this. Nodes should have 0-1 of these run list envs, no more.
+# Also used for the update_split_branches command, a branch like split_staging is parsed into split-staging
+run_list_environments:
+  split_staging: 'splitstaging'
+  split_a:       'splita'
+
+#YAML array of the types of databases stored on your database primary
+db_primary_backup_database_stacks: 
+  - 'postgresql'
+
+#nodes to initialize when cft devstaging command is run. All keys are optional but not assigning a flavor to a node will default it to the default_flavor_name key
+#flavor:     the flavor the node will be booted with
+#descriptor: optional string to be parsed into the node's config. Can be used to pair with load balancers, etc
+#dns_config: by default, nodes are assigned NODE_NAME.ENV_TLD for their DNS, this can be overridden here. Both NODE_NAME and ENV_TLD are interpolated if used
+env_boot_nodes:
+  devstaging_nodes:
+    mybackend01d:     
+      flavor:     "2 GB Performance"
+      descriptor: "lb:my-main-rails-repository"
+    mybackendlbd:     
+      dns_config: "api.ENV_TLD"
+    dbmasterd:    
+      flavor:     "8 GB Performance"
+      dns_config: "db.ENV_TLD"
+
+#Extra data used for nodes when the "cft scale up" command is run. Digits in the node are parsed out and the node's name (without digits) must match 100% to trigger the custom data
+scaling_nodes:
+  mybackend01p:
+    flavor:     "8 GB Performance"
+    descriptor: "lb:my-main-rails-repository"
+
+#tells the cheftacular gem about your split-environments and what main environment they're nested under.
+split_environments:
+  staging:
+    splitstaging:
+  production:
+    splita:
+
+#used in the test_env command, these are nodes that spun up for split-testing environments. They connect to their primary environment's database. IE a splitstaging node may connect to a staging database
+#NOTE! splitenv data bag data is contained in whatever env houses the splitenv!
+split_env_nodes:
+  mybackendSPLITENV01:
+    flavor:      "2 GB Performance"
+    descriptor:  "lb:my-main-rails-repository-ENV"
+  mybackendSPLITENVlb:
+    dns_config:  "api.ENV_TLD"
+
+global_chef_passwords: #passwords you want auto-generated for a chef_env for all repositories
+  pg_pass: 20
+
+#used in the get_haproxy_log command
+haproxy_config:
+  role_name:    'haproxy' #default role all haproxy servers will have
+  default_port: 22002
