@@ -316,7 +316,7 @@ class Cheftacular
 
       puts("Loading additional data bag data from chef server for environment \"#{ env }\" for bags: #{ bags_to_load.join(', ') }") if !in_initializer && !@options['quiet']
 
-      @config['ChefDataBag'].init_bag('default', 'authentication', false) if bags_to_load.empty? || bags_to_load.include?('authentication')
+      @config['ChefDataBag'].init_bag('default', 'authentication') if bags_to_load.empty? || bags_to_load.include?('authentication')
 
       @config['helper'].completion_rate?(38, 'initializer') if in_initializer
 

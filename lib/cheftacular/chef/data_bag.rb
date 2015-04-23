@@ -49,7 +49,7 @@ class Cheftacular
     end
 
     def save_authentication_bag bag_env="default"
-      save_bag 'authentication', bag_env, @config['default']['authentication_bag'], @config['default']['authentication_bag_hash']
+      save_bag 'authentication', bag_env, @config['default']['authentication_bag'], @config['default']['authentication_bag_hash'], true
     end
 
     def save_chef_passwords_bag bag_env="options"

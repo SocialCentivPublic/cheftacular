@@ -44,8 +44,8 @@ class Cheftacular
 
           "        4. `destroy:SERVER_NAME` destroys the server on the cloud. This must be an exact match of the server's actual name or the script will error.",
 
-          "        5. `poll:SERVER_NAME` polls the cloud's server for the status of the SERVER_NAME. " +
-          "This command will stop polling if / when the status of the server is ACTIVE and its build progress is 100%.",
+          "        5. `poll:SERVER_NAME` polls the cloud's server for the status of the SERVER_NAME. This command " +
+          "will stop polling if / when the status of the server is ACTIVE and its build progress is 100%.",
 
           "        6. `attach_volume:SERVER_NAME:VOLUME_NAME[:VOLUME_SIZE[:DEVICE_LOCATION]]` " +
           "If VOLUME_NAME exists it will attach it if it is unattached otherwise it will create it",

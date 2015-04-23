@@ -24,7 +24,7 @@ class Cheftacular
 
       specific_repository = ARGV[2] if ARGV[2] && specific_repository.empty?
       
-      unless @config['helper'].get_array_of_repo_names_for_repositories.include?(specific_repository)
+      if !specific_repository.empty? && @config['getter'].get_repo_names_for_repositories.include?(specific_repository)
         puts "The repository passed (#{ specific_repository }) is not listed in the cheftacular.yml repositories hash! Please update the hash or check your spelling!"
 
         return false
@@ -33,9 +33,9 @@ class Cheftacular
       public_ssh_key = ARGV[1]
 
       if specific_repository.blank?
-        @config['default']['authentication_bag_hash']["authorized_keys"] << pub_ssh_key
+        @config['default']['authentication_bag_hash']["authorized_keys"] << public_ssh_key
       else
-        @config['default']['authentication_bag_hash']["specific_authorized_keys"] << pub_ssh_key
+        @config['default']['authentication_bag_hash']["specific_authorized_keys"] << public_ssh_key
       end
 
       @config['ChefDataBag'].save_authentication_bag
