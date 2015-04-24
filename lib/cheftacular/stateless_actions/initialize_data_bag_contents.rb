@@ -89,6 +89,12 @@ class Cheftacular
         end
       end
 
+      if @config['cheftacular']['git_based_deploys'] == 'true'
+        if !hash.has_key?('git_private_key') || !hash.has_key?('git_public_key') || !hash.has_key?('git_OAuth')
+          puts "Warning! github user credentials in default authentication bag were not found! Please run `cft help create_git_key` and then run that command itself!" unless @command == 'help'
+        end
+      end
+
       @config['ChefDataBag'].save_authentication_bag if save_on_finish
 
       exit if exit_on_finish

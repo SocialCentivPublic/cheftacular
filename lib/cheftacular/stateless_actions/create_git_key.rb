@@ -36,7 +36,7 @@ class Cheftacular
 
       hash = @config['default']['authentication_bag_hash']
 
-      if h.has_key?('private_key') 
+      if hash.has_key?('private_key') 
         puts "Overwrite current git key in default data bag? (Y/y/N/n)"
         input = STDIN.gets.chomp
 
@@ -46,11 +46,11 @@ class Cheftacular
 
       if overwrite
 
-        hash['private_key'] = data
+        hash['git_private_key'] = data
 
-        hash['public_key'] = data_pub
+        hash['git_public_key'] = data_pub
 
-        hash['OAuth'] = oauth_key
+        hash['git_OAuth'] = oauth_key
 
         @config['ChefDataBag'].save_authentication_bag
 

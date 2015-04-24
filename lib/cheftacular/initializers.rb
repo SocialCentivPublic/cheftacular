@@ -6,7 +6,7 @@ class Cheftacular
 
       initialize_yaml_configuration
 
-      initialize_environment
+      initialize_default_cheftacular_options
 
       initialize_locations
 
@@ -228,8 +228,9 @@ class Cheftacular
       exit
     end
 
-    def initialize_environment
-      @options['env'] = @config['cheftacular']['initial_environment'] if @config['cheftacular'].has_key?('initial_environment')
+    def initialize_default_cheftacular_options
+      @options['env']        = @config['cheftacular']['default_environment'] if @config['cheftacular'].has_key?('default_environment')
+      @options['repository'] = @config['cheftacular']['default_repository'] if @config['cheftacular'].has_key?('default_repository')
     end
 
     def initialize_monkeypatches

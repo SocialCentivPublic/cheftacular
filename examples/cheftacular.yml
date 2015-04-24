@@ -1,6 +1,7 @@
 
 mode:                   'devops'                   # valid modes are devops, application, and server. Server mode is very similar to devops and only useful if you want your servers to be able to run cheftacular commands
-initial_environment:    'staging'                  # the initial environment all commands are run in without an env setting flag
+default_repository:     'my-main-rails-repository' # If the mode is set to devops, load this repository as the default one (can be overridden with the -R REPOSITORY_NAME flag)
+default_environment:    'staging'                  # the default environment all commands are run in without an env setting flag
 ruby_version:           'ruby-2.1.2'               # Default ruby version to run commands against, only matters explicitly if your repo does not have a .ruby-version file
 deploy_user:            'deploy'                   # User on the remote systems that all remote commands will be done with
 cheftacular_chef_user:  'mychefuser'               # Chef user on the chef user. You must have a CHEFUSERNAME.pem file in your .chef directory to authenticate
