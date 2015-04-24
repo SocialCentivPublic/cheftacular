@@ -35,7 +35,7 @@ class Cheftacular
       rescue Ridley::Errors::HTTPRequestEntityTooLarge => e
         puts "WARNING! #{ e }! The logs from this run will not be saved on the chef server. Wiping the bag so future runs can be saved."
 
-        item.update(id: 'logs')
+        item.update('logs', description: "store logs for an environment")
 
         @config[env]['logs_bag_hash'] = @config[env]['logs_bag'].to_hash
       end
