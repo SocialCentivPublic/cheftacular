@@ -103,9 +103,9 @@ class Cheftacular
       end
     end
 
-    def get_current_role_map ret=""
+    def get_current_role_map run_list, ret={}
       @config['cheftacular']['role_maps'].each_pair do |main_role, role_hash|
-        ret = role_hash if role_hash['role_name'] == @options['role']
+        ret = role_hash if run_list.include?("role[#{ role_hash['role_name'] }]")
       end
 
       ret

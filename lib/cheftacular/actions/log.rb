@@ -36,8 +36,8 @@ class Cheftacular
 
         puts("Beginning log fetch run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']
 
-        if getter.get_current_stack.nil?
-          start_log_role_map( name, n.public_ipaddress, getter.get_current_role_map['log_location'], options, locs, cheftacular, passwords)
+        if has_run_list_in_role_map?(n.run_list, cheftacular['role_maps'])
+          start_log_role_map( n.name, n.public_ipaddress, getter.get_current_role_map(n.run_list)['log_location'], options, locs, cheftacular, passwords)
         else
           self.send("start_log_fetch_#{ getter.get_current_stack }", n.name, n.public_ipaddress, n.run_list, options, locs, cheftacular, passwords)
         end

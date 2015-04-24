@@ -5,23 +5,24 @@ module SSHKit
         log_loc, timestamp  = set_log_loc_and_timestamp(locs)
         log_cmnd, log_lines = get_log_command_and_lines(options)
 
-        if !test("[ -e #{ target_log_loc }]") #true if file exists
-          puts "#{ name } (#{ ip_address }) does not have a log file for #{ options['env'] } at the moment..."
+        
+        puts "Fetching log file(s) for #{ name } (#{ ip_address }). Outputting to #{ log_loc } with timestamp: #{ timestamp }"
 
-        else
-          puts "Fetching log file(s) for #{ name } (#{ ip_address }). Outputting to #{ log_loc }/#{ name }-#{ options['role'] }-log-#{ timestamp }.txt"
+        target_log_loc.split(',').each do |parsed_log_loc|
+          parsed_log_loc = parsed_log_loc.gsub('|current_repo_location|', "#{ cheftacular['base_file_path'] }/#{ options['repository'] }/current")
 
-          target_log_loc.split(',').each do |parsed_log_loc|
-            parsed_log_loc = parsed_log_loc.gsub('|current_repo_location|', "#{ cheftacular['base_file_path'] }/#{ options['repository'] }/current")
+          if parsed_log_loc != '/var/log/syslog' && !test("[ -e #{ parsed_log_loc }]") #true if file exists ()
+            puts "#{ name } (#{ ip_address }) does not have a #{ parsed_log_loc } log file for #{ options['env'] } at the moment..."
+          else
             if log_lines.nil?
               out << sudo_capture(passwords[ip_address], log_cmnd.to_sym, parsed_log_loc)
 
             else
               out << sudo_capture(passwords[ip_address], log_cmnd.to_sym, log_lines, parsed_log_loc)
             end
-          end
 
-          ::File.open("#{ log_loc }/#{ name }-#{ options['role'] }-log-#{ timestamp }.txt", "w") { |f| f.write(out.scrub_pretty_text) } unless options['no_logs']
+            ::File.open("#{ log_loc }/#{ name }-#{ parsed_log_loc.split('/').last.split('.').first }-#{ timestamp }.txt", "w") { |f| f.write(out.scrub_pretty_text) } unless options['no_logs']
+          end
         end
       end
 

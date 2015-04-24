@@ -26,9 +26,8 @@ class Cheftacular
       nodes.each do |n|
         puts("Beginning tail run for #{ n.name } (#{ n.public_ipaddress }) on role #{ @options['role'] }") unless @options['quiet']
 
-
-        if @config['getter'].get_current_stack.nil?
-          start_tail_role_map( n.public_ipaddress )
+        if @config['dummy_sshkit'].has_run_list_in_role_map?(n.run_list, @config['cheftacular']['role_maps'])
+          start_tail_role_map( n.public_ipaddress, n.run_list )
         else
           self.send("start_tail_#{ @config['getter'].get_current_stack }", n.public_ipaddress, n.run_list )
         end
@@ -37,8 +36,8 @@ class Cheftacular
 
     private
 
-    def start_tail_role_map ip_address
-      log_loc = @config['getter'].get_current_role_map['log_location'].split(',').first
+    def start_tail_role_map ip_address, run_list
+      log_loc = @config['getter'].get_current_role_map(run_list)['log_location'].split(',').first.gsub('|current_repo_location|', "#{ @config['cheftacular']['base_file_path'] }/#{ @options['repository'] }/current")
 
       `ssh -oStrictHostKeyChecking=no -tt deploy@#{ ip_address } "#{ @config['helper'].sudo(ip_address) } tail -f #{ log_loc }" > /dev/tty`
     end
