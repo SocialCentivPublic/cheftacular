@@ -2,7 +2,7 @@ class Cheftacular
   class StatelessActionDocumentation
     def fetch_file
       @config['documentation']['stateless_action'] <<  [
-        "`cft fetch_file NODE_NAME LOCATION_ALIAS FILE_NAME` fetches a file from the remote node. ",
+        "[NYI]`cft fetch_file NODE_NAME LOCATION_ALIAS FILE_NAME` fetches a file from the remote node. ",
 
         [
           "    1. `LOCATION_ALIAS` will be parsed as a path if it has backslash characters. Otherwise it will be parsed from your " +

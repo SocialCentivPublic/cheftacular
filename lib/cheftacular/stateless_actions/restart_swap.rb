@@ -3,7 +3,7 @@ class Cheftacular
     def restart_swap
       @config['documentation']['stateless_action'] <<  [
         "`cft restart_swap` will restart the swap on every server that doesn't have swap currently on. " +
-        "Useful if you notice servers with no swap activated from `hip disk_report`",
+        "Useful if you notice servers with no swap activated from `cft disk_report`",
 
         [
           "    1. There is no risk in running this command. Sometimes swap doesnt reactivate if " +

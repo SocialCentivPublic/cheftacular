@@ -1,8 +1,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def chef_environment
-      @config['documentation']['action'] <<  [
-        "`cft chef_environment ENVIRONMENT_NAME [create|destroy]` will allow you to interact with chef environments on the chef server.",
+      @config['documentation']['stateless_action'] <<  [
+        "[NYI]`cft chef_environment ENVIRONMENT_NAME [create|destroy]` will allow you to interact with chef environments on the chef server.",
       
         [
           "    1.  `create` will create an environment if it does not exist.",

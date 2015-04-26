@@ -42,6 +42,12 @@ class Cheftacular
       raise "You attempted to create a database console for a role that had no database type attached to it, this is not possible."
     end
 
+    def db_console_
+      puts "db_console method tried to create a db_console for the role \"#{ @options['role'] }\" but it doesn't appear to have a repository set! Skipping..."
+
+      return false
+    end
+
     alias_method :psql, :db_console_postgresql
 
     private 

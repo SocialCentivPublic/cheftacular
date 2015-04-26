@@ -57,7 +57,7 @@ class Cheftacular
 
         final_commands
 
-        rvm_source = "source /home/deploy/.rvm/scripts/rvm &&"
+        rvm_source = "source /home/deploy/.rvm/bin/rvm &&"
 
         final_commands = [
           "#{ rvm_source } echo '#{ new_deploy_pass }' | rvmsudo -S rvm requirements",

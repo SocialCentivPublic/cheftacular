@@ -55,8 +55,6 @@ class Cheftacular
         '    2. *You will not be able to set a custom revision for beta environments.* The beta environments are tied to split-staging and splita/b/c/d respectively.',
       ]
     end
-
-    alias_method :stateless_arguments, :arguments
   end
 
   class StatelessAction

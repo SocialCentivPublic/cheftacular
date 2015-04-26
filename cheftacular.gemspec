@@ -31,6 +31,5 @@ Gem::Specification.new do |s|
   s.add_dependency             "public_suffix"
   s.add_dependency             "rest-client"
   s.add_dependency             "fog"
-  s.add_development_dependency "nokogiri", "1.6.1"
-  s.add_development_dependency "mechanize"
+  s.add_dependency             "slack-notifier"
 end

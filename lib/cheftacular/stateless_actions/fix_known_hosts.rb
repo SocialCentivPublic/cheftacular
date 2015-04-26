@@ -17,8 +17,6 @@ class Cheftacular
 
   class StatelessAction
     def fix_known_hosts
-      include Config
-
       targets = ["all"]
 
       if ARGV[1].class == String
@@ -28,12 +26,13 @@ class Cheftacular
       if targets.first == 'all'
         nodes = @config['getter'].get_true_node_objects(true)
         arr = []
-        environments = (nodes.map { |n| n.chef_environment }).uniq
 
-        environments.delete("_default")
+        @config['chef_environments'].each do |env|
+          @config['initializer'].initialize_data_bags_for_environment env, false, ['addresses']
 
-        environments.each do |env|
-          @config[env]['addresses_bag_hash'].each do |serv_hash|
+          @config['initializer'].initialize_addresses_bag_contents env
+
+          @config[env]['addresses_bag_hash']['addresses'].each do |serv_hash|
             arr << serv_hash['dn'].split('.').first
             arr << serv_hash['public']
           end

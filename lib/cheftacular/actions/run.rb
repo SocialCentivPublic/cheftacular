@@ -60,5 +60,11 @@ class Cheftacular
     def run_all
       raise "You attempted to run a command for the all role, this is not possible."
     end
+
+    def run_
+      puts "Run method tried to run a command for the role \"#{ @options['role'] }\" but it doesn't appear to have a repository set! Skipping..."
+
+      return false
+    end
   end
 end

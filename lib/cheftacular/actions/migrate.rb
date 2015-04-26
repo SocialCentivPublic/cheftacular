@@ -53,5 +53,11 @@ class Cheftacular
     def migrate_all nodes=[]
       raise "You attempted to migrate the all role, this is not possible."
     end
+
+    def migrate_ nodes=[]
+      puts "Migrate method tried to migrate the role \"#{ @options['role'] }\" but it doesn't appear to have a repository set! Skipping..."
+
+      return false
+    end
   end
 end

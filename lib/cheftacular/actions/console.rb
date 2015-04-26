@@ -58,5 +58,11 @@ class Cheftacular
     def start_console_all
       raise "Not yet implemented"
     end
+
+    def console_
+      puts "Console method tried to create a console for the role \"#{ @options['role'] }\" but it doesn't appear to have a repository set! Skipping..."
+
+      return false
+    end
   end
 end

@@ -9,8 +9,10 @@ class Cheftacular
   end
 
   class StatelessAction
-    def initialize_data_bag_contents env
+    def initialize_data_bag_contents env=""
       raise "Environment does not exist on chef server!" unless @config['chef_environments'].include?(env)
+
+      env = ARGV[1] if env.blank?
 
       @config['initializer'].initialize_audit_bag_contents env
 
@@ -166,6 +168,8 @@ class Cheftacular
       end
 
       envs_to_build_in_hash.each do |env|
+        hash[env] ||= {}
+        
         if !hash[env].has_key?('tld') || ( hash[env].has_key?('tld') && hash[env]['tld'].blank? )
           hash[env]['tld'] = "" unless hash[env].has_key?('tld')
 

@@ -19,6 +19,7 @@ require 'fog'
 require 'socket'
 require 'net/http'
 require 'timeout'
+require 'slack-notifier'
 
 Dir["#{File.dirname(__FILE__)}/../**/*.rb"].each { |f| require f }
 

@@ -61,7 +61,7 @@ class Cheftacular
 
       elsif repo_check_array.include?(true)
         @config['cheftacular']['repositories'].each_pair do |key, repo_hash|
-          @options['role'] = key if repo_hash['repo_name'] == repository && set_variables
+          @options['role'] = key if repo_hash['repo_name'] == repository && set_variables && @options['role'].nil?
         end
       else
         raise "Unable to parse repository: #{ repository }, the repository you're referring to does not exist in your cheftacular.yml."

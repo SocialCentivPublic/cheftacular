@@ -1,5 +1,3 @@
-
-#Uploads a private key found in ~/.ssh/id_rsa to an encrypted bag to let the chef-server access private repos.
 class Cheftacular
   class StatelessActionDocumentation
     def create_git_key

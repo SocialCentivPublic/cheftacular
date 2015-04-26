@@ -24,9 +24,9 @@ class Cheftacular
 
       nodes.each do |node|
         if @config[@options['env']]['logs_bag_hash'].has_key?("#{ node.name }-deploy")
-          puts("Found log data in logs bag. Outputting to #{ log_loc }/#{ node.name }-deploystash-#{ @config[@options['env']]['logs_bag_hash']["#{ node.name }-deploy"][:timestamp] }.txt") unless @options['quiet']
+          puts("Found log data in logs bag. Outputting to #{ log_loc }/stashedlog/#{ node.name }-deploystash-#{ @config[@options['env']]['logs_bag_hash']["#{ node.name }-deploy"][:timestamp] }.txt") unless @options['quiet']
 
-          File.open("#{ log_loc }/#{ node.name }-deploystash-#{@config[@options['env']]['logs_bag_hash']["#{ node.name }-deploy"][:timestamp] }.txt", "w") do |f|
+          File.open("#{ log_loc }/stashedlog/#{ node.name }-deploystash-#{@config[@options['env']]['logs_bag_hash']["#{ node.name }-deploy"][:timestamp] }.txt", "w") do |f|
             f.write(@config[@options['env']]['logs_bag_hash']["#{ node.name }-deploy"][:text])
           end
 

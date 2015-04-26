@@ -2,7 +2,7 @@ class Cheftacular
   class StatelessActionDocumentation
     def clean_sensu_plugins
       @config['documentation']['stateless_action'] <<  [
-        "`cft clean_sensu_plugins` [NYI] will checkout / update the sensu community plugins github repo on your " +
+        "[NYI]`cft clean_sensu_plugins` will checkout / update the sensu community plugins github repo on your " +
         "local machine and sync any sensu plugin files in your wrapper cookbook directory with what is in the repo."
       ]
     end
