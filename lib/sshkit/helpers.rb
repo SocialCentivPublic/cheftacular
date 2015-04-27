@@ -9,6 +9,10 @@ module SSHKit
         capture :echo, pass, :|, :sudo, '-S', *args
       end
 
+      def sudo_test pass, file_location
+        sudo_capture( pass, :test, '-e', file_location, '&&', :echo, 'true', { raise_on_non_zero_exit: false, verbosity: Logger::DEBUG }) == 'true'
+      end
+
       def has_run_list_in_role_map? run_list, role_map_hash
         role_map_hash.each_value do |map_hash|
           return true if run_list.include?("role[#{ map_hash['role_name'] }]")

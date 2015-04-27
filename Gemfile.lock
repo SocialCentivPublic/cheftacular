@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    cheftacular (2.1.0)
+    cheftacular (2.1.1)
       activesupport
       awesome_print
       chef (>= 11.12)

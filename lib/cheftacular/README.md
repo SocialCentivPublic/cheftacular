@@ -341,9 +341,17 @@
 
     1. `hip apt_update restart` will prompt to ask if you also want to restart all servers in a rolling restart. This should be done with extreme caution and only in a worst-case scenario.
 
-30. `cft slack "MESSAGE" [CHANNEL]` will attempt to post the message to the webhook set in your cheftacular.yml. Slack posts to your default channel by default but if the CHANNEL argument is supplied the message will post there.
+30. `cft service [COMMAND] [SERVICE]` will run service commands on remote servers. This command only runs on the first server it comes across. Specify others with -n NODE_NAME.
 
-31. `cft test_env [TARGET_ENV] boot|destroy` will create (or destroy) the test nodes for a particular environment (defaults to staging, prod split-envs can be set with `-p`). Please read below for how TARGET_ENV works
+    1. When no commands are passed, the command will list all the services in the /etc/init directory
+
+    2. When `list` is passed, the above behavior is performed 
+
+    3. When `restart|stop|start SERVICE` is passed, the command will attempt to restart|stop|start the service if it has a .conf file on the remote server in the /etc/init directory.
+
+31. `cft slack "MESSAGE" [CHANNEL]` will attempt to post the message to the webhook set in your cheftacular.yml. Slack posts to your default channel by default but if the CHANNEL argument is supplied the message will post there.
+
+32. `cft test_env [TARGET_ENV] boot|destroy` will create (or destroy) the test nodes for a particular environment (defaults to staging, prod split-envs can be set with `-p`). Please read below for how TARGET_ENV works
 
     1. TARGET_ENV changes functionality depending on the overall (like staging / production) environment
 
@@ -353,9 +361,9 @@
 
         3. The default tld used should change depending on which environment you are booting / destroying. This is set in the environment's config data bag under the tld key
 
-32. `cft ubuntu_bootstrap ADDRESS ROOT_PASS` This command will bring a fresh server to a state where chef-client can be run on it via `cft chef-bootstrap`. It should be noted that it is in this step where a server's randomized deploy_user sudo password is generated.
+33. `cft ubuntu_bootstrap ADDRESS ROOT_PASS` This command will bring a fresh server to a state where chef-client can be run on it via `cft chef-bootstrap`. It should be noted that it is in this step where a server's randomized deploy_user sudo password is generated.
 
-33. `cft update_split_branches` will perform a series of git commands that will merge all the split branches for your split_branch enabled repositories with what is currently on master and push them.
+34. `cft update_split_branches` will perform a series of git commands that will merge all the split branches for your split_branch enabled repositories with what is currently on master and push them.
 
     1. Repository must be set with `-R REPOSITORY_NAME` for this command to work.
 
@@ -365,9 +373,9 @@
 
     4. This command will return a helpful error statement if you attempt to run the command with changes to your current working directory. You must commit these changes before running this command.
 
-34. `cft update_tld TLD` command will force a full dns update for a tld in the preferred cloud. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address.
+35. `cft update_tld TLD` command will force a full dns update for a tld in the preferred cloud. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address.
 
-35. `cft upload_nodes` This command will resync the chef server's nodes with the data in our chef-repo/node_roles. 
+36. `cft upload_nodes` This command will resync the chef server's nodes with the data in our chef-repo/node_roles. 
 
     1. This command changes behavior depending on several factors about both your mode and the state of your environment
 
@@ -379,4 +387,4 @@
 
         1. Due to this, only users running this against their chef-repo need to worry about having a nodes_dir, the way it should be.
 
-36. `cft upload_roles` This command will resync the chef server's roles with the data in the chef-repo/roles.
+37. `cft upload_roles` This command will resync the chef server's roles with the data in the chef-repo/roles.

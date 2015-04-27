@@ -41,7 +41,6 @@ class Cheftacular
             log_arr.each do |log_hash|
               out << "    #{ log_array_entry_count }. #{ log_hash['command'] }"
               out << "        1. Hostname:  #{ log_hash['hostname'] }"
-              out << "        2. IPAddress: #{ log_hash['true_ip'] }"
               out << "        3. Arguments: #{ log_hash['arguments'] }"
               out << "        4. Options:   #{ log_hash['options'].to_hash }"
               out << ""

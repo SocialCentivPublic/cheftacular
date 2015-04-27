@@ -29,7 +29,7 @@ class Cheftacular
       
       puts "Preparing to run merges..."
 
-      split_branch_repos =  @config['getters'].get_split_branch_hash
+      split_branch_repos =  @config['getter'].get_split_branch_hash
 
       raise "unsupported codebase, please run in #{ split_branch_repos.keys.join(', ') } only!" if ( @options['repository'] =~ /#{ split_branch_repos.keys.join('|') }/ ) == 0
 

@@ -38,9 +38,9 @@ class Cheftacular
       end
 
       if @config['getter'].get_repository_from_role_name(working_dir, "has_value?")
-        parse_repository(working_dir)
+        @options['repository'] = working_dir unless @options['repository'] #enable custom -r or -R flags to get through in application directories
 
-        @options['repository'] = working_dir
+        parse_repository(@options['repository'])
 
         @options['command']    = ARGV[0] unless @config['helper'].is_not_command_or_stateless_command?(ARGV[0])
       end
