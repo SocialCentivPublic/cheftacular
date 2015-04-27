@@ -30,9 +30,25 @@ class Cheftacular
     end
 
     def fetch_audit_data_hash ret_hash={}, ip=""
-      Timeout::timeout(10) do
-        response = Net::HTTP.get URI.parse('http://checkip.dyndns.org')
-        ip = response.match( /(?:Address: )([\d\.]+)/ )[1]
+      begin
+        Timeout::timeout(10) do
+          response = Net::HTTP.get URI.parse('http://checkip.dyndns.org')
+          ip = response.match( /(?:Address: )([\d\.]+)/ )[1]
+        end
+      rescue StandardError => e
+        tries ||= 4
+
+        puts "Unable to fetch remote IP address for auditing hash. Trying #{tries} more times."
+
+        tries -= 1
+
+        if tries > 0
+          sleep(15)
+
+          retry
+        else
+          ip = "Unable to fetch"
+        end
       end
 
       ret_hash['hostname']  = Socket.gethostname
@@ -41,7 +57,7 @@ class Cheftacular
       ret_hash
     rescue StandardError => exception
       @config['helper'].cleanup_file_caches('current-audit-only')
-      
+
       @config['helper'].exception_output "Unable to finish parsing auditing hash", exception
     end
   end
