@@ -296,8 +296,8 @@ class Cheftacular
 
       @config['ridley'] = Ridley.new(
         server_url:                @config['cheftacular']['chef_server_url'],
-        client_name:               (@config['helper'].running_on_chef_node? ? parse_node_name_from_client_file : @config['cheftacular']['cheftacular_chef_user']),
-        client_key:                File.expand_path("#{ @config['locs']['chef'] }/#{ @config['helper'].running_on_chef_node? ? 'client.pem' : @config['cheftacular']['cheftacular_chef_user'] }.pem"),
+        client_name:               (@config['helper'].running_on_chef_node? ? @config['parser'].parse_node_name_from_client_file : @config['cheftacular']['cheftacular_chef_user']),
+        client_key:                File.expand_path("#{ @config['locs']['chef'] }/#{ @config['helper'].running_on_chef_node? ? 'client' : @config['cheftacular']['cheftacular_chef_user'] }.pem"),
         encrypted_data_bag_secret: @config['data_bag_secret'],
         ssl:                       { verify: @config['cheftacular']['ssl_verify'] == 'true' }
       )

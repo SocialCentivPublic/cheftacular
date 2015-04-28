@@ -275,6 +275,47 @@ class Cheftacular
       end      
     end
 
+    def does_cheftacular_config_have? key_array, *args
+      cheftacular = @config['cheftacular']
+      key_array   = [key_array] if key_array.is_a?(String)
+      key_checks  = []
+
+      key_array.each do |key|
+        key_checks << recursive_hash_check(key.split(':'), @config['cheftacular']).to_s
+      end
+
+      !key_checks.include?('false')
+    end
+
+    def recursive_hash_check keys, hash
+      if hash.has_key?(keys[0]) 
+        case hash[keys[0]].class
+        when Hash
+          if !hash[keys[0]].empty?
+            recursive_hash_check keys[1..keys.count-1], hash[keys[0]] 
+          else
+            return true
+          end
+        when String
+          return !hash[keys[0]].blank?
+        when Array
+          return !hash[keys[0]].empty?
+        end
+      else
+        return false
+      end
+    end
+
+    def parse_node_name_from_client_file ret=""
+      config = File.read(File.expand_path("#{ @config['locs']['chef'] }/client.rb"))
+
+      config.split("\n").each do |line|
+        next unless line.include?('node_name')
+
+        return line.split('node_name').last.strip.chomp.gsub('"', '')
+      end
+    end
+
     private
     def current_file_path file_name
       File.join( @config['locs']['app-root'], 'tmp', declassify, "#{ Time.now.strftime("%Y%m%d") }-#{ file_name }")

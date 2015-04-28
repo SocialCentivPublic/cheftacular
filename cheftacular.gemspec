@@ -32,4 +32,5 @@ Gem::Specification.new do |s|
   s.add_dependency             "rest-client"
   s.add_dependency             "fog"
   s.add_dependency             "slack-notifier"
+  s.add_dependency             "cloudflare"
 end
