@@ -38,7 +38,7 @@ class Cheftacular
 
         env_nodes = @config['parser'].exclude_nodes(nodes, [{ if: { not_env: env } }])
         puts "\nFound #{ env_nodes.count } #{ env } nodes:"
-        out = "  #{ 'name'.ljust(22) } #{ 'ip_address'.ljust(21) }"
+        out = "  #{ 'name'.ljust(22) } #{ 'ip_address'.ljust(20) }"
         out << "#{ 'private_address'.ljust(21) }"                   if @options['with_private']
         out << "#{ 'pass?'.ljust(5) } #{ 'domain'.ljust(41) }"      if @options['verbose']
         out << "#{ 'deploy_password'.ljust(21) }"                   if @options['verbose']
@@ -48,15 +48,15 @@ class Cheftacular
 
         auth_hash = @config[env]['server_passwords_bag_hash']
 
-        addr_data = @config['getter'].get_addresses_hash env
+        addresses_hash = @config['getter'].get_addresses_hash env
 
         env_nodes.each do |node|
           #client = @ridley.client.find(options['node_name'])
           out = "  #{ node.chef_id.ljust(22,'_') }_#{ node.public_ipaddress.ljust(20,'_') }"
 
           if @options['with_private']
-            if addr_data.has_key?(node.public_ipaddress)
-              out << addr_data[node.public_ipaddress]['priv'].ljust(20,'_')
+            if addresses_hash.has_key?(node.public_ipaddress)
+              out << addresses_hash[node.public_ipaddress]['address'].ljust(20,'_')
             else
               out << ''.ljust(20,'_')
             end
@@ -66,8 +66,8 @@ class Cheftacular
 
             out << "_" + auth_hash.has_key?("#{ node.public_ipaddress }-deploy-pass").to_s.ljust(5,'_') + "_"
 
-            if addr_data.has_key?(node.public_ipaddress)
-              out << addr_data[node.public_ipaddress]['dn'].ljust(40,'_')
+            if addresses_hash.has_key?(node.public_ipaddress)
+              out << addresses_hash[node.public_ipaddress]['dn'].ljust(40,'_')
             else
               out << ''.ljust(40,'_')
             end

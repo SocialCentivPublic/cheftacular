@@ -19,11 +19,11 @@ class Cheftacular
 
       out << '# Table of Contents for Cheftacular Commands'
 
-      out << '1. [Cheftacular Arguments and Flags](https://github.com/SocialCentivPublic/cheftacular/blob/master/lib/cheftacular/README.md#arguments-and-flags-for-cheftacular))'
+      out << '1. [Cheftacular Arguments and Flags](https://github.com/SocialCentivPublic/cheftacular/blob/master/lib/cheftacular/README.md#arguments-and-flags-for-cheftacular)'
 
       out << '2. [Application Commands](https://github.com/SocialCentivPublic/cheftacular/blob/master/lib/cheftacular/README.md#commands-that-can-be-run-in-the-application-context)'
 
-      out << '3. [DevOps Commands](https://github.com/SocialCentivPublic/cheftacular/blob/master/lib/cheftacular/README.md#commands-that-can-only-be-run-in-the-devops-context))' + "\n"
+      out << '3. [DevOps Commands](https://github.com/SocialCentivPublic/cheftacular/blob/master/lib/cheftacular/README.md#commands-that-can-only-be-run-in-the-devops-context)' + "\n"
       
       out << @config['documentation']['arguments']
 
@@ -34,6 +34,8 @@ class Cheftacular
       out << "\n## Commands that can ONLY be run in the devops context"
 
       out << @config['helper'].compile_documentation_lines('stateless_action')
+
+      FileUtils.rm("#{ @config['locs']['chef-log'] }/README.md") if File.exist?("#{ @config['locs']['chef-log'] }/README.md")
 
       File.open("#{ @config['locs']['chef-log'] }/README.md", "w") { |f| f.write(out.flatten.join("\n\n")) }
     end

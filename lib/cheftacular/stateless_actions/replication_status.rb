@@ -47,7 +47,6 @@ class Cheftacular
         rep_status_hash[n.name] = start_slave_replication_report( n.name, n.public_ipaddress,  options, locs, passwords)
       end
 
-
       rep_status_hash.each_pair do |serv_name, output|
         out << "#{ serv_name }:"
 

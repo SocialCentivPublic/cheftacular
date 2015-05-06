@@ -1,13 +1,15 @@
 class CloudInteractor
   class Domain
     def create_record args, already_created=false
-      args['type'] ||= 'A'
-      args['ttl']  ||= 300
+      args['type']          ||= 'A'
+      args['ttl']           ||= 300
+      args['target_domain'] ||= "#{ args['subdomain'] }.#{ args[IDENTITY.singularize] }"
+      args['target_domain']   = args[IDENTITY.singularize] if args['subdomain'].blank?
 
       read args, false
 
       @main_obj['specific_records'][args[IDENTITY.singularize]].each do |record_hash|
-        already_created = true if record_hash['name'] == "#{ args['subdomain'] }.#{ args[IDENTITY.singularize] }"
+        already_created = true if record_hash['name'] == args['target_domain'] && record_hash['type'] == args['type']
 
         break if already_created
       end
@@ -18,9 +20,9 @@ class CloudInteractor
       else
         specific_fog_object = @classes['auth'].auth_service(RESOURCE).instance_eval('zones').get @main_obj["specific_#{ IDENTITY }"].last['id']
 
-        specific_fog_object.records.create(name: "#{ args['subdomain'] }.#{ args[IDENTITY.singularize] }", value: args['target_ip'], type: args['type'], ttl: args['ttl'])
+        specific_fog_object.records.create(name: args['target_domain'], value: args['target_ip'], type: args['type'], ttl: args['ttl'])
 
-        puts "Attached #{ args['subdomain'] } (#{ args['target_ip'] }) to #{ args[IDENTITY.singularize] }..."
+        puts "Attached #{ args['subdomain'] } (#{ args['target_ip'] }) to #{ args[IDENTITY.singularize] } (#{ args['target_domain'] })..."
       end
     end
   end

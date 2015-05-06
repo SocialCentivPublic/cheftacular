@@ -57,7 +57,7 @@ class Cheftacular
         node_roles_hash.each_pair do |role_name, role_hash|
           overwrite = false
           if bag_hash[role_name] != role_hash
-            puts "Detected difference between saved roles hash and updated node_roles json hash."
+            puts "Detected difference between saved roles hash and updated node_roles json hash for #{ role_name }."
 
             puts "Saved roles hash:"
             ap(bag_hash[role_name])
@@ -90,6 +90,7 @@ class Cheftacular
           allowed_changes_hash[node.name].each_pair do |node_key, node_val|
             if (node_key =~ /name/) != 0 && node.send(node_key) != node_val
               puts("Updating #{ node.name } with attribute #{ node_key } = #{ node_val } from #{ node.name }.json") unless @options['quiet']
+
               node.send("#{ node_key }=", node_val)
 
               changes_for_current_node, invalidate_file_node_cache = true, true
@@ -100,6 +101,7 @@ class Cheftacular
           allowed_changes_hash[node.name.gsub(/\d/,'')].each_pair do |node_key, node_val|
             if (node_key =~ /name/) != 0 && node.send(node_key) != node_val
               puts("Updating #{ node.name } with attribute #{ node_key } = #{ node_val } from template json file") unless @options['quiet']
+              
               node.send("#{ node_key }=", node_val)
 
               changes_for_current_node, invalidate_file_node_cache = true, true

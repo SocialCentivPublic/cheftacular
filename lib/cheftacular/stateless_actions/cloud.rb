@@ -3,7 +3,7 @@ class Cheftacular
   class StatelessActionDocumentation
     def cloud
       @config['documentation']['stateless_action'] <<  [
-        "`cft cloud <FIRST_LEVEL_ARG> [<SECOND_LEVEL_ARG>[:<SECOND_LEVEL_ARG_QUERY>]*] ` this command handles talking to various cloud apis. " +
+        "`cft cloud <FIRST_LEVEL_ARG> [<SECOND_LEVEL_ARG>[:<SECOND_LEVEL_ARG_QUERY>]*] ` this command handles talking to various cloud APIs. " +
         "If no args are passed nothing will happen.",
 
         [

@@ -29,6 +29,11 @@ virtualization_mode:    'PV'                       # on rackspace cloud, set you
 install_rvm_on_boot:    'false'                    # 'true'|'false' If true, this will cause RVM to be installed for the deploy_user on boot, this makes managing RVM via cookbook impossible.
 rvm_gpg_key:            ''
 
+cloudflare:
+  api_key:     ''
+  user_email:  ''
+  default_ttl: 300
+
 # the first comma in the list of log_locs is what is tailable, the others are only loggable
 role_maps: # role maps for log tailing
   sensu_server_role:    
@@ -42,7 +47,7 @@ role_maps: # role maps for log tailing
     log_location: '/var/log/syslog,|current_repo_location|/log/delayed_job.log' # commas will pull logs from multiple locations. |current_repo_location| acts as an alias for a role's default repo location
 
 repositories:
-  myrepo:                                          # this row is reserved for nicknames, preferably nicknames that eliminate any hyphens in the repo_name
+  mybackendrepo:                                   # this row is reserved for nicknames, preferably nicknames that eliminate any hyphens in the repo_name
     repo_name:                 'my-main-rails-repository'
     database:                  'postgresql'        # Valid values are currently only 'postgresql' or 'mysql'
     application_database_user: 'databaseguy'       # Name of the database user on the remote server (useful if each app has it's own database user)
@@ -56,6 +61,13 @@ repositories:
     specific_chef_passwords:                       # Special keys that you want auto-generated for their repo by for the ENV chef_passwords bag, the value for them is their length
       pg_root_pass:         20
       pg_app_pass:          20
+
+  myfrontendrepo:
+    repo_name:                       'my-frontend-repository'
+    database:                        'none'
+    stack:                           'nodejs' #remember, this is the stack the server is using on the server side to SERVE requests, not the code it's running to render things on the client side
+    route_wildcard_requests_for_tld: 'true'   #this triggers special behaviors for server creation (cloud_bootstrap). If a server is a load balancer for this repo, server creation will route wildcard requests to it
+
   all:                                             # This key should always exist
     repo_name: 'all'
     database:  'none'                              # We don't want to run migrations on an all deploy

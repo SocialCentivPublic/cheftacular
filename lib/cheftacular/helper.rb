@@ -10,14 +10,6 @@ class Cheftacular
       Cheftacular.to_s.underscore.dasherize
     end
 
-    #[TODO] Refactor to more accurate solution
-    def running_in_gem?
-      File.expand_path('.', __FILE__).split('/').include?('.rvm') || 
-        (File.exist?(File.expand_path("#{ Dir.getwd }/.ruby-gemset")) &&
-          File.read(File.expand_path("#{ Dir.getwd }/.ruby-gemset")) != 'hiplogiq-deploy')
-    end
-
-    #TODO add command check
     def is_command? command
       @config['action'].public_methods(false).include?(command.to_sym)
     end
@@ -30,7 +22,6 @@ class Cheftacular
       !@config['action'].public_methods(false).include?(command.to_sym) && !@config['stateless_action'].public_methods(false).include?(command.to_sym)
     end
 
-    #[TODO] Refactor to running_on_chef_node?
     def running_on_chef_node?
       Dir.entries('/etc').include?('chef')
     rescue StandardError => e
@@ -275,7 +266,7 @@ class Cheftacular
       end      
     end
 
-    def does_cheftacular_config_have? key_array, *args
+    def does_cheftacular_config_have? key_array
       cheftacular = @config['cheftacular']
       key_array   = [key_array] if key_array.is_a?(String)
       key_checks  = []
@@ -289,16 +280,16 @@ class Cheftacular
 
     def recursive_hash_check keys, hash
       if hash.has_key?(keys[0]) 
-        case hash[keys[0]].class
-        when Hash
+        case hash[keys[0]].class.to_s
+        when 'Hash'
           if !hash[keys[0]].empty?
             recursive_hash_check keys[1..keys.count-1], hash[keys[0]] 
           else
             return true
           end
-        when String
+        when 'String'
           return !hash[keys[0]].blank?
-        when Array
+        when 'Array'
           return !hash[keys[0]].empty?
         end
       else
@@ -306,6 +297,7 @@ class Cheftacular
       end
     end
 
+    #this must be in helpers because parser class is not yet loaded at the time this method is needed.
     def parse_node_name_from_client_file ret=""
       config = File.read(File.expand_path("#{ @config['locs']['chef'] }/client.rb"))
 

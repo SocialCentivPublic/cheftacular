@@ -13,8 +13,10 @@ class CloudInteractor
         record_obj = JSON.parse(record.to_json)
 
         @main_obj["specific_#{ IDENTITY }"].last['records'] << record_obj
-        @main_obj['specific_records'][args[IDENTITY.singularize]]  << record_obj
+        @main_obj['specific_records'][args[IDENTITY.singularize]] << record_obj
       end
+
+      @main_obj['output']["records_for_#{ @main_obj["specific_#{ IDENTITY }"].last['domain'] }"] = @main_obj["specific_#{ IDENTITY }"].last['records']
 
       ap(@main_obj["specific_#{ IDENTITY }"].last['records']) if output
     end

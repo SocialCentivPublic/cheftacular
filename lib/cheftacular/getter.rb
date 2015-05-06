@@ -111,9 +111,9 @@ class Cheftacular
       ret
     end
 
-    def get_addresses_hash env='staging', ret_hash={}
+    def get_addresses_hash env='staging', ret_hash={}, mode=""
       @config[env]['addresses_bag_hash']['addresses'].each do |serv_hash|
-        ret_hash[serv_hash['public']] = { "dn" => serv_hash['dn'], "priv" => serv_hash['address'], "pub" => serv_hash['public'] }
+        ret_hash[serv_hash['public']] = serv_hash
         
       end if @config[env].has_key?('addresses_bag_hash')
 

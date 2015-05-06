@@ -56,7 +56,7 @@ class Cheftacular
       puts @config['helper'].compile_documentation_lines('devops').flatten.join("\n\n") if target_command == 'devops'
 
       if inference_modes.empty? && @config['helper'].is_not_command_or_stateless_command?(target_command)
-        methods = @config['action_documentation'].public_methods(false) + @config['action_documentation'].public_methods(false)
+        methods = @config['action_documentation'].public_methods(false) + @config['stateless_action_documentation'].public_methods(false)
 
         sorted_methods = methods.uniq.sort_by { |method| @config['helper'].compare_strings(target_command, method.to_s)}
 

@@ -196,6 +196,12 @@ class Cheftacular
 
           save_on_finish = true
         end
+
+        unless hash[env].has_key?('cloudflare_activated_domains')
+          hash[env]['cloudflare_activated_domains'] = []
+
+          save_on_finish = true
+        end
       end
 
       @config['ChefDataBag'].save_config_bag(main_env) if save_on_finish

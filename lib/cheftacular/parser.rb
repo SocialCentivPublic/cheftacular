@@ -195,5 +195,11 @@ class Cheftacular
 
       dns_string.gsub('NODE_NAME', @options['node_name']).gsub('ENV_TLD', @config[@options['env']]['config_bag_hash']['tld'])
     end
+
+    def parse_repository_hash_from_string string
+      @config['getter'].get_repo_names_for_repositories.each do |repository, repository_hash|
+        return repository_hash if string.include?(repository)
+      end
+    end
   end
 end

@@ -6,7 +6,8 @@ class Cheftacular
         "Logs of the run itself will be sent to the local log directory in the application (or chef-repo) where the run was conducted.",
         
         [
-          "    1.  This command also restarts services on the server and updates the code. Changes behavior slightly with the `-z|-Z` args."
+          "    1.  This command also restarts services on the server and updates the code. Changes behavior slightly with the `-z|-Z` args " +
+          "but only if your cookbooks support switching revisions based on tags / branch names."
         ]
       ]
     end

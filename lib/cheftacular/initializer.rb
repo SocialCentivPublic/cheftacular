@@ -356,8 +356,8 @@ class Cheftacular
       rescue StandardError => e
         msg = [
           "Please run this in the root of your application directory,",
-          " a ruby string to run commands against was not found in either your cheftacular.yml file or your .ruby-version file."
-        ]
+          "a ruby string to run commands against was not found in either your cheftacular.yml file or your .ruby-version file."
+        ].join(' ')
 
         @config['helper'].exception_output msg, e
       end
@@ -424,6 +424,7 @@ class Cheftacular
       @config['action_documentation']           = Cheftacular::ActionDocumentation.new(@options, @config)
       @config['stateless_action_documentation'] = Cheftacular::StatelessActionDocumentation.new(@options, @config)
       @config['dummy_sshkit']                   = SSHKit::Backend::Netssh.new(SSHKit::Host.new('127.0.0.1'))
+      @config['DNS']                            = Cheftacular::DNS.new(@options, @config)
     end
 
     def initialize_directories

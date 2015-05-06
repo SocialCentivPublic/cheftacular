@@ -1,10 +1,10 @@
 # Table of Contents for Cheftacular Commands
 
-1. [Cheftacular Arguments and Flags](https://github.com/SocialCentivPublic/cheftacular/blob/master/lib/cheftacular/README.md#arguments-and-flags-for-cheftacular))
+1. [Cheftacular Arguments and Flags](https://github.com/SocialCentivPublic/cheftacular/blob/master/lib/cheftacular/README.md#arguments-and-flags-for-cheftacular)
 
 2. [Application Commands](https://github.com/SocialCentivPublic/cheftacular/blob/master/lib/cheftacular/README.md#commands-that-can-be-run-in-the-application-context)
 
-3. [DevOps Commands](https://github.com/SocialCentivPublic/cheftacular/blob/master/lib/cheftacular/README.md#commands-that-can-only-be-run-in-the-devops-context))
+3. [DevOps Commands](https://github.com/SocialCentivPublic/cheftacular/blob/master/lib/cheftacular/README.md#commands-that-can-only-be-run-in-the-devops-context)
 
 
 ## Arguments and flags for cheftacular
@@ -51,13 +51,11 @@
 
 1.  `-e|--except-role ROLE_NAME` will *prevent* any server with this role from being *deployed to* for the deploy command. Other commands will ignore this argument.
 
-2.  `-z|--unset-revision` will unset a custom revision specified in the arg below and make the codebase utilize the default (staging branch for staging and master for production)
+2.  `-z|--unset-revision` will unset a custom revision specified in the arg below and make the codebase utilize the default.
 
 3.  `-Z|--revision REVISION` will force the role you're deploying to to utilize the revision specified here. This can be a specific commit or a branch name.
 
     1. Note: The system does not check if the revision exists, if you pass a non-existent revision no one will be able to deploy to that role until -Z with a correction revision or -z is passed.
-
-    2. *You will not be able to set a custom revision for beta environments.* The beta environments are tied to split-staging and splita/b/c/d respectively.
 
 
 ## Commands that can be run in the application context
@@ -82,7 +80,7 @@
 
 6. `cft deploy` will do a simple chef-client run on the servers for a role. Logs of the run itself will be sent to the local log directory in the application (or chef-repo) where the run was conducted.
 
-    1.  This command also restarts services on the server and updates the code. Changes behavior slightly with the `-z|-Z` args.
+    1.  This command also restarts services on the server and updates the code. Changes behavior slightly with the `-z|-Z` args but only if your cookbooks support switching revisions based on tags / branch names.
 
 7. `cft disk_report` will fetch useful statistics from every server for every environment and output it into your log directory.
 
@@ -128,9 +126,7 @@
 
 18. `cft reinitialize IP_ADDRESS NODE_NAME` will reconnect a server previously managed by chef to a new chef server. The node name MUST MATCH THE NODE'S ORIGINAL NODE NAME for the roles to be setup correctly.
 
-19. `cft remove_client -n NODE_NAME` removes a client (and its node data) from the chef-server. It also removes its dns records from the cloud service (if possible). This should not be done lightly as you will have to wipe the server and trigger another chef-client run to get it to register again
-
-20. `cft run COMMAND [--all]` will trigger the command on the first server in the role. Can be used to run rake commands or anything else.
+19. `cft run COMMAND [--all]` will trigger the command on the first server in the role. Can be used to run rake commands or anything else.
 
     1. `--all` will make the command run against all servers in a role rather than the first server it comes across. Don't do this if you're modifying the database with the command.
 
@@ -140,11 +136,11 @@
 
     4. IMPORTANT NOTE: You cannot run `cft run rake -T` as is, you have to enclose any command that uses command line dash arguments in quotes like `cft run "rake -T"`
 
-21. `cft scale up|down [NUM_TO_SCALE]` will add (or remove) NUM_TO_SCALE servers from the server array. This command will not let you scale down below 1 server.
+20. `cft scale up|down [NUM_TO_SCALE]` will add (or remove) NUM_TO_SCALE servers from the server array. This command will not let you scale down below 1 server.
 
     1. In the case of server creation, this command takes a great deal of time to execute. It will output what stage it is currently on to the terminal but <b>you must not kill this command while it is executing</b>.A failed build may require the server to be destroyed / examined by a DevOps engineer.
 
-22. `cft tail` will tail the logs (return continuous output) of the first node if finds that has an application matching the repository running on it. Currently only supports rails stacks
+21. `cft tail` will tail the logs (return continuous output) of the first node if finds that has an application matching the repository running on it. Currently only supports rails stacks
 
     1. pass `-n NODE_NAME` to grab the output of a node other than the first.
 
@@ -189,7 +185,7 @@
 
     3. This command is aliased to `client-list` with no arguments or cft prefix.
 
-9. `cft cloud <FIRST_LEVEL_ARG> [<SECOND_LEVEL_ARG>[:<SECOND_LEVEL_ARG_QUERY>]*] ` this command handles talking to various cloud apis. If no args are passed nothing will happen.
+9. `cft cloud <FIRST_LEVEL_ARG> [<SECOND_LEVEL_ARG>[:<SECOND_LEVEL_ARG_QUERY>]*] ` this command handles talking to various cloud APIs. If no args are passed nothing will happen.
 
     1. `domain` 1st level argument for interacting with cloud domains
 
@@ -307,21 +303,27 @@
 
 21. `cft get_pg_pass ['clip']` command will output the current environment's pg_password to your terminal. Optionally you can pass in clip like `cft get_pg_pass clip` to have it also copy the pass to your clipboard.
 
-22. `cft help COMMAND|MODE` this command returns the documentation for a specific command if COMMAND matches the name of a command. Alternatively, it can be passed `action|arguments|application|current|devops|stateless_action` to fetch the commands for a specific mode.Misspellings of commands will display near hits.
+22. `cft get_shorewall_allowed_connections` command will query a single server and return all of its ACCEPT connections from shorewall in it's syslog and return the results in a CSV format. Useful for tracking IP activity.
 
-23. `cft initialize_data_bag_contents ENVIRONMENT_NAME` will ensure the data bags always have the correct structure before each run. This command is run every time the gem is started and if called directly, will exit after completion.
+    1. This command will attempt to `dig` each ip address to give you the most likely culprit.
 
-24. `cft knife_upload` will resync the chef-server with the local chef-repo code. This command is analog for `knife upload /`
+23. `cft help COMMAND|MODE` this command returns the documentation for a specific command if COMMAND matches the name of a command. Alternatively, it can be passed `action|arguments|application|current|devops|stateless_action` to fetch the commands for a specific mode.Misspellings of commands will display near hits.
 
-25. `cft pass NODE_NAME` will drop the server's sudo password into your clipboard. Useful for when you need to ssh into the server itself and try advanced linux commands
+24. `cft initialize_data_bag_contents ENVIRONMENT_NAME` will ensure the data bags always have the correct structure before each run. This command is run every time the gem is started and if called directly, will exit after completion.
 
-26. `cft replication_status` will check the status of the database master and slaves in every environment. Also lists how far behind the slaves are from the master in milliseconds.
+25. `cft knife_upload` will resync the chef-server with the local chef-repo code. This command is analog for `knife upload /`
 
-27. `cft restart_swap` will restart the swap on every server that doesn't have swap currently on. Useful if you notice servers with no swap activated from `cft disk_report`
+26. `cft pass NODE_NAME` will drop the server's sudo password into your clipboard. Useful for when you need to ssh into the server itself and try advanced linux commands
+
+27. `cft remove_client -n NODE_NAME` removes a client (and its node data) from the chef-server. It also removes its dns records from the cloud service (if possible). This should not be done lightly as you will have to wipe the server and trigger another chef-client run to get it to register again
+
+28. `cft replication_status` will check the status of the database master and slaves in every environment. Also lists how far behind the slaves are from the master in milliseconds.
+
+29. `cft restart_swap` will restart the swap on every server that doesn't have swap currently on. Useful if you notice servers with no swap activated from `cft disk_report`
 
     1. There is no risk in running this command. Sometimes swap doesnt reactivate if the server was rebooted and this command fixes that.
 
-28. `cft rvm [COMMAND] [ADDITIONAL_COMMANDS]*` will run rvm commands on the remote servers. Output from this command for each server will go into your rvm directory under the log directory. Please refer to [the rvm help page](https://rvm.io/rvm) for more information on rvm commands.
+30. `cft rvm [COMMAND] [ADDITIONAL_COMMANDS]*` will run rvm commands on the remote servers. Output from this command for each server will go into your rvm directory under the log directory. Please refer to [the rvm help page](https://rvm.io/rvm) for more information on rvm commands.
 
     1. When no commands are passed, rvm will just run `rvm list` on each server on all servers in the current environment.
 
@@ -337,11 +339,11 @@
 
     7. `upgrade_rvm` will run `rvm get stable --auth-dotfiles` on all servers for the current environment. It will also check and attempt to upgrade pre 1.25 installations of RVM to 1.26+ (which requires a GPG key).
 
-29. `cft server_update [restart]` allows you to force update all nodes' packages for a specific environment. This should be done with caution as this *might* break something.
+31. `cft server_update [restart]` allows you to force update all nodes' packages for a specific environment. This should be done with caution as this *might* break something.
 
     1. `hip apt_update restart` will prompt to ask if you also want to restart all servers in a rolling restart. This should be done with extreme caution and only in a worst-case scenario.
 
-30. `cft service [COMMAND] [SERVICE]` will run service commands on remote servers. This command only runs on the first server it comes across. Specify others with -n NODE_NAME.
+32. `cft service [COMMAND] [SERVICE]` will run service commands on remote servers. This command only runs on the first server it comes across. Specify others with -n NODE_NAME.
 
     1. When no commands are passed, the command will list all the services in the /etc/init directory
 
@@ -349,9 +351,13 @@
 
     3. When `restart|stop|start SERVICE` is passed, the command will attempt to restart|stop|start the service if it has a .conf file on the remote server in the /etc/init directory.
 
-31. `cft slack "MESSAGE" [CHANNEL]` will attempt to post the message to the webhook set in your cheftacular.yml. Slack posts to your default channel by default but if the CHANNEL argument is supplied the message will post there.
+33. `cft slack "MESSAGE" [CHANNEL]` will attempt to post the message to the webhook set in your cheftacular.yml. Slack posts to your default channel by default but if the CHANNEL argument is supplied the message will post there.
 
-32. `cft test_env [TARGET_ENV] boot|destroy` will create (or destroy) the test nodes for a particular environment (defaults to staging, prod split-envs can be set with `-p`). Please read below for how TARGET_ENV works
+    1. NOTE: To prevent confusing spam from many possible sources, the username posted to slack will always be *Cheftacular*. This can be overloaded in the StatelessAction method "slack" but this is not recommended.
+
+    2. Remember, if you have auditing turned on in your cheftacular.yml, you can track who sends what to slack.
+
+34. `cft test_env [TARGET_ENV] boot|destroy` will create (or destroy) the test nodes for a particular environment (defaults to staging, prod split-envs can be set with `-p`). Please read below for how TARGET_ENV works
 
     1. TARGET_ENV changes functionality depending on the overall (like staging / production) environment
 
@@ -361,9 +367,15 @@
 
         3. The default tld used should change depending on which environment you are booting / destroying. This is set in the environment's config data bag under the tld key
 
-33. `cft ubuntu_bootstrap ADDRESS ROOT_PASS` This command will bring a fresh server to a state where chef-client can be run on it via `cft chef-bootstrap`. It should be noted that it is in this step where a server's randomized deploy_user sudo password is generated.
+35. `cft ubuntu_bootstrap ADDRESS ROOT_PASS` This command will bring a fresh server to a state where chef-client can be run on it via `cft chef-bootstrap`. It should be noted that it is in this step where a server's randomized deploy_user sudo password is generated.
 
-34. `cft update_split_branches` will perform a series of git commands that will merge all the split branches for your split_branch enabled repositories with what is currently on master and push them.
+36. `cft update_cloudflare_dns_from_cloud` command will force a full dns update for cloudflare. 
+
+    1. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address for an environment.
+
+    2. This command will also ensure any dns records on your cloud are also migrated over to cloudflare as well. This also includes the reverse in the event you would like to turn off cloudflare.
+
+37. `cft update_split_branches` will perform a series of git commands that will merge all the split branches for your split_branch enabled repositories with what is currently on master and push them.
 
     1. Repository must be set with `-R REPOSITORY_NAME` for this command to work.
 
@@ -373,9 +385,9 @@
 
     4. This command will return a helpful error statement if you attempt to run the command with changes to your current working directory. You must commit these changes before running this command.
 
-35. `cft update_tld TLD` command will force a full dns update for a tld in the preferred cloud. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address.
+38. `cft update_tld TLD` command will force a full dns update for a tld in the preferred cloud. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address.
 
-36. `cft upload_nodes` This command will resync the chef server's nodes with the data in our chef-repo/node_roles. 
+39. `cft upload_nodes` This command will resync the chef server's nodes with the data in our chef-repo/node_roles. 
 
     1. This command changes behavior depending on several factors about both your mode and the state of your environment
 
@@ -387,4 +399,4 @@
 
         1. Due to this, only users running this against their chef-repo need to worry about having a nodes_dir, the way it should be.
 
-37. `cft upload_roles` This command will resync the chef server's roles with the data in the chef-repo/roles.
+40. `cft upload_roles` This command will resync the chef server's roles with the data in the chef-repo/roles.

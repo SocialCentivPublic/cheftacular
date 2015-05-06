@@ -31,8 +31,6 @@ class Cheftacular
         database = repo_hash.has_key?('custom_database_name') ? repo_hash['custom_database_name'] : repo_hash['repo_name']
         password = @config[@options['env']]['chef_passwords_bag_hash']['pg_pass']
 
-        ap @config[@options['env']]['chef_passwords_bag_hash']
-
         if @config[@options['env']]['chef_passwords_bag_hash'].has_key?(repo_hash['repo_name']) && @config[@options['env']]['chef_passwords_bag_hash'][repo_hash['repo_name']].has_key?('pg_pass')
           password = @config[@options['env']]['chef_passwords_bag_hash'][repo_hash['repo_name']]['pg_pass'] unless @config[@options['env']]['chef_passwords_bag_hash'][repo_hash['repo_name']]['pg_pass'].empty?
         end
