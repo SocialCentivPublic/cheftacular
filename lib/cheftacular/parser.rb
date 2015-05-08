@@ -42,7 +42,7 @@ class Cheftacular
 
         parse_repository(@options['repository'])
 
-        @options['command']    = ARGV[0] unless @config['helper'].is_not_command_or_stateless_command?(ARGV[0])
+        @options['command'] = ARGV[0] unless @config['helper'].is_not_command_or_stateless_command?(ARGV[0])
       end
 
       return if !@options['codebase'].nil? && !@options['role'].nil? && !@options['command'].nil?

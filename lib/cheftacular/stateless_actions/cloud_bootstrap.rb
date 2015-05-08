@@ -70,8 +70,6 @@ class Cheftacular
       @config['DNS'].create_dns_record_for_domain_from_address_hash(@options['with_dn'], address_hash, "specific_domain_mode") if @options['with_dn']
 
       @config['DNS'].create_dns_record_for_domain_from_address_hash(tld, address_hash)
-
-      @config[@options['env']]['addresses_bag_hash'] = @config[@options['env']]['addresses_bag'].reload.to_hash
       
       @config['ChefDataBag'].save_addresses_bag
 

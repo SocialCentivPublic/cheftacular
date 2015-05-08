@@ -82,6 +82,16 @@ class Cheftacular
         allowed_changes_hash = bag_hash
       end
 
+      #force add any roles that are not in the bag in the event force yes is turned on
+      (node_roles_hash.keys - bag_hash.keys).each do |role_not_in_node_roles_bag|
+
+        new_role = node_roles_hash[role_not_in_node_roles_bag]
+
+        allowed_changes_hash[role_not_in_node_roles_bag] = bag_hash[role_not_in_node_roles_bag]
+
+        @config[new_role['chef_environment']]['node_roles_bag_hash']['node_roles'][new_role['name']] = new_role
+      end if @options['force_yes'] && @config['helper'].running_in_mode?('devops')
+
       nodes.each do |node|
         # if there is a node_roles file that completely matches the name of the file, use it
         changes_for_current_node = false

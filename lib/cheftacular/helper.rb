@@ -10,15 +10,21 @@ class Cheftacular
       Cheftacular.to_s.underscore.dasherize
     end
 
-    def is_command? command
+    def is_command? command=''
+      command ||= ''
+
       @config['action'].public_methods(false).include?(command.to_sym)
     end
 
-    def is_stateless_command? command
+    def is_stateless_command? command=''
+      command ||= ''
+      
       @config['stateless_action'].public_methods(false).include?(command.to_sym)
     end
 
-    def is_not_command_or_stateless_command? command
+    def is_not_command_or_stateless_command? command=''
+      command ||= ''
+
       !@config['action'].public_methods(false).include?(command.to_sym) && !@config['stateless_action'].public_methods(false).include?(command.to_sym)
     end
 

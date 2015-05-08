@@ -142,7 +142,7 @@ class Cheftacular
     end
 
     def compile_address_hash_for_server_from_options *args
-      target_serv_index = nil
+      target_serv_index = args.include?('set_hash_to_nil') ? nil : @config[@options['env']]['addresses_bag_hash']['addresses'].count
       tld               = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld']
 
       args.each do |arg|
@@ -154,6 +154,8 @@ class Cheftacular
       end
 
       full_domain ||= "#{ @options['node_name'] }.#{ tld }"
+
+      @config[@options['env']]['addresses_bag_hash'] = @config[@options['env']]['addresses_bag'].reload.to_hash
 
       @config[@options['env']]['addresses_bag_hash']['addresses'].each do |serv_hash|
         target_serv_index = @config[@options['env']]['addresses_bag_hash']['addresses'].index(serv_hash) if serv_hash['name'] == @options['node_name']

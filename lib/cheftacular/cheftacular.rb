@@ -21,6 +21,7 @@ require 'net/http'
 require 'timeout'
 require 'slack-notifier'
 require 'cloudflare'
+require 'zlib'
 
 Dir["#{File.dirname(__FILE__)}/../**/*.rb"].each { |f| require f }
 
