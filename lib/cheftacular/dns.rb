@@ -25,7 +25,7 @@ class Cheftacular
 
       cloudflare_records_hash = fetch_cloudflare_records_as_hash target_domain
 
-      puts('#'.ljust(4) + 'subdomain'.ljust(50) + 'type'.ljust(6) + 'ttl'.ljust(5) + 'mode'.ljust(20) + 'value') unless @options['quiet']
+      puts('#'.ljust(4) + 'subdomain'.ljust(50) + 'type'.ljust(6) + 'ttl'.ljust(5) + 'cloudflare_on ' + 'mode'.ljust(20) + 'value') unless @options['quiet']
 
       domain_count = 1
 
@@ -36,7 +36,12 @@ class Cheftacular
           record_hash['activate_cloudflare'] = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['cloudflare_activated_domains'].include?(record_hash['name'])
         end
 
-        print(domain_count.to_s.ljust(4, '_') + record_hash['name'].ljust(50, '_') + record_hash['type'].ljust(6, '_') + record_hash['ttl'].to_s.ljust(5, '_'))
+        print(domain_count.to_s.ljust(4, '_') + 
+          record_hash['name'].ljust(50, '_') + 
+          record_hash['type'].ljust(6, '_') + 
+          record_hash['ttl'].to_s.ljust(5, '_') + 
+          record_hash['activate_cloudflare'].to_s.ljust(14, '_')
+        )
 
         if cloudflare_records_hash.has_key?("#{ record_hash['name'] }-#{ record_hash['type'] }") && ( !cloudflare_records_hash["#{ record_hash['name'] }-#{ record_hash['type'] }"].empty? ||
           cloudflare_record_does_include_value?(cloudflare_records_hash["#{ record_hash['name'] }-#{ record_hash['type'] }"], record_hash['value']) )
@@ -57,7 +62,7 @@ class Cheftacular
             record_hash['SRV_weight'],
             record_hash['SRV_port'],
             record_hash['SRV_target'],
-            (record_hash['activate_cloudflare'] ? '1' : '0') #service_mode
+            (record_hash['activate_cloudflare'] ? 1 : 0) #service_mode
           )
 
           print 'create'.ljust(20, '_')
@@ -72,7 +77,8 @@ class Cheftacular
     end
 
     def create_dns_record_for_domain_from_address_hash domain, address_hash, *args
-      domain_obj = PublicSuffix.parse domain
+      domain_obj   = PublicSuffix.parse("#{ address_hash['name'] }.#{ domain }") if args.empty?
+      domain_obj ||= PublicSuffix.parse domain
 
       if args.include?('specific_domain_mode')
         puts("running cloud domain create_record:#{ domain_obj.domain }:#{ domain_obj.trd }:#{ address_hash['public'] }") if @options['verbose']
@@ -121,7 +127,9 @@ class Cheftacular
           'ttl'   => 300
         }
 
-        update_cloudflare_from_array_of_domain_hashes domain_obj.tld, target_domain_records
+        #ap target_domain_records
+
+        update_cloudflare_from_array_of_domain_hashes domain_obj.domain, target_domain_records
       end
     end
 
@@ -257,7 +265,7 @@ class Cheftacular
       else
         print 'edit'.ljust(20, '_')
 
-        @config['cloudflare'].rec_edit(target_domain, record_hash['type'], possible_matches[0]['rec_id'], record_hash['name'], record_hash['value'], record_hash['ttl'])
+        @config['cloudflare'].rec_edit(target_domain, record_hash['type'], possible_matches[0]['rec_id'], record_hash['name'], record_hash['value'], record_hash['ttl'], record_hash['activate_cloudflare'])
       end
     end
 

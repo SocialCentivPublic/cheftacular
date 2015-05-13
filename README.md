@@ -14,13 +14,19 @@ applications where non-devops engineers need to be able to deploy or interact wi
 
 2. Check the cheftacular.yml file in the examples folder for an idea on how to set your configurations for the gem.
 
-## Usage (Chef)
+3. Create a cheftacular.yml file in the config directory of your application (create this directory if it doesn't exist for non-rails apps)
+
+4. Add cheftacular to your Gemfile (create a Gemfile if it doesn't exist)
+
+5. Run `bundle install`
+
+## Usage
 
 After you have a successful chef and cheftacular installation you can now connect to the chef server and clients via various tools.
 
 Note: You can substitute cft for cftr, cheftacular, or cftclr.
 
-1.  To view detailed information about nodes connected to the chef server, run
+1.  To view detailed information about nodes connected to the chef server, run (this is a good command to test installation on)
 
         client-list
 
@@ -52,8 +58,8 @@ Note: You can substitute cft for cftr, cheftacular, or cftclr.
 
 8.  To add a new web server (and worker server as well in the case of an api), run
 
-    `cft scale up`
+        cft scale up
 
-## Additional Reading
+## Additional Reading (Features and Commands)
 
 For more information about these commands and the several commands only available if you are running them from the chef-repo directly, please see the [Cheftacular Scripts Readme](https://github.com/SocialCentivPublic/cheftacular/blob/master/lib/cheftacular/README.md)

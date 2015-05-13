@@ -2,7 +2,7 @@ class Cheftacular
   class StatelessActionDocumentation
     def get_shorewall_allowed_connections
       @config['documentation']['stateless_action'] <<  [
-        "`cft get_shorewall_allowed_connections` command will query a single server and return all of its ACCEPT connections " +
+        "`[NYI]cft get_shorewall_allowed_connections` command will query a single server and return all of its ACCEPT connections " +
         "from shorewall in it's syslog and return the results in a CSV format. Useful for tracking IP activity.",
 
         [
@@ -14,12 +14,8 @@ class Cheftacular
 
   class StatelessAction
     def get_shorewall_allowed_connections
+      raise "Not yet implemented"
       #TODO find and load syslog files from nodes!
-      log_data << File.read(File.expand_path("#{ @locs['chef-log'] }/marketing_site_syslog_2.txt"))
-      log_data << File.read(File.expand_path("#{ @locs['chef-log'] }/marketing_site_syslog_1.txt"))
-      log_data << File.read(File.expand_path("#{ @locs['chef-log'] }/marketing_site_syslog.txt"))
-
-      exit
 
       addresses = {}
 

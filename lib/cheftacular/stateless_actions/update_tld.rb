@@ -51,7 +51,7 @@ class Cheftacular
 
         @config['DNS'].compile_address_hash_for_server_from_options("set_specific_domain_name:#{ specific_domain }")
 
-        sleep 5 #prepare for next domain
+        sleep 1 #prepare for next domain
       end
 
       @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld'] = target_tld

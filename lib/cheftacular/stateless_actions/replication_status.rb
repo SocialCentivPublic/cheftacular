@@ -51,7 +51,7 @@ class Cheftacular
         out << "#{ serv_name }:"
 
         output.join("\n").split("\n").each do |line|
-          out << "  #{ line }"
+          out << "  #{ line }\n"
         end
 
         out << "\n"
@@ -70,6 +70,21 @@ module SSHKit
 
         psql_commands = [
           "select client_addr, state, sent_location, write_location, flush_location, replay_location, sync_priority from pg_stat_replication;",
+          %{
+            SELECT
+                client_addr,
+                sent_offset - (
+                    replay_offset - (sent_xlog - replay_xlog) * 255 * 16 ^ 6 ) AS byte_lag
+            FROM (
+                SELECT
+                    client_addr,
+                    ('x' || lpad(split_part(sent_location,   '/', 1), 8, '0'))::bit(32)::bigint AS sent_xlog,
+                    ('x' || lpad(split_part(replay_location, '/', 1), 8, '0'))::bit(32)::bigint AS replay_xlog,
+                    ('x' || lpad(split_part(sent_location,   '/', 2), 8, '0'))::bit(32)::bigint AS sent_offset,
+                    ('x' || lpad(split_part(replay_location, '/', 2), 8, '0'))::bit(32)::bigint AS replay_offset
+                FROM pg_stat_replication
+            ) AS s;
+          } #http://www.dansketcher.com/2013/01/27/monitoring-postgresql-streaming-replication/
         ]
 
         psql_commands.each do |cmnd|
