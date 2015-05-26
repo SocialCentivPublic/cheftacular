@@ -15,7 +15,7 @@ class Cheftacular
 
   class StatelessAction
     def chef_environment
-      #TODO
+      raise "Not yet Implemented"
     end
   end
 end

@@ -397,7 +397,7 @@ class Cheftacular
 
         exit
       else
-        unless File.exists?( current_version_file_path )
+        unless File.exists?( @config['helper'].current_version_file_path )
           puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") } (#{ detected_version }). No new version detected."
 
           @config['helper'].write_version_file detected_version

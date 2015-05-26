@@ -33,7 +33,7 @@ class Cheftacular
         logs_bag_hash["#{ n.name }-deploy"] = { text: log_data.scrub_pretty_text, timestamp: timestamp }
       end
       
-      @config['ChefDataBag'].save_logs_bag unless @options['debug'] #the debug chef-client runs are literally too large to POST
+      #@config['ChefDataBag'].save_logs_bag unless @options['debug'] #We don't really need to store entire chef runs in the logs bag
 
       migrate(nodes) if @config['getter'].get_current_repo_config['database'] != 'none' && !@options['run_migration_already']
     end

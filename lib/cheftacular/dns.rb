@@ -180,11 +180,11 @@ class Cheftacular
       if !target_serv_index.nil? && target_serv_index.is_a?(Fixnum) && !@options['dont_remove_address_or_server'] && args.include?('set_hash_to_nil')
         puts("Found entry in addresses data bag corresponding to #{ @options['node_name'] } for #{ @options['env'] }, removing...") unless @options['quiet']
 
+        domain_obj = PublicSuffix.parse @config[@options['env']]['addresses_bag_hash']['addresses'][target_serv_index]['dn']
+
         @config[@options['env']]['addresses_bag_hash']['addresses'][target_serv_index] = nil
       
         @config[@options['env']]['addresses_bag_hash']['addresses'] = @config[@options['env']]['addresses_bag_hash']['addresses'].compact
-
-        domain_obj = PublicSuffix.parse @config[@options['env']]['addresses_bag_hash']['addresses'][target_serv_index]['dn']
 
         @config['stateless_action'].cloud "domain", "destroy_record:#{ domain_obj.tld }:#{ domain_obj.trd }" if domain_obj.tld == @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld']
       end

@@ -43,7 +43,7 @@ class Cheftacular
     end
 
     def migrate_wordpress nodes=[]
-      puts "Method #{ __migrate_wordpress__ } isb ot yet implemented"
+      puts "Method #{ __method__ } is not yet implemented"
 
       exit
     end

@@ -220,8 +220,8 @@
             2. NOTE! Most flavors have spaces in them, you must use quotes at the command line to utilize them!
 
         4. `destroy:SERVER_NAME` destroys the server on the cloud. This must be an exact match of the server's actual name or the script will error.
-
-        5. `poll:SERVER_NAME` polls the cloud's server for the status of the SERVER_NAME. This command will stop polling if / when the status of the server is ACTIVE and its build progress is 100%.
+        
+        5. `poll:SERVER_NAME` polls the cloud's server for the status of the SERVER_NAME. This command will stop polling if / when the status of the server is ACTIVE and its build progress is 100%.
 
         6. `attach_volume:SERVER_NAME:VOLUME_NAME[:VOLUME_SIZE[:DEVICE_LOCATION]]` If VOLUME_NAME exists it will attach it if it is unattached otherwise it will create it
 
@@ -303,9 +303,13 @@
 
 21. `cft get_pg_pass ['clip']` command will output the current environment's pg_password to your terminal. Optionally you can pass in clip like `cft get_pg_pass clip` to have it also copy the pass to your clipboard.
 
-22. `cft get_shorewall_allowed_connections` command will query a single server and return all of its ACCEPT connections from shorewall in it's syslog and return the results in a CSV format. Useful for tracking IP activity.
+22. `cft get_shorewall_allowed_connections [PATH_TO_LOCAL_FILE] -n NODE_NAME` command will query a single server and return all of its ACCEPT connections from shorewall in it's syslog and return the results in a CSV format. Useful for tracking IP activity.
 
-    1. This command will attempt to `dig` each ip address to give you the most likely culprit.
+    1. You must pass in a node name to query with `-n NODE_NAME`
+
+    2. This command will attempt to `dig` each ip address to give you the most likely culprit.
+
+    3. If `PATH_TO_LOCAL_FILE` is not blank, the command will use that file instead of building a file on the remote server
 
 23. `cft help COMMAND|MODE` this command returns the documentation for a specific command if COMMAND matches the name of a command. Alternatively, it can be passed `action|arguments|application|current|devops|stateless_action` to fetch the commands for a specific mode.Misspellings of commands will display near hits.
 
@@ -369,11 +373,13 @@
 
 35. `cft ubuntu_bootstrap ADDRESS ROOT_PASS` This command will bring a fresh server to a state where chef-client can be run on it via `cft chef-bootstrap`. It should be noted that it is in this step where a server's randomized deploy_user sudo password is generated.
 
-36. `cft update_cloudflare_dns_from_cloud` command will force a full dns update for cloudflare. 
+36. `cft update_cloudflare_dns_from_cloud [skip_update_tld]` command will force a full dns update for cloudflare. 
 
     1. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address for an environment.
 
     2. This command will also ensure any dns records on your cloud are also migrated over to cloudflare as well. This also includes the reverse in the event you would like to turn off cloudflare.
+
+    3. The argument `skip_update_tld` will stop the long process of checking and updating all the server domains _before_ cloudflare is updated. Only skip if you believe your domain info on your cloud is accurate.
 
 37. `cft update_split_branches` will perform a series of git commands that will merge all the split branches for your split_branch enabled repositories with what is currently on master and push them.
 

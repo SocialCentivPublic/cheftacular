@@ -75,7 +75,7 @@ class Cheftacular
 
       @options['dont_remove_address_or_server'] = true #flag to make sure our entry isnt removed in addresses bag
 
-      full_bootstrap #bootstrap server with ruby and attach it to the chef server
+      @config['stateless_action'].full_bootstrap #bootstrap server with ruby and attach it to the chef server
     end
   end
 end

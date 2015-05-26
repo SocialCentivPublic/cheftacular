@@ -39,6 +39,8 @@ class Cheftacular
 
         item.attributes = @config[env]['logs_bag_hash'].keep_if {|key,val| key == 'id'}
 
+        sleep 5
+
         item.save
 
         @config[env]['logs_bag_hash'] = @config[env]['logs_bag'].reload.to_hash

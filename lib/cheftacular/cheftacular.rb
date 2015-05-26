@@ -22,12 +22,15 @@ require 'timeout'
 require 'slack-notifier'
 require 'cloudflare'
 require 'zlib'
+require 'csv'
 
 Dir["#{File.dirname(__FILE__)}/../**/*.rb"].each { |f| require f }
 
 class Cheftacular
   def initialize options={'env'=>'staging'}, config={}
     @options, @config = options, config
+
+    SSHKit.config.format = :blackhole
 
     @config['start_time']  = Time.now
 

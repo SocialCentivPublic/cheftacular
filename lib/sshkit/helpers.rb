@@ -9,6 +9,10 @@ module SSHKit
         capture :echo, pass, :|, :sudo, '-S', *args
       end
 
+      def sudo_execute pass, *args
+        execute :echo, pass, :|, :sudo, '-S', *args
+      end
+
       def sudo_test pass, file_location
         sudo_capture( pass, :test, '-e', file_location, '&&', :echo, 'true', { raise_on_non_zero_exit: false, verbosity: Logger::DEBUG }) == 'true'
       end

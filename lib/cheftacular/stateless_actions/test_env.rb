@@ -30,7 +30,7 @@ class Cheftacular
 
       type = ARGV[env_index] if ARGV[env_index]
 
-      raise "Unknown split_env: #{ split_env }, can only be #{ cheftacular['run_list_environments'].values.join(', ') }" unless (split_env =~ /#{ cheftacular['run_list_environments'].values.join('|') }/) == 0
+      raise "Unknown split_env: #{ split_env }, can only be #{ @config['cheftacular']['run_list_environments'].values.join(', ') }" unless (split_env =~ /#{ @config['cheftacular']['run_list_environments'].values.join('|') }/) == 0
 
       raise "Unknown type: #{ type }, can only be 'boot' or 'destroy'" unless (type =~ /boot|destroy/) == 0
 
@@ -41,11 +41,9 @@ class Cheftacular
       @options['force_yes']  = true
       @options['in_scaling'] = true
 
-      initial_servers = @config['cheftacular']['split_env_nodes']
-
       case type
       when 'boot'
-        initial_servers.each_pair do |name, config_hash|
+        @config['cheftacular']['split_env_nodes'].each_pair do |name, config_hash|
           true_name               = name.gsub('SPLITENV', split_env) 
           @options['node_name']   = "#{ true_name }#{ 'p' if @options['env'] == 'production' }" 
           @options['flavor_name'] = config_hash.has_key?('flavor') ? config_hash['flavor'] : @config['cheftacular']['default_flavor_name']
@@ -66,7 +64,6 @@ class Cheftacular
         @options['delete_server_on_remove'] = true
 
         nodes.each do |node|
-          next if !targets.empty? && !targets.include?(node.name)
 
           @options['node_name'] = node.name
 

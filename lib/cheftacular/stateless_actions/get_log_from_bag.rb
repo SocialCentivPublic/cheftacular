@@ -23,14 +23,14 @@ class Cheftacular
       nodes = @config['parser'].exclude_nodes( nodes, [{ unless: { env: @options['env'] }}])
 
       nodes.each do |node|
-        if @config[@options['env']]['logs_bag_hash'].has_key?("#{ node.name }-deploy")
-          puts("Found log data in logs bag. Outputting to #{ log_loc }/stashedlog/#{ node.name }-deploystash-#{ @config[@options['env']]['logs_bag_hash']["#{ node.name }-deploy"][:timestamp] }.txt") unless @options['quiet']
+        if @config[@options['env']]['logs_bag_hash'].has_key?("#{ node.name }-run")
+          puts("Found log data in logs bag. Outputting to #{ log_loc }/stashedlog/#{ node.name }-deploystash-#{ @config[@options['env']]['logs_bag_hash']["#{ node.name }-run"][:timestamp] }.txt") unless @options['quiet']
 
-          File.open("#{ log_loc }/stashedlog/#{ node.name }-deploystash-#{@config[@options['env']]['logs_bag_hash']["#{ node.name }-deploy"][:timestamp] }.txt", "w") do |f|
-            f.write(@config[@options['env']]['logs_bag_hash']["#{ node.name }-deploy"][:text])
+          File.open("#{ log_loc }/stashedlog/#{ node.name }-deploystash-#{@config[@options['env']]['logs_bag_hash']["#{ node.name }-run"][:timestamp] }.txt", "w") do |f|
+            f.write(@config[@options['env']]['logs_bag_hash']["#{ node.name }-run"][:text])
           end
 
-          puts(@config[@options['env']]['logs_bag_hash']["#{ node.name }-deploy"][:text]) if @options['verbose']
+          puts(@config[@options['env']]['logs_bag_hash']["#{ node.name }-run"][:text]) if @options['verbose']
         end
       end
     end

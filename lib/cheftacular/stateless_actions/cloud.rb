@@ -7,7 +7,7 @@ class Cheftacular
         "If no args are passed nothing will happen.",
 
         [
-          "    1. `domain` 1st level argument for interacting with cloud domains",
+          "    1. `domain` first level argument for interacting with cloud domains",
 
           "        1. `list` default behavior",
 
@@ -28,7 +28,7 @@ class Cheftacular
 
           "        9. `update_record:TOP_LEVEL_DOMAIN:SUBDOMAIN_NAME:IP_ADDRESS[:RECORD_TYPE[:TTL]]` similar to `create_record`.",
 
-          "    2. `server` 1st level argument for interacting with cloud servers, " +
+          "    2. `server` first level argument for interacting with cloud servers, " +
           "if no additional args are passed the command will return a list of all servers on the preferred cloud.",
 
           "        1.  `list` default behavior",
@@ -44,7 +44,7 @@ class Cheftacular
 
           "        4. `destroy:SERVER_NAME` destroys the server on the cloud. This must be an exact match of the server's actual name or the script will error.",
 
-          "        5. `poll:SERVER_NAME` polls the cloud's server for the status of the SERVER_NAME. This command " +
+          "        5. `poll:SERVER_NAME` polls the cloud's server for the status of the SERVER_NAME. This command " +
           "will stop polling if / when the status of the server is ACTIVE and its build progress is 100%.",
 
           "        6. `attach_volume:SERVER_NAME:VOLUME_NAME[:VOLUME_SIZE[:DEVICE_LOCATION]]` " +
@@ -66,7 +66,7 @@ class Cheftacular
 
           "        9. `read_volume:SERVER_NAME:VOLUME_NAME` returns the data of VOLUME_NAME if it is attached to the server.",
 
-          "    3. `volume` 1st level argument for interacting with cloud storage volumes, if no additional args are passed the command will return a list of all cloud storage containers.",
+          "    3. `volume` first level argument for interacting with cloud storage volumes, if no additional args are passed the command will return a list of all cloud storage containers.",
             
           "        1. `list` default behavior",
 
@@ -76,7 +76,7 @@ class Cheftacular
 
           "        4. `destroy:VOLUME_NAME` destroys the volume. This operation will not work if the volume is attached to a server.",
 
-          "    4. `flavor` 1st level argument for listing the flavors available on the cloud service",
+          "    4. `flavor` first level argument for listing the flavors available on the cloud service",
 
           "        1. `list` default behavior",
 
