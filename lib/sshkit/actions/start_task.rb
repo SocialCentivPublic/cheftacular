@@ -3,7 +3,7 @@ module SSHKit
     class Netssh
       def start_task name, ip_address, run_list, command, options, locs, cheftacular, out=""
         log_loc, timestamp = set_log_loc_and_timestamp(locs)
-        true_env = get_true_environment run_list, cheftacular['run_list_environments'], options['env']
+        true_env = get_true_environment run_list, cheftacular['run_list_environments'][options['env']], options['env']
 
         puts "Running #{ command } for #{ name } (#{ ip_address }) (Run with with --debug to generate a log as well)"
 

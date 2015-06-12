@@ -143,7 +143,7 @@ class Cheftacular
       #puts "repositories:#{ repository_hash['role'] }:#{ repository_hash['repo_name'] }:route_wildcard_requests_for_tld"
 
       if @config['helper'].does_cheftacular_config_have?(["repositories:#{ repository_hash['role'] }:route_wildcard_requests_for_tld"])
-        should_route_requests = @config['cheftacular']['repositories'][repository_hash['role']]['route_wildcard_requests_for_tld'] == 'true'
+        should_route_requests = @config['cheftacular']['repositories'][repository_hash['role']]['route_wildcard_requests_for_tld']
       end
 
       should_route_requests

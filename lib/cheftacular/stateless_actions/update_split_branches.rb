@@ -48,10 +48,12 @@ class Cheftacular
         "git fetch origin",
       ]
 
-      @config['run_list_environments'].each_key do |branch_name|
-        true_branch_name = branch_name.gsub('_','-')
+      @config['run_list_environments'].each_pair do |env, branch_hash|
+        branch_hash.keys.each do |branch_name|        
+          true_branch_name = branch_name.gsub('_','-')
 
-        commands << ["git checkout #{ true_branch_name }", "git pull origin #{ true_branch_name }", 'git merge master --no-edit', "git push origin #{ true_branch_name }"]
+          commands << ["git checkout #{ true_branch_name }", "git pull origin #{ true_branch_name }", 'git merge master --no-edit', "git push origin #{ true_branch_name }"]
+        end
       end
 
       commands << "git checkout #{ current_revision }"

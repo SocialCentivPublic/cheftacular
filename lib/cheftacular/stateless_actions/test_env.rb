@@ -30,7 +30,9 @@ class Cheftacular
 
       type = ARGV[env_index] if ARGV[env_index]
 
-      raise "Unknown split_env: #{ split_env }, can only be #{ @config['cheftacular']['run_list_environments'].values.join(', ') }" unless (split_env =~ /#{ @config['cheftacular']['run_list_environments'].values.join('|') }/) == 0
+      split_envs = @config['cheftacular']['run_list_environments'][@options['env']]
+
+      raise "Unknown split_env: #{ split_env }, can only be #{ split_envs.values.join(', ') }" unless (split_env =~ /#{ split_envs.values.join('|') }/) == 0
 
       raise "Unknown type: #{ type }, can only be 'boot' or 'destroy'" unless (type =~ /boot|destroy/) == 0
 
@@ -44,7 +46,9 @@ class Cheftacular
       case type
       when 'boot'
         @config['cheftacular']['split_env_nodes'].each_pair do |name, config_hash|
-          true_name               = name.gsub('SPLITENV', split_env) 
+          config_hash           ||= {}
+          true_name               = name.gsub('SPLITENV', split_env)
+          @options['sub_env']     = split_env
           @options['node_name']   = "#{ true_name }#{ 'p' if @options['env'] == 'production' }" 
           @options['flavor_name'] = config_hash.has_key?('flavor') ? config_hash['flavor'] : @config['cheftacular']['default_flavor_name']
           @options['descriptor']  = config_hash.has_key?('descriptor') ? "#{ config_hash['descriptor'] }-#{ split_env }" : name

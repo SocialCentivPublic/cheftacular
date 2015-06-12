@@ -18,6 +18,9 @@ class CloudInteractor
   def run args
     parse_args(args) unless args.empty?
 
+    #clear out the main_obj so repeated runs do not cause strange data
+    @main_obj = @main_obj.keep_if {|key, value| key == 'output'}
+
     @main_obj['output']
   end
 end

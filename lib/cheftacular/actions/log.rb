@@ -76,7 +76,7 @@ module SSHKit
 
       def start_log_fetch_ruby_on_rails name, ip_address, run_list, options, locs, cheftacular, passwords, out=""
         log_loc, timestamp  = set_log_loc_and_timestamp(locs)
-        true_env            = get_true_environment run_list, cheftacular['run_list_environments'], options['env']
+        true_env            = get_true_environment run_list, cheftacular['run_list_environments'][options['env']], options['env']
         app_log_loc         = "#{ cheftacular['base_file_path'] }/#{ options['repository'] }/current/log"
         log_cmnd, log_lines = get_log_command_and_lines(options)
 

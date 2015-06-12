@@ -51,7 +51,7 @@ class Cheftacular
 
       final_commands = []
 
-      if @config['cheftacular']['install_rvm_on_boot'] == 'true'
+      if @config['cheftacular']['install_rvm_on_boot']
         deploy_commands << "gpg --keyserver hkp://keys.gnupg.net --recv-keys #{ @config['cheftacular']['rvm_gpg_key'] }"
         deploy_commands << "curl -L https://get.rvm.io | bash -s stable"
 

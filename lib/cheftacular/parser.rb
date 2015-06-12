@@ -191,9 +191,9 @@ class Cheftacular
 
     def parse_to_dns dns_string
       raise "Unable to parse DNS without @option['node_name'] for #{ dns_string }!" if dns_string.include?('NODE_NAME') && @options['node_name'].nil?
-      raise "Unable to parse DNS without a tld set in the config bag for #{ @options['env'] }!" if dns_string.include?('ENV_TLD') && @config[@options['env']]['config_bag_hash']['tld'].nil?
+      raise "Unable to parse DNS without a tld set in the config bag for #{ @options['env'] }!" if dns_string.include?('ENV_TLD') && @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld'].nil?
 
-      dns_string.gsub('NODE_NAME', @options['node_name']).gsub('ENV_TLD', @config[@options['env']]['config_bag_hash']['tld'])
+      dns_string.gsub('NODE_NAME', @options['node_name']).gsub('ENV_TLD', @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld'])
     end
 
     def parse_repository_hash_from_string string

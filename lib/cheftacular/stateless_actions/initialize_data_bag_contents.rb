@@ -91,7 +91,7 @@ class Cheftacular
         end
       end
 
-      if @config['cheftacular']['git_based_deploys'] == 'true'
+      if @config['cheftacular']['git_based_deploys']
         if !hash.has_key?('git_private_key') || !hash.has_key?('git_public_key') || !hash.has_key?('git_OAuth')
           puts "Warning! github user credentials in default authentication bag were not found! Please run `cft help create_git_key` and then run that command itself!" unless @command == 'help'
         end
@@ -161,8 +161,8 @@ class Cheftacular
 
       config_fix_message = "\n\n knife data bag edit #{ main_env } config\n\n"
 
-      if @config['cheftacular']['split_environments'].has_key?(main_env)
-        @config['cheftacular']['split_environments'][main_env].each_key do |sub_env|
+      if @config['cheftacular']['run_list_environments'].has_key?(main_env)
+        @config['cheftacular']['run_list_environments'][main_env].each_value do |sub_env|
           envs_to_build_in_hash << sub_env
         end
       end

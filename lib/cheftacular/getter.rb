@@ -122,7 +122,7 @@ class Cheftacular
 
     def get_split_branch_hash ret={}
       @config['cheftacular']['repositories'].each_pair do |name, repo_hash|
-        ret[repo_hash['name']] = repo_hash if repo_hash.has_key?('has_split_branches') && repo_hash['has_split_branches'] == 'true'
+        ret[repo_hash['name']] = repo_hash if repo_hash.has_key?('has_split_branches') && repo_hash['has_split_branches']
       end
 
       ret

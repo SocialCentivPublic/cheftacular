@@ -38,7 +38,7 @@ class Cheftacular
       @options['force_yes']  = true
       @options['in_scaling'] = true
 
-      initial_servers = @config['cheftacular']['env_boot_nodes']["#{ @options['env'] }_node_names"]
+      initial_servers = @config['cheftacular']['env_boot_nodes']["#{ @options['env'] }_nodes"]
 
       if initial_servers.empty?
         puts "There are no servers defined for #{ @options['env'] } in the env_boot_nodes hash in your cheftacular.yml... Exiting"
@@ -49,12 +49,12 @@ class Cheftacular
       case type
       when 'boot'
         initial_servers.each_pair do |name, config_hash|
+          next if nodes.map { |n| n.name }.include?(name)
+
           @options['node_name']   = name
           @options['flavor_name'] = config_hash.has_key?('flavor') ? config_hash['flavor'] : @config['cheftacular']['default_flavor_name']
           @options['descriptor']  = config_hash.has_key?('descriptor') ? config_hash['descriptor'] : name
           @options['with_dn']     = config_hash.has_key?('dns_config') ? @config['parser'].parse_to_dns(config_hash['dns_config']) : @config['parser'].parse_to_dns('NODE_NAME.ENV_TLD')
-                                    
-          next if nodes.map { |n| n.name }.include?(@options['node_name'])
 
           puts("Preparing to boot server #{ @options['node_name'] } for #{ @options['env'] }!") unless @options['quiet']
 

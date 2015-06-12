@@ -251,7 +251,6 @@ class Cheftacular
           FileUtils.rm("#{ base_dir }/#{ entry }") if File.file?("#{ base_dir }/#{ entry }") && entry.include?(Time.now.strftime("%Y%m%d"))
         end
 
-
         if File.exists?("#{ base_dir }/#{ entry }") && File.directory?("#{ base_dir }/#{ entry }")
           FileUtils.rm_rf("#{ base_dir }/#{ entry }") if !check_current_day_entry && !entry.include?(Time.now.strftime("%Y%m%d"))
           
@@ -312,6 +311,45 @@ class Cheftacular
 
         return line.split('node_name').last.strip.chomp.gsub('"', '')
       end
+    end
+
+    #this must be in helpers because getter class is not yet loaded at the time this method is needed.
+    def get_cheftacular_yml_as_hash
+      config_location = if File.exist?(File.join( Dir.getwd, 'config', 'cheftacular.yml' ))
+                          File.join( Dir.getwd, 'config', 'cheftacular.yml' )
+                        elsif File.exist?('/root/cheftacular.yml')
+                          '/root/cheftacular.yml'
+                        else
+                          raise "cheftacular.yml configuration file could not be found in either #{ File.join( Dir.getwd, 'config', 'cheftacular.yml' ) } or /root/cheftacular.yml"
+                        end
+
+      YAML::load(ERB.new(IO.read(File.open(config_location))).result)
+    rescue StandardError => e
+      puts "The cheftacular.yml configuration file could not be parsed."
+      puts "Error message: #{ e }\n#{ e.backtrace.join("\n") }"
+      
+      exit
+    end
+
+    def current_chef_repo_cheftacular_file_cache_path
+      current_file_path "chef_repo_cheftacular_cache"
+    end
+
+    def write_chef_repo_cheftacular_cache_file hash
+      File.open( current_chef_repo_cheftacular_file_cache_path, "w") { |f| f.write(hash) }
+    end
+
+    def compile_chef_repo_cheftacular_yml_as_hash
+      master_hash = get_cheftacular_yml_as_hash
+      master_hash['replace_keys_in_chef_repo'].each_pair do |key, val|
+        master_hash[key] = val
+      end
+
+      master_hash
+    end
+
+    def write_chef_repo_cheftacular_yml_file file_location
+      File.open( file_location, "w") { |f| f.write(compile_chef_repo_cheftacular_yml_as_hash.to_yaml) }
     end
 
     private

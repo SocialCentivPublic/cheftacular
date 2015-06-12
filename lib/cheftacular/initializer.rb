@@ -48,9 +48,11 @@ class Cheftacular
 
       @config['helper'].completion_rate? 100, 'initializer'
 
-      initialize_version_check if @config['cheftacular']['strict_version_checks'] == 'true'
+      initialize_version_check if @config['cheftacular']['strict_version_checks']
 
-      initialize_auditing_checks if @config['cheftacular']['auditing'] == 'true'
+      initialize_auditing_checks if @config['cheftacular']['auditing']
+
+      initialize_chef_repo_up_to_date if @config['cheftacular']['keep_chef_repo_cheftacular_yml_up_to_date']
     end
 
     #changes to arguments should show up in the documentation methods in their appropriate method file
@@ -212,20 +214,7 @@ class Cheftacular
     end
 
     def initialize_yaml_configuration
-      config_location = if File.exist?(File.join( Dir.getwd, 'config', 'cheftacular.yml' ))
-                          File.join( Dir.getwd, 'config', 'cheftacular.yml' )
-                        elsif File.exist?('/root/cheftacular.yml')
-                          '/root/cheftacular.yml'
-                        else
-                          raise "cheftacular.yml configuration file could not be found in either #{ File.join( Dir.getwd, 'config', 'cheftacular.yml' ) } or /root/cheftacular.yml"
-                        end
-
-      @config['cheftacular'] = YAML::load(ERB.new(IO.read(File.open(config_location))).result)
-    rescue StandardError => e
-      puts "The cheftacular.yml configuration file could not be parsed."
-      puts "Error message: #{ e }\n#{ e.backtrace.join("\n") }"
-      
-      exit
+      @config['cheftacular'] = @config['helper'].get_cheftacular_yml_as_hash
     end
 
     def initialize_default_cheftacular_options
@@ -299,7 +288,7 @@ class Cheftacular
         client_name:               (@config['helper'].running_on_chef_node? ? @config['helper'].parse_node_name_from_client_file : @config['cheftacular']['cheftacular_chef_user']),
         client_key:                File.expand_path("#{ @config['locs']['chef'] }/#{ @config['helper'].running_on_chef_node? ? 'client' : @config['cheftacular']['cheftacular_chef_user'] }.pem"),
         encrypted_data_bag_secret: @config['data_bag_secret'],
-        ssl:                       { verify: @config['cheftacular']['ssl_verify'] == 'true' }
+        ssl:                       { verify: @config['cheftacular']['ssl_verify'] }
       )
     end
 
@@ -393,7 +382,7 @@ class Cheftacular
       if @config['helper'].is_higher_version? detected_version, current_version
         puts "\n Your Cheftacular is out of date. Currently #{ current_version } and remote version is #{ detected_version }.\n"
 
-        puts "Please update the gemfile to #{ detected_version } and restart this process.\n"
+        puts "Please update the gemfile to #{ detected_version }, bundle install and then restart this process.\n"
 
         exit
       else
@@ -437,6 +426,39 @@ class Cheftacular
       FileUtils.mkdir_p @config['helper'].current_nodes_file_cache_path
 
       @config['helper'].cleanup_file_caches
+    end
+
+    def initialize_chef_repo_up_to_date
+      if @config['helper'].running_in_mode?('devops')
+        @config['cheftacular']['wrapper_cookbooks'].split(',').each do |wrapper_cookbook|
+          parsed_hash = if File.exists?( @config['helper'].current_chef_repo_cheftacular_file_cache_path ) 
+                          File.read( @config['helper'].current_chef_repo_cheftacular_file_cache_path )
+                        else
+                          Digest::SHA2.hexdigest(@config['helper'].compile_chef_repo_cheftacular_yml_as_hash.to_yaml.to_s)
+                        end
+
+          wrapper_cookbook_cheftacular_loc = "#{ @config['locs']['cookbooks'] }/#{ wrapper_cookbook }" +
+            @config['cheftacular']['location_of_chef_repo_cheftacular_yml'] + '/cheftacular.yml'
+
+          unless File.exist?(wrapper_cookbook_cheftacular_loc)
+            puts "Wrapper cookbook \"#{ wrapper_cookbook }\" does not have a cheftacular.yml file in #{ @config['cheftacular']['location_of_chef_repo_cheftacular_yml'] }! Creating..."
+
+            @config['helper'].write_chef_repo_cheftacular_yml_file wrapper_cookbook_cheftacular_loc
+          end
+
+          if parsed_hash == Digest::SHA2.hexdigest(File.read(wrapper_cookbook_cheftacular_loc))
+            next if File.exists?( @config['helper'].current_chef_repo_cheftacular_file_cache_path )
+          else
+            puts "Wrapper cookbook (#{ wrapper_cookbook }) does not have a current cheftacular.yml file in #{ @config['cheftacular']['location_of_chef_repo_cheftacular_yml'] }\"! Overwriting..."
+
+            @config['helper'].write_chef_repo_cheftacular_yml_file wrapper_cookbook_cheftacular_loc
+          end
+
+          puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") }'s cheftacular.yml."
+
+          @config['helper'].write_chef_repo_cheftacular_cache_file parsed_hash
+        end
+      end
     end
 
     def initialize_bag_for_all_environments bag_name, total_percent=100

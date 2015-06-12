@@ -46,7 +46,7 @@ class Cheftacular
 
     puts("Preparing to run command \"#{ @options['command'] }\"...") if @options['verbose']
 
-    @config['auditor'].audit_run if @config['cheftacular']['auditing'] == 'true'
+    @config['auditor'].audit_run if @config['cheftacular']['auditing']
 
     @config['action'].send(@options['command']) if @config['helper'].is_command?(@options['command'])
 

@@ -27,17 +27,17 @@ class Cheftacular
         end
       end
 
-      compiled_audit_hash.each_pair do |day, time_log_hash|
+      compiled_audit_hash.keys.sort.each do |day|
         out << "# Audit Log Entries for #{ Date.parse(day) }"
 
         entry_count, int_times = 1, []
 
-        time_log_hash.keys.each do |time|
+        compiled_audit_hash[day].keys.each do |time|
           out << "#{ entry_count }. #{ time }"
 
           log_array_entry_count = 1
 
-          time_log_hash[time].each do |log_arr|
+          compiled_audit_hash[day][time].each do |log_arr|
             log_arr.each do |log_hash|
               out << "    #{ log_array_entry_count }. #{ log_hash['command'] }"
               out << "        1. Hostname:  #{ log_hash['hostname'] }"
@@ -47,7 +47,7 @@ class Cheftacular
 
               log_array_entry_count += 1
             end
-          end if time_log_hash.has_key?(time)
+          end if compiled_audit_hash[day].has_key?(time)
 
           entry_count += 1
         end

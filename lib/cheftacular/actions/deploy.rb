@@ -7,7 +7,10 @@ class Cheftacular
         
         [
           "    1.  This command also restarts services on the server and updates the code. Changes behavior slightly with the `-z|-Z` args " +
-          "but only if your cookbooks support switching revisions based on tags / branch names."
+          "but only if your cookbooks support switching revisions based on tags / branch names.",
+
+          "    2.  This command will also run migrations on both an role's normal servers and its split servers if certain " +
+          "conditions are met (such as the role having a database, etc)."
         ]
       ]
     end
@@ -36,6 +39,26 @@ class Cheftacular
       #@config['ChefDataBag'].save_logs_bag unless @options['debug'] #We don't really need to store entire chef runs in the logs bag
 
       migrate(nodes) if @config['getter'].get_current_repo_config['database'] != 'none' && !@options['run_migration_already']
+
+      split_nodes_hash = {}
+
+      @config['cheftacular']['run_list_environments'][@options['env']].each_key do |role_name|
+        split_nodes_hash[role_name] = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ role_name }]" }])
+      end
+
+      split_nodes_hash.each_pair do |role, split_nodes|
+        next if split_nodes.empty?
+
+        unless @options["run_#{ role }_migrations_already"]
+          @options["run_#{ role }_migrations_already"] = true
+          
+          if @config['getter'].get_current_repo_config['database'] != 'none'
+            puts("Running migration on split environment #{ role }...") if !@options['quiet']
+            
+            migrate(split_nodes)
+          end
+        end
+      end
     end
   end
 end

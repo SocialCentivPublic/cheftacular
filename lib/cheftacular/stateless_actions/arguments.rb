@@ -48,7 +48,7 @@ class Cheftacular
 
         '2.  `-z|--unset-revision` will unset a custom revision specified in the arg below and make the codebase utilize the default.',
 
-        "3.  `-Z|--revision REVISION` will force the role you're deploying to to utilize the revision specified here. This can be a specific commit or a branch name.",
+        "3.  `-Z|--revision REVISION` will force the role you're deploying to to utilize the revision specified here. This can be a specific commit, a branch name or even a tag.",
 
         '    1. Note: The system does not check if the revision exists, if you pass a non-existent revision no one will be able to deploy to that role until -Z with a correction revision or -z is passed.'
       ]
