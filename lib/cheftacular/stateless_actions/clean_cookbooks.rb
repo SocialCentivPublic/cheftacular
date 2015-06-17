@@ -44,7 +44,7 @@ class Cheftacular
           berkshelf_cookbooks.keys.each do |processed_berkshelf_cookbook|
             if processed_berkshelf_cookbook.rpartition('-').first == berkshelf_cookbook.rpartition('-').first
               cookbook_mtime  = File.mtime(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }"))
-              pcookbook_mtime = File.mtime(File.expand_path("#{ @locs['locs']['berks'] }/#{ processed_berkshelf_cookbook }"))
+              pcookbook_mtime = File.mtime(File.expand_path("#{ @config['locs']['berks'] }/#{ processed_berkshelf_cookbook }"))
 
               skip = true if cookbook_mtime < pcookbook_mtime #get only the latest version, berkshelf pulls in multiple commits from git repos for SOME REASON
             end
@@ -62,7 +62,7 @@ class Cheftacular
         chef_repo_cookbooks = {}
 
         Dir.foreach(@config['locs']['cookbooks']) do |chef_repo_cookbook|
-          next if @config['helper'].is_junk_filename?(berkshelf_cookbook)
+          next if @config['helper'].is_junk_filename?(chef_repo_cookbook)
             
           new_name = chef_repo_cookbook.rpartition('-').first
 

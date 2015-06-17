@@ -16,11 +16,14 @@ class Cheftacular
   end
 
   class StatelessAction
-    def slack
-      notifier = Slack::Notifier.new @config['cheftacular']['slack_webhook'], username: 'Cheftacular'
+    def slack message='', channel=''
+      @slack_notifier ||= Slack::Notifier.new @config['cheftacular']['slack']['webhook'], username: 'Cheftacular'
 
-      notifier.channel = ARGV[2] ? ARGV[2] : '#default'  
-      notifier.ping ARGV[1]
+      message = ARGV[1] if message.blank?
+      channel = ARGV[2] if channel.blank?
+
+      @slack_notifier.channel = channel.nil? ? @config['cheftacular']['slack']['default_channel'] : channel
+      @slack_notifier.ping message
     end
   end
 end

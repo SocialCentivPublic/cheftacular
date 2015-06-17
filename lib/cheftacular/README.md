@@ -53,7 +53,7 @@
 
 2.  `-z|--unset-revision` will unset a custom revision specified in the arg below and make the codebase utilize the default.
 
-3.  `-Z|--revision REVISION` will force the role you're deploying to to utilize the revision specified here. This can be a specific commit or a branch name.
+3.  `-Z|--revision REVISION` will force the role you're deploying to to utilize the revision specified here. This can be a specific commit, a branch name or even a tag.
 
     1. Note: The system does not check if the revision exists, if you pass a non-existent revision no one will be able to deploy to that role until -Z with a correction revision or -z is passed.
 
@@ -81,6 +81,8 @@
 6. `cft deploy` will do a simple chef-client run on the servers for a role. Logs of the run itself will be sent to the local log directory in the application (or chef-repo) where the run was conducted.
 
     1.  This command also restarts services on the server and updates the code. Changes behavior slightly with the `-z|-Z` args but only if your cookbooks support switching revisions based on tags / branch names.
+
+    2.  This command will also run migrations on both an role's normal servers and its split servers if certain conditions are met (such as the role having a database, etc).
 
 7. `cft disk_report` will fetch useful statistics from every server for every environment and output it into your log directory.
 
@@ -187,7 +189,7 @@
 
 9. `cft cloud <FIRST_LEVEL_ARG> [<SECOND_LEVEL_ARG>[:<SECOND_LEVEL_ARG_QUERY>]*] ` this command handles talking to various cloud APIs. If no args are passed nothing will happen.
 
-    1. `domain` 1st level argument for interacting with cloud domains
+    1. `domain` first level argument for interacting with cloud domains
 
         1. `list` default behavior
 
@@ -207,7 +209,7 @@
 
         9. `update_record:TOP_LEVEL_DOMAIN:SUBDOMAIN_NAME:IP_ADDRESS[:RECORD_TYPE[:TTL]]` similar to `create_record`.
 
-    2. `server` 1st level argument for interacting with cloud servers, if no additional args are passed the command will return a list of all servers on the preferred cloud.
+    2. `server` first level argument for interacting with cloud servers, if no additional args are passed the command will return a list of all servers on the preferred cloud.
 
         1.  `list` default behavior
 
@@ -220,7 +222,7 @@
             2. NOTE! Most flavors have spaces in them, you must use quotes at the command line to utilize them!
 
         4. `destroy:SERVER_NAME` destroys the server on the cloud. This must be an exact match of the server's actual name or the script will error.
-        
+
         5. `poll:SERVER_NAME` polls the cloud's server for the status of the SERVER_NAME. This command will stop polling if / when the status of the server is ACTIVE and its build progress is 100%.
 
         6. `attach_volume:SERVER_NAME:VOLUME_NAME[:VOLUME_SIZE[:DEVICE_LOCATION]]` If VOLUME_NAME exists it will attach it if it is unattached otherwise it will create it
@@ -239,7 +241,7 @@
 
         9. `read_volume:SERVER_NAME:VOLUME_NAME` returns the data of VOLUME_NAME if it is attached to the server.
 
-    3. `volume` 1st level argument for interacting with cloud storage volumes, if no additional args are passed the command will return a list of all cloud storage containers.
+    3. `volume` first level argument for interacting with cloud storage volumes, if no additional args are passed the command will return a list of all cloud storage containers.
 
         1. `list` default behavior
 
@@ -249,7 +251,7 @@
 
         4. `destroy:VOLUME_NAME` destroys the volume. This operation will not work if the volume is attached to a server.
 
-    4. `flavor` 1st level argument for listing the flavors available on the cloud service
+    4. `flavor` first level argument for listing the flavors available on the cloud service
 
         1. `list` default behavior
 

@@ -417,7 +417,7 @@ class Cheftacular
     end
 
     def initialize_directories
-      ['applog', 'deploy', 'rolelog', 'rvm', 'stashedlog'].each do |sub_log_directory|
+      ['applog', 'deploy', 'failed-deploy', 'rolelog', 'rvm', 'stashedlog'].each do |sub_log_directory|
         FileUtils.mkdir_p File.join( @config['locs']['chef-log'], sub_log_directory )
       end
 

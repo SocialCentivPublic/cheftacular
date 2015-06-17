@@ -31,12 +31,19 @@ class Cheftacular
 
         puts("Beginning chef client run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']
 
-        log_data, timestamp = start_deploy( n.name, n.public_ipaddress, options, locs, passwords)
+        log_data, timestamp, exit_status = start_deploy( n.name, n.public_ipaddress, options, locs, passwords)
 
-        logs_bag_hash["#{ n.name }-deploy"] = { text: log_data.scrub_pretty_text, timestamp: timestamp }
+        logs_bag_hash["#{ n.name }-deploy"] = { "text" => log_data.scrub_pretty_text, "timestamp" => timestamp, "exit_status" => exit_status }
+      end
+
+      #Yes, you will get pinged on EVERY deploy until you fix the problem
+      if @config['cheftacular']['slack']['webhook']
+        logs_bag_hash.each_pair do |key, hash|
+          @config['stateless_action'].slack(hash['text'].prepend('```').insert(-1, '```')) if hash['exit_status'] && hash['exit_status'] == 1
+        end
       end
       
-      #@config['ChefDataBag'].save_logs_bag unless @options['debug'] #We don't really need to store entire chef runs in the logs bag
+      @config['ChefDataBag'].save_logs_bag unless @options['debug'] #We don't really need to store entire chef runs in the logs bag
 
       migrate(nodes) if @config['getter'].get_current_repo_config['database'] != 'none' && !@options['run_migration_already']
 
@@ -83,7 +90,15 @@ module SSHKit
 
         puts "Succeeded deploy of #{ name } (#{ ip_address }) on role #{ options['role'] }"
 
-        [out, timestamp] #return out to send to logs_bag
+        ['Successful Deploy', timestamp, 0] #return out to send to logs_bag
+      rescue SSHKit::Command::Failed => e
+        puts "@@@@@CRITICAL! Deploy failed for #{ name } (#{ ip_address })! Please check your #{ log_loc }/failed-deploy for the logs!@@@@@"
+
+        lines = e.message.split("\n").last(100).join("\n")
+
+        ::File.open("#{ log_loc }/failed-deploy/#{ name }-deploy-#{ timestamp }.txt", "w") { |f| f.write(lines.scrub_pretty_text) }
+
+        [lines, timestamp, 1]
       end
     end
   end

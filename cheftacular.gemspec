@@ -18,19 +18,18 @@ Gem::Specification.new do |s|
   #s.test_files = Dir["spec/**/*"]
 
   s.required_ruby_version = '>= 1.9.1'
-  s.add_dependency             "hashie", ">= 2.0" #hashie 3.0+ breaks varia_model
-  s.add_dependency             "chef", ">= 11.12"
-  s.add_dependency             "ridley"
-  s.add_development_dependency "berkshelf"
-  s.add_dependency             "highline"
-  s.add_dependency             "ffi-yajl"
-  s.add_development_dependency "pry"
-  s.add_dependency             "awesome_print"
-  s.add_dependency             "sshkit"
-  s.add_dependency             "activesupport"
-  s.add_dependency             "public_suffix"
-  s.add_dependency             "rest-client"
-  s.add_dependency             "fog"
-  s.add_dependency             "slack-notifier"
-  s.add_dependency             "cloudflare"
+  s.add_dependency "hashie", ">= 2.0" #hashie 3.0+ breaks varia_model
+  s.add_dependency "chef", ">= 11.12"
+  s.add_dependency "ridley"
+  s.add_dependency "berkshelf"
+  s.add_dependency "highline"
+  s.add_dependency "ffi-yajl"
+  s.add_dependency "awesome_print"
+  s.add_dependency "sshkit"
+  s.add_dependency "activesupport"
+  s.add_dependency "public_suffix"
+  s.add_dependency "rest-client"
+  s.add_dependency "fog"
+  s.add_dependency "slack-notifier"
+  s.add_dependency "cloudflare"
 end

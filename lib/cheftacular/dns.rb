@@ -62,7 +62,7 @@ class Cheftacular
             record_hash['SRV_weight'],
             record_hash['SRV_port'],
             record_hash['SRV_target'],
-            (record_hash['activate_cloudflare'] ? 1 : 0) #service_mode
+            (record_hash['activate_cloudflare'] ? 0 : 1) #service_mode
           )
 
           print 'create'.ljust(20, '_')

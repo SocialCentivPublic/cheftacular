@@ -23,6 +23,8 @@ class Cheftacular
     end
 
     def save_logs_bag bag_env="options"
+      return true if @config['helper'].running_on_chef_node?
+      
       env = bag_env == 'options' ? @options['env'] : bag_env
 
       item = @config[env]['logs_bag'].reload
