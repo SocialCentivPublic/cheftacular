@@ -210,6 +210,11 @@ class Cheftacular
           @options['virtualization_mode'] = v_mode
         end
 
+        #file
+        opts.on('--save-to-file FILE_NAME', 'On cft file, this option can be used to save the output of the file display methods to your system. Also works in the fetch context') do |path|
+          @options['save_to_file'] = path
+        end
+
       end.parse!
     end
 
@@ -272,6 +277,7 @@ class Cheftacular
       locs['wrapper-cookbooks'] = @config['cheftacular']['wrapper-cookbooks']
       locs['ssh']               = File.expand_path('~/.ssh')
       locs['chef-log']          = File.expand_path("#{ locs['root']}/log")             unless locs['chef-log']
+      locs['app-tmp']           = File.expand_path("#{ locs['app-root']}/tmp")
 
       @config['locs'] = locs
     end
@@ -412,6 +418,7 @@ class Cheftacular
       @config['decryptor']                      = Cheftacular::Decryptor.new(@config['data_bag_secret'])
       @config['action_documentation']           = Cheftacular::ActionDocumentation.new(@options, @config)
       @config['stateless_action_documentation'] = Cheftacular::StatelessActionDocumentation.new(@options, @config)
+      @config['error']                          = Cheftacular::Error.new(@options, @config)
       @config['dummy_sshkit']                   = SSHKit::Backend::Netssh.new(SSHKit::Host.new('127.0.0.1'))
       @config['DNS']                            = Cheftacular::DNS.new(@options, @config)
     end
@@ -421,7 +428,7 @@ class Cheftacular
         FileUtils.mkdir_p File.join( @config['locs']['chef-log'], sub_log_directory )
       end
 
-      FileUtils.mkdir_p File.join( @config['locs']['app-root'], 'tmp', @config['helper'].declassify)
+      FileUtils.mkdir_p File.join( @config['locs']['app-tmp'], @config['helper'].declassify)
 
       FileUtils.mkdir_p @config['helper'].current_nodes_file_cache_path
 

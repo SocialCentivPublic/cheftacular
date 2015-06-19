@@ -25,7 +25,7 @@ class Cheftacular
       options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
 
       #on is namespaced to SSHKit::Backend::Netssh.on 
-      on ( nodes.map { |n| "deploy@" + n.public_ipaddress } ) do |host|
+      on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
         n = get_node_from_address(nodes, host.hostname)
 
         puts("Beginning haproxy log generation run for #{ n.name } (#{ n.public_ipaddress })") unless options['quiet']

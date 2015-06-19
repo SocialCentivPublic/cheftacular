@@ -46,7 +46,7 @@ class Cheftacular
 
         options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = set_local_instance_vars
 
-        on ( db_primary_nodes.map { |n| "deploy@" + n.public_ipaddress } ) do |host|
+        on ( db_primary_nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
           n = get_node_from_address(nodes, host.hostname)
 
           puts("Beginning db fetch_and_restore for #{ n.name } (#{ n.public_ipaddress }) for env #{ options['env'] }") unless options['quiet']

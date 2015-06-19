@@ -201,5 +201,30 @@ class Cheftacular
         return repository_hash if string.include?(repository)
       end
     end
+
+    def parse_location_alias string
+      if @config['cheftacular']['location_aliases'].keys.include?(string)
+        puts("Matched location_alias #{ string } to #{ @config['cheftacular']['location_aliases'][string] }") unless @options['quiet']
+
+        string = @config['cheftacular']['location_aliases'][string]
+      end
+
+      string
+    end
+
+    def parse_mode_into_command mode
+      case mode.split(':').first
+      when /display/ then 'cat'
+      when 'edit'    then mode.split(':').last
+      when 'tail'
+        if mode.split(':').last == 'tail'
+          'tail -500'
+        else
+          "tail -#{ mode.split(':').last }"
+        end
+      when 'tail-f'  then 'tail -f'
+      else                mode
+      end
+    end
   end
 end

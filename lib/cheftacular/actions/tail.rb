@@ -39,7 +39,7 @@ class Cheftacular
     def start_tail_role_map ip_address, run_list
       log_loc = @config['getter'].get_current_role_map(run_list)['log_location'].split(',').first.gsub('|current_repo_location|', "#{ @config['cheftacular']['base_file_path'] }/#{ @options['repository'] }/current")
 
-      `ssh -oStrictHostKeyChecking=no -tt deploy@#{ ip_address } "#{ @config['helper'].sudo(ip_address) } tail -f #{ log_loc }" > /dev/tty`
+      `ssh -oStrictHostKeyChecking=no -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "#{ @config['helper'].sudo(ip_address) } tail -f #{ log_loc }" > /dev/tty`
     end
 
     def start_tail_ruby_on_rails ip_address, run_list
@@ -48,7 +48,7 @@ class Cheftacular
       #special servers should be listed first as most of them will have web role
       log_loc = "#{ @config['cheftacular']['base_file_path'] }/#{ @options['repository'] }/current/log/#{ true_env }.log"
       
-      `ssh -oStrictHostKeyChecking=no -tt deploy@#{ ip_address } "#{ @config['helper'].sudo(ip_address) } tail -f #{ log_loc }" > /dev/tty`
+      `ssh -oStrictHostKeyChecking=no -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "#{ @config['helper'].sudo(ip_address) } tail -f #{ log_loc }" > /dev/tty`
     end
   end
 end

@@ -1,3 +1,13 @@
+## 2.5.0
+
+* Fixed issue where most commands that interacted with servers still used the deploy user rather than using the *deploy_user* set in the cheftacular.yml
+
+* Removed stateless command files for commands that are either superfluous, empty, or no current plans to implement.
+
+* Created errors class for better handling of large errors in the code
+
+* Implemented new command `file` that will be extremely useful for interacting with files on remote servers, supports `cat|display|edit|fetch|list|scp|tail|tail-f`.
+
 ## 2.4.1
 
 * **Modified readable attributes in cheftacular.yml** Added _slack_ key with nested keys _webhook_ and _default channel_

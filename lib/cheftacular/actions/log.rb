@@ -31,7 +31,7 @@ class Cheftacular
 
       getter = @config['getter']
 
-      on ( nodes.map { |n| "deploy@" + n.public_ipaddress } ), in: :parallel do |host|
+      on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ), in: :parallel do |host|
         n = get_node_from_address(nodes, host.hostname)
 
         puts("Beginning log fetch run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']
@@ -109,6 +109,7 @@ module SSHKit
 
       def start_log_fetch_nginx name, log_loc, log_cmnd, timestamp, options, out=""
         out = "" unless options['no_logs']
+        log_cmnd, log_lines = get_log_command_and_lines(options)
 
         nginx_log_loc = "/var/log/nginx/#{ options['repository'] }_access.log"
 

@@ -27,7 +27,7 @@ class Cheftacular
       #this must always precede on () calls so they have the instance variables they need
       options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
 
-      on ( primary_nodes.map { |n| "deploy@" + n.public_ipaddress } ) do |host|
+      on ( primary_nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
         n = get_node_from_address(nodes, host.hostname)
 
         puts "Beginning replication status report run for #{ n.name } (#{ n.public_ipaddress })"
@@ -37,7 +37,7 @@ class Cheftacular
         rep_status_hash[n.name] = start_replication_report( n.name, n.public_ipaddress,  options, locs, passwords)
       end
 
-      on ( slave_nodes.map { |n| "deploy@" + n.public_ipaddress } ) do |host|
+      on ( slave_nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
         n = get_node_from_address(nodes, host.hostname)
 
         puts "Beginning slave replication status report run for #{ n.name } (#{ n.public_ipaddress })"

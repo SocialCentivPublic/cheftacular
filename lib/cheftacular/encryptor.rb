@@ -15,6 +15,8 @@ class Cheftacular
       hash
     end
 
+    private
+
     #https://github.com/opscode/chef/blob/master/lib/chef/encrypted_data_bag_item/encryptor.rb
     def encrypt_data_for_databag string
       encryptor = openssl_encryptor

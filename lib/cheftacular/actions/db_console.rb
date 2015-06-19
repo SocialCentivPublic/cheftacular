@@ -63,7 +63,7 @@ class Cheftacular
                   end
 
       #the >/dev/tty after the ssh block redirects the full output to stdout, not /dev/null where it normally goes  
-      `ssh -oStrictHostKeyChecking=no -tt deploy@#{ ip_address } "PGPASSWORD=#{ pg_pass } psql -U #{ db_user } -h #{ database_host }" -d #{ db_name } > /dev/tty`
+      `ssh -oStrictHostKeyChecking=no -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "PGPASSWORD=#{ pg_pass } psql -U #{ db_user } -h #{ database_host }" -d #{ db_name } > /dev/tty`
     end
 
     def start_console_mysql

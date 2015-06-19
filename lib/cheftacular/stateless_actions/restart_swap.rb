@@ -23,7 +23,7 @@ class Cheftacular
       #this must always precede on () calls so they have the instance variables they need
       options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
 
-      on ( nodes.map { |n| "deploy@" + n.public_ipaddress } ), in: :groups, limit: 5, wait: 2 do |host|
+      on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ), in: :groups, limit: 5, wait: 2 do |host|
         n = get_node_from_address(nodes, host.hostname)
 
         puts "Beginning swap restart run for #{ n.name } (#{ n.public_ipaddress })"

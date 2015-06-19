@@ -20,6 +20,8 @@ class Cheftacular
       return_hash
     end
 
+    private
+
     def openssl_decryptor
       openssl_decryptor = begin
         decryptor = OpenSSL::Cipher::Cipher.new(ALGORITHM)

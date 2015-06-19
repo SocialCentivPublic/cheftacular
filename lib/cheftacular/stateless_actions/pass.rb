@@ -15,13 +15,7 @@ class Cheftacular
     def pass
       @options['node_name'] = ARGV[1] unless @options['node_name']
 
-      raise "Too few arguments, please supply a node name" if ARGV.length < 2
-
-      nodes = @config['getter'].get_true_node_objects(true)
-
-      nodes = @config['parser'].exclude_nodes( nodes, [{ if: { not_node: @options["node_name"] } }], true )
-
-      raise "Node not found for #{ @options['node_name'] }" if nodes.empty?
+      nodes = @config['error'].is_valid_node_name_option?
 
       if nodes.first.chef_environment != @options['env']
         @config['initializer'].initialize_data_bags_for_environment nodes.first.chef_environment, false, ['server_passwords']
