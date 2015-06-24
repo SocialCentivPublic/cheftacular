@@ -11,6 +11,8 @@ class CloudInteractor
     end
     
     def run method, args
+      args['name'] = args['name'].gsub('_', '-')
+
       self.send(method, args)
     end
   end

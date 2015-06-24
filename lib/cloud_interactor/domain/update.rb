@@ -10,7 +10,7 @@ class CloudInteractor
         return false
       end
 
-      @classes['auth'].auth_service(resource).instance_eval('zones').get(@main_obj["specific_#{ IDENTITY }"].last['id']).update(ttl: 5, email: @auth_hash['cloud_auth'][@options['preferred_cloud']]['email'])
+      @classes['auth'].auth_service(resource).instance_eval('zones').get(@main_obj["specific_#{ IDENTITY }"].last['id']).update(ttl: 5, email: @auth_hash['cloud_authentication'][@options['preferred_cloud']]['email'])
 
       puts "Updated #{ IDENTITY } #{ args[IDENTITY.singularize] }..."
     end

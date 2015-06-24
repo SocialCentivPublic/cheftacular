@@ -83,7 +83,19 @@ class Cheftacular
           "        2. `read:FLAVOR SIZE` behaves the same as list unless a flavor size is supplied.",
 
           "            1. Standard servers are listed as XGB with no spaces in their size, performance servers are listed as X GB with " +
-          "a space in their size. If you are about to create a server and are unsure, query flavors first."
+          "a space in their size. If you are about to create a server and are unsure, query flavors first.",
+
+          "    5. `image` first level argument for listing the images available on the cloud service",
+
+          "        1. `list` default behavior",
+
+          "        2. `read:NAME` behaves the same as list unless a specific image name is supplied",
+
+          "    6. `region` first level argument for listing the regions available on the cloud service (only supported by DigitalOcean)",
+
+          "        1. `list` default behavior",
+
+          "        2. `read:REGION` behaves the same as list unless a specific region name is supplied"
         ]
       ]
     end
@@ -95,7 +107,7 @@ class Cheftacular
 
       args = ARGV[1..ARGV.length] if args.empty?
 
-      @config['cloud_interactor'] ||= CloudInteractor.new(@config['default']['authentication_bag_hash'], @options)
+      @config['cloud_interactor'] ||= CloudInteractor.new(@config['cheftacular'], @options)
 
       @config['cloud_interactor'].run args
     end

@@ -46,6 +46,8 @@ class Cheftacular
 
       initialize_directories
 
+      initialize_cloud_checks
+
       @config['helper'].completion_rate? 100, 'initializer'
 
       initialize_version_check if @config['cheftacular']['strict_version_checks']
@@ -198,6 +200,10 @@ class Cheftacular
           @options['preferred_cloud'] = 'aws'
         end
 
+        opts.on('--do', "On cft cloud calls, set the cloud to DigitalOcean") do
+          @options['preferred_cloud'] = 'digitalocean'
+        end
+
         opts.on('--region REGION', 'On cft cloud calls, set the cloud region to perform operations on to this region') do |region|
           @options['preferred_cloud_region'] = region
         end
@@ -208,6 +214,10 @@ class Cheftacular
 
         opts.on('--virtualization-mode MODE', 'On cft cloud calls, set the default virtualization mode to this (On rackspace, only PV or PVHVM are supported)') do |v_mode|
           @options['virtualization_mode'] = v_mode
+        end
+
+        opts.on('--route-dns-changes-via SERVICE', 'On cft cloud calls, set the default dns provider to this service') do |service|
+          @options['route_dns_changes_via'] = service
         end
 
         #file
@@ -433,6 +443,49 @@ class Cheftacular
       FileUtils.mkdir_p @config['helper'].current_nodes_file_cache_path
 
       @config['helper'].cleanup_file_caches
+    end
+
+    def initialize_cloud_checks exit_on_finish = false
+      hash = @config['cheftacular']['cloud_authentication']
+
+      unless hash.has_key?(@options['preferred_cloud'])
+        puts "Critical! No Cloud credentials detected for your preferred cloud #{ @options['preferred_cloud'] }, " +
+        "Please update the cheftacular.yml cloud_authentication:#{ @options['preferred_cloud'] } key!"
+
+        exit_on_finish = true
+      end
+
+      if hash.has_key?('rackspace')
+        if !( hash['rackspace'].has_key?('username') || hash['rackspace'].has_key?('api_key') || hash['rackspace'].has_key?('email')) 
+
+          puts "Critical! No cloud credentials detected for the rackspace cloud_authentication hash! There must be both a valid username and an api_key in this hash!"
+          puts "Please update the cheftacular.yml cloud_authentication:rackspace key!"
+
+          exit_on_finish = true
+        elsif hash['rackspace']['username'].empty? || hash['rackspace']['api_key'].empty? || hash['rackspace']['email'].empty?
+          puts "Critical! Cloud credentials detected for the rackspace cloud_authentication hash are blank!"
+          puts "Please update the cheftacular.yml cloud_authentication:rackspace key!"
+
+          exit_on_finish = true
+        end
+      end
+
+      if hash.has_key?('digitalocean')
+        if !( hash['digitalocean'].has_key?('client_id') || hash['digitalocean'].has_key?('api_key')) 
+
+          puts "Critical! No cloud credentials detected for the digitalocean cloud_authentication hash! There must be both a valid client_id and an api_key in this hash!"
+          puts "Please update the cheftacular.yml cloud_authentication:digitalocean key!"
+
+          exit_on_finish = true
+        elsif hash['digitalocean']['client_id'].empty? || hash['digitalocean']['api_key'].empty?
+          puts "Critical! Cloud credentials detected for the digitalocean cloud_authentication hash are blank!"
+          puts "Please update the cheftacular.yml cloud_authentication:digitalocean key!"
+
+          exit_on_finish = true
+        end
+      end
+
+      exit if exit_on_finish
     end
 
     def initialize_chef_repo_up_to_date

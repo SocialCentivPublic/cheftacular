@@ -20,7 +20,7 @@ class CloudInteractor
                               raise "CloudInteractor Does not currently support this #{ options['preferred_cloud'] }'s' volume creation at this time"
                             end
                           when 'dns'
-                            case @options['preferred_cloud']
+                            case @options['route_dns_changes_via']
                             when 'rackspace' 
                               except_keys = [:version, :rackspace_region]
 
@@ -40,17 +40,43 @@ class CloudInteractor
       cloud_hash = case @options['preferred_cloud']
                    when 'rackspace' 
                      {
-                       provider:            @options['preferred_cloud'].capitalize,
-                       rackspace_username:  @auth_hash['cloud_auth'][@options['preferred_cloud']]['username'],
-                       rackspace_api_key:   @auth_hash['cloud_auth'][@options['preferred_cloud']]['api_key'],
+                       provider:            'Rackspace',
+                       rackspace_username:  @auth_hash['cloud_authentication'][@options['preferred_cloud']]['username'],
+                       rackspace_api_key:   @auth_hash['cloud_authentication'][@options['preferred_cloud']]['api_key'],
                        version:             :v2,
                        rackspace_region:    @options['preferred_cloud_region'].to_sym,
                        connection_options:  {}
-                     }.delete_if { |key, value| except_keys.flatten.include?(key) }
+                     }
+                   when 'digitalocean'
+                     {
+                       provider:               'DigitalOcean',
+                       digitalocean_api_key:   @auth_hash['cloud_authentication'][@options['preferred_cloud']]['api_key'],
+                       digitalocean_client_id: @auth_hash['cloud_authentication'][@options['preferred_cloud']]['client_id'],
+                       version:                :v1
+                     }
                    else raise "CloudInteractor Does not currently support #{ @options['preferred_cloud'] } at this time"
                    end
 
-      Fog.class_eval(classes_to_inject.join('::')).new(cloud_hash)
+      if interaction_class == 'DNS'
+        cloud_hash = if @options['route_dns_changes_via'] == @options['preferred_cloud']
+                       cloud_hash
+                     else 
+                       case @options['route_dns_changes_via']
+                       when 'rackspace'
+                         cloud_hash
+                       when 'dnsimple'
+                         {
+                           provider: 'dnsimple',
+                           dnsimple_email:    @auth_hash['cloud_authentication'][@options['route_dns_changes_via']]['email'],
+                           dnsimple_password: @auth_hash['cloud_authentication'][@options['route_dns_changes_via']]['password'],
+                           dnsimple_token:    @auth_hash['cloud_authentication'][@options['route_dns_changes_via']]['token']
+                         }
+                       else raise "CloudInteractor does not currently support #{ @options['route_dns_changes_via'] } as a DNS creation provider at this time"
+                       end
+                     end
+      end
+
+      Fog.class_eval(classes_to_inject.join('::')).new(cloud_hash.delete_if { |key, value| except_keys.flatten.include?(key) })
     end
   end
 end

@@ -1,5 +1,6 @@
 class CloudInteractor
   def parse_args args, final_args={}
+    args[0] = args[0].singularize
     #example args: domain "create:mydomain.us:23.253.44.192:my"
 
     raise "This class does not support #{ args[0] } at this time" unless ALLOWED_HLMS.include?(args[0])
@@ -29,6 +30,8 @@ class CloudInteractor
                when args[0] =~ /volume/                                                    then { 1 => "display_name", 2 => "size", 3 => 'volume_type' }
                when args[0] =~ /flavor/                                                    then { 1 => "name" }
                when args[0] =~ /image/                                                     then { 1 => "name" }
+               when args[0] =~ /region/                                                    then { 1 => "name" }
+               when args[0] =~ /sshkey/                                                    then { 1 => "name" }
                else raise "FATAL! Unsupported High Level Class #{ args[0] } for CloudInteractor! Please raise an issue on github with this stacktrace! args:#{ args }"
                end 
 
