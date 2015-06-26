@@ -20,9 +20,17 @@ class Cheftacular
 
       initialize_documentation_hash
 
+      initialize_ruby_config
+
+      initialize_classes
+
+      initialize_directories
+
+      initialize_cloud_checks
+
       @config['helper'].completion_rate? 0, 'initializer'
 
-      if @options['command'] == 'initialize_cheftacular_yml'
+      unless @options['command'] == 'initialize_cheftacular_yml'
 
         initialize_ridley
 
@@ -38,27 +46,18 @@ class Cheftacular
 
         initialize_data_bags_for_environment @options['env'], true
 
+        @config['helper'].completion_rate? 90, 'initializer'
+
+        initialize_passwords @options['env']
+
+        initialize_version_check if @config['cheftacular']['strict_version_checks']
+
+        initialize_auditing_checks if @config['cheftacular']['auditing']
+
+        initialize_chef_repo_up_to_date if @config['cheftacular']['keep_chef_repo_cheftacular_yml_up_to_date']
       end
 
-      @config['helper'].completion_rate? 90, 'initializer'
-
-      initialize_ruby_config
-
-      initialize_passwords @options['env']
-
-      initialize_classes
-
-      initialize_directories
-
-      initialize_cloud_checks
-
       @config['helper'].completion_rate? 100, 'initializer'
-
-      initialize_version_check if @config['cheftacular']['strict_version_checks']
-
-      initialize_auditing_checks if @config['cheftacular']['auditing']
-
-      initialize_chef_repo_up_to_date if @config['cheftacular']['keep_chef_repo_cheftacular_yml_up_to_date']
     end
 
     #changes to arguments should show up in the documentation methods in their appropriate method file

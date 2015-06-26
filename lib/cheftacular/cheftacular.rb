@@ -38,7 +38,9 @@ class Cheftacular
 
     @config['initializer'] = Initializer.new(@options, @config)
 
-    @config['stateless_action'].initialize_data_bag_contents @options['env'] #ensure basic structure are always maintained before each run
+    unless @options['command'] == 'initialize_data_bag_contents'
+      @config['stateless_action'].initialize_data_bag_contents(@options['env']) #ensure basic structure are always maintained before each run
+    end
 
     @config['parser'].parse_application_context if @config['cheftacular']['mode'] == 'application'
 
