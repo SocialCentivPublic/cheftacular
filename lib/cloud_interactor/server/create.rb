@@ -8,7 +8,7 @@ class CloudInteractor
       @classes['flavor'].read args['flavor']
 
       @classes['region'].read(@options['preferred_cloud_region'], false) if @options['preferred_cloud'] == 'digitalocean'
-      @classes['sshkey'].read('louis-macbook-pro', false) if @options['preferred_cloud'] == 'digitalocean'
+      @classes['sshkey'].bootstrap if @options['preferred_cloud'] == 'digitalocean'
 
       read args, false
 

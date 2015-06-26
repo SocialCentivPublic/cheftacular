@@ -22,19 +22,23 @@ class Cheftacular
 
       @config['helper'].completion_rate? 0, 'initializer'
 
-      initialize_ridley
+      if @options['command'] == 'initialize_cheftacular_yml'
 
-      @config['helper'].completion_rate? 10, 'initializer'
+        initialize_ridley
 
-      initialize_ridley_environments
+        @config['helper'].completion_rate? 10, 'initializer'
 
-      @config['helper'].completion_rate? 20, 'initializer'
+        initialize_ridley_environments
 
-      initialize_ridley_roles_and_nodes
+        @config['helper'].completion_rate? 20, 'initializer'
 
-      @config['helper'].completion_rate? 30, 'initializer'
+        initialize_ridley_roles_and_nodes
 
-      initialize_data_bags_for_environment @options['env'], true
+        @config['helper'].completion_rate? 30, 'initializer'
+
+        initialize_data_bags_for_environment @options['env'], true
+
+      end
 
       @config['helper'].completion_rate? 90, 'initializer'
 
