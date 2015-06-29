@@ -11,6 +11,12 @@ class Cheftacular
     end
   end
 
+  class InitializationAction
+    def help
+      
+    end
+  end
+
   class StatelessAction
     def help inference_modes=[]
       target_command   = @options['command'] == 'help' ? ARGV[1] : ARGV[0]

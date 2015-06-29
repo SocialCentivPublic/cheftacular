@@ -22,6 +22,8 @@ class Cheftacular
 
       initialize_ruby_config
 
+      initialize_ridley unless @config['helper'].is_initialization_command?(@options['command'])
+
       initialize_classes
 
       initialize_directories
@@ -30,9 +32,7 @@ class Cheftacular
 
       @config['helper'].completion_rate? 0, 'initializer'
 
-      unless @options['command'] == 'initialize_cheftacular_yml'
-
-        initialize_ridley
+      unless @config['helper'].is_initialization_command?(@options['command'])
 
         @config['helper'].completion_rate? 10, 'initializer'
 
@@ -50,14 +50,14 @@ class Cheftacular
 
         initialize_passwords @options['env']
 
+        @config['helper'].completion_rate? 100, 'initializer'
+
         initialize_version_check if @config['cheftacular']['strict_version_checks']
 
         initialize_auditing_checks if @config['cheftacular']['auditing']
 
         initialize_chef_repo_up_to_date if @config['cheftacular']['keep_chef_repo_cheftacular_yml_up_to_date']
       end
-
-      @config['helper'].completion_rate? 100, 'initializer'
     end
 
     #changes to arguments should show up in the documentation methods in their appropriate method file
@@ -427,6 +427,7 @@ class Cheftacular
       @config['getter']                         = Cheftacular::Getter.new(@options, @config)
       @config['action']                         = Cheftacular::Action.new(@options, @config)
       @config['stateless_action']               = Cheftacular::StatelessAction.new(@options, @config)
+      @config['initialization_action']        ||= Cheftacular::InitializationAction.new(@options, @config)
       @config['encryptor']                      = Cheftacular::Encryptor.new(@config['data_bag_secret'])
       @config['decryptor']                      = Cheftacular::Decryptor.new(@config['data_bag_secret'])
       @config['action_documentation']           = Cheftacular::ActionDocumentation.new(@options, @config)

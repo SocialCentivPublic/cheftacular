@@ -9,6 +9,12 @@ class Cheftacular
     end
   end
 
+  class InitializationAction
+    def initialize_cheftacular_yml
+      
+    end
+  end
+
   class StatelessAction
     def initialize_cheftacular_yml
       #TODO

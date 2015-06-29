@@ -8,6 +8,12 @@ class Cheftacular
     end
   end
 
+  class InitializationAction
+    def initialize_data_bag_contents
+      
+    end
+  end
+
   class StatelessAction
     def initialize_data_bag_contents env=""
       raise "Environment does not exist on chef server!" unless @config['chef_environments'].include?(env)

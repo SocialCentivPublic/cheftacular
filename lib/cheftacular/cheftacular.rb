@@ -34,11 +34,11 @@ class Cheftacular
 
     @config['start_time']  = Time.now
 
-    @config['helper']      = Helper.new(@options, @config)
+    @config['helper']                = Helper.new(@options, @config)
+    @config['initialization_action'] = InitializationAction.new(@options, @config)
+    @config['initializer']           = Initializer.new(@options, @config)
 
-    @config['initializer'] = Initializer.new(@options, @config)
-
-    unless @options['command'] == 'initialize_data_bag_contents'
+    unless @config['helper'].is_initialization_command?(@options['command'])
       @config['stateless_action'].initialize_data_bag_contents(@options['env']) #ensure basic structure are always maintained before each run
     end
 

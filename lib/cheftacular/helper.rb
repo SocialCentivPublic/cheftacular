@@ -353,6 +353,12 @@ class Cheftacular
       File.open( file_location, "w") { |f| f.write(compile_chef_repo_cheftacular_yml_as_hash.to_yaml) }
     end
 
+    def is_initialization_command? command=''
+      command ||= ''
+      
+      @config['initialization_action'].public_methods(false).include?(command.to_sym)
+    end
+
     private
     def current_file_path file_name
       File.join( @config['locs']['app-root'], 'tmp', declassify, "#{ Time.now.strftime("%Y%m%d") }-#{ file_name }")
