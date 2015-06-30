@@ -36,13 +36,15 @@ class Cheftacular
         raise "sshpass not installed! Please run brew install https://raw.github.com/eugeneoden/homebrew/eca9de1/Library/Formula/sshpass.rb (or get it from your repo for linux)"
       end
 
-      #the output of the cloud command is a hash, this hash is UPDATED every time a rax command is run so you only need to grab it when you need it
-      @config['stateless_action'].cloud "server", "create:#{ @options['env'] }_#{ @options['node_name'] }:#{ @options['flavor_name'] }"
+      real_node_name = @config['helper'].get_current_real_node_name
 
-      status_hash = @config['stateless_action'].cloud "server", "poll:#{ @options['env'] }_#{ @options['node_name'] }"
+      #the output of the cloud command is a hash, this hash is UPDATED every time a rax command is run so you only need to grab it when you need it
+      @config['stateless_action'].cloud "server", "create:#{ real_node_name }:#{ @options['flavor_name'] }"
+
+      status_hash = @config['stateless_action'].cloud "server", "poll:#{ real_node_name }"
 
       status_hash['created_servers'].each do |server_hash|
-        next unless server_hash['name'] == "#{ @options['env'] }_#{ @options['node_name'] }"
+        next unless server_hash['name'] == "#{ real_node_name }"
 
         @options['address'] = server_hash['ipv4_address']
 
@@ -50,7 +52,7 @@ class Cheftacular
       end
 
       begin
-        @options['client_pass'] = status_hash['admin_passwords']["#{ @options['env'] }_#{ @options['node_name'] }"]
+        @options['client_pass'] = status_hash['admin_passwords']["#{ real_node_name }"]
       rescue NoMethodError => e
         puts "Unable to locate an admin pass for server #{ @options['node_name'] }, does the server already exist? Exiting #{ __method__ }..."
 

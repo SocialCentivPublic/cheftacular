@@ -47,7 +47,7 @@ class Cheftacular
           @config['ridley'].client.delete(client)
 
           if @options['delete_server_on_remove'] == 'destroy'
-            @config['stateless_action'].cloud "server", "destroy:#{ @options['env'] }_#{ n.name }"
+            @config['stateless_action'].cloud "server", "destroy:#{ @config['helper'].get_current_real_node_name(n.name) }"
           end
         end
 
