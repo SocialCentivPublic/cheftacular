@@ -22,7 +22,7 @@ class Cheftacular
 
       initialize_ruby_config
 
-      initialize_ridley unless @config['helper'].is_initialization_command?(@options['command'])
+      initialize_ridley unless @config['helper'].is_initialization_command?(ARGV[0])
 
       initialize_classes
 
@@ -30,9 +30,9 @@ class Cheftacular
 
       initialize_cloud_checks
 
-      @config['helper'].completion_rate? 0, 'initializer'
+      unless @config['helper'].is_initialization_command?(ARGV[0])
 
-      unless @config['helper'].is_initialization_command?(@options['command'])
+        @config['helper'].completion_rate? 0, 'initializer'
 
         @config['helper'].completion_rate? 10, 'initializer'
 

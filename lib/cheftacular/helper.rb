@@ -355,7 +355,7 @@ class Cheftacular
 
     def is_initialization_command? command=''
       command ||= ''
-      
+            
       @config['initialization_action'].public_methods(false).include?(command.to_sym)
     end
 

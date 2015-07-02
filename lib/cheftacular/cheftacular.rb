@@ -38,17 +38,19 @@ class Cheftacular
     @config['initialization_action'] = InitializationAction.new(@options, @config)
     @config['initializer']           = Initializer.new(@options, @config)
 
-    unless @config['helper'].is_initialization_command?(@options['command'])
+    if @config['helper'].is_initialization_command?(ARGV[0])
+      @options['command'] = ARGV[0] #this is normally set by parse_context but that is not run for initialization commands
+    else
       @config['stateless_action'].initialize_data_bag_contents(@options['env']) #ensure basic structure are always maintained before each run
+
+      @config['parser'].parse_application_context if @config['cheftacular']['mode'] == 'application'
+
+      @config['parser'].parse_context
+
+      puts("Preparing to run command \"#{ @options['command'] }\"...") if @options['verbose']
+
+      @config['auditor'].audit_run if @config['cheftacular']['auditing']
     end
-
-    @config['parser'].parse_application_context if @config['cheftacular']['mode'] == 'application'
-
-    @config['parser'].parse_context
-
-    puts("Preparing to run command \"#{ @options['command'] }\"...") if @options['verbose']
-
-    @config['auditor'].audit_run if @config['cheftacular']['auditing']
 
     @config['action'].send(@options['command']) if @config['helper'].is_command?(@options['command'])
 

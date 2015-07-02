@@ -228,11 +228,9 @@ class Cheftacular
     end
 
     def parse_base_chef_server_url
-      domain = PublicSuffix.parse @config['cheftacular']['chef_server_url']
+      domain = PublicSuffix.parse @config['cheftacular']['chef_server_url'].gsub('https://','').split('/').first
 
-      puts "#{ domain.trd }.#{ domain.tld }"
-
-      "#{ domain.trd }.#{ domain.tld }"
+      "#{ domain.trd }.#{ domain.domain }"
     end
   end
 end
