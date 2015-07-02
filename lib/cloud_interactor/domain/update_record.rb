@@ -24,8 +24,8 @@ class CloudInteractor
         #the fact that there is no public update method is silly
         specific_record = specific_fog_object.records.get(args['id'])
 
-        case @options['preferred_cloud']
-        when 'rackspace'
+        case @options['route_dns_changes_via']
+        when /rackspace|dnsimple/
           specific_record.type  = args['type']
           specific_record.value = args['target_ip']
           specific_record.ttl   = args['ttl']

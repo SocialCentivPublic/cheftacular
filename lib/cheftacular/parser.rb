@@ -226,5 +226,13 @@ class Cheftacular
       else                mode
       end
     end
+
+    def parse_base_chef_server_url
+      domain = PublicSuffix.parse @config['cheftacular']['chef_server_url']
+
+      puts "#{ domain.trd }.#{ domain.tld }"
+
+      "#{ domain.trd }.#{ domain.tld }"
+    end
   end
 end

@@ -223,8 +223,8 @@ class Cheftacular
           @options['route_dns_changes_via'] = service
         end
 
-        #file
-        opts.on('--save-to-file FILE_NAME', 'On cft file, this option can be used to save the output of the file display methods to your system. Also works in the fetch context') do |path|
+        #file | chef_server
+        opts.on('--save-to-file FILE_NAME', 'On cft file or chef_server, this option can be used to save the output of the file display methods to your system. Also works in the fetch context') do |path|
           @options['save_to_file'] = path
         end
 
