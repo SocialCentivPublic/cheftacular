@@ -95,7 +95,22 @@ class Cheftacular
 
           "        1. `list` default behavior",
 
-          "        2. `read:REGION` behaves the same as list unless a specific region name is supplied"
+          "        2. `read:REGION` behaves the same as list unless a specific region name is supplied",
+
+          "    7. `sshkey` first level argument for listing the sshkeys added to the cloud service (only supported by DigitalOcean)",
+
+          "        1. `list` default behavior",
+
+          "        2. `read:KEY_NAME` behaves the same as list unless a specific sshkey name is supplied",
+
+          "        3. `\"create:KEY_NAME:KEY_STRING\"` creates an sshkey object. KEY_STRING must contain the entire value of the ssh public key file. " +
+          "The command must be enclosed in quotes.",
+
+          "        4. `destroy:KEY_NAME` destroys the sshkey object",
+
+          "        5. `bootstrap` captures the current computer's hostname and checks to see if a key matching this hostname exists on the cloud service. " +
+          "If the key does not exist, the command attempts to read the contents of the ~/.ssh/id_rsa.pub file and create a new key with that data and the " +
+          "hostname of the current computer. Run automatically when creating DigitalOcean servers."
         ]
       ]
     end

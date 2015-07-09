@@ -52,21 +52,25 @@ This is a guide from the ground up, setting up a Chef 12 server on digital ocean
 
     4. For Chef 12, Remember to edit your knife.rb file with `chef_server_url:"https://server_domain_or_IP/organizations/org_name"`, this is very important and easily overlooked.
 
+    5. Your .chef folder should look similar to the folder found [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/.chef)
+
 8. Cheftacular in your chef-repo
 
-    1. Your chef-repo needs to have a Gemfile and cheftacular, if you don't have a gemfile, you can use the template at (ADD ME).
+    1. Your chef-repo needs to have a Gemfile and cheftacular, if you don't have a gemfile, you can use the template [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/Gemfile)
 
     2. Run `bundle install` to install Cheftacular and its dependencies
 
-    2. Run `cft initialize_cheftacular`, this will create your config/cheftacular.yml
+    3. Run `cft initialize_cheftacular_yml`, this will create your config/cheftacular.yml
 
         1. NOTE! You must edit this file to reflect your desired environment! Anything not explained by the comments in the file accurately should be raised as an issue!
 
-    3. Run `cft initialize_data_bag_contents`. This command will create many data bags on the chef server and fill them with initial data.
+    4. Run `cft initialize_data_bag_contents`. This command will create many data bags on the chef server and fill them with initial data.
 
         1. NOTE! This command will say what to run to fix various warnings about data bags that require user input. Please read the output.
 
-    4. If you're doing git based deploys...
+        2. Continue running this command and doing what it says *UNTIL* it stops returning issues with your overall configuration.
+
+    5. If you're doing git based deploys...
 
         1. Create a github user on github to be your deploy user (it should not be yourself!)
 
@@ -78,4 +82,6 @@ This is a guide from the ground up, setting up a Chef 12 server on digital ocean
 
         4. Create a OAuth token for the account in the Settings -> Personal access tokens page
 
-        5. Run `cft create_git_key NAME_OF_DEPLOY_SSH_KEY_FILE OAUTH_TOKEN`
+        5. Add the SSH key you created for this new user to your .chef folder
+
+        6. Run `cft create_git_key NAME_OF_DEPLOY_SSH_KEY_FILE OAUTH_TOKEN`

@@ -35,6 +35,8 @@ class Cheftacular
       #@config['initializer'].initialize_logs_bag_contents env
 
       #@config['ChefDataBag'].initialize_node_roles_bag_contents env
+
+      exit if @options['command'] == __method__
     end
   end
 
