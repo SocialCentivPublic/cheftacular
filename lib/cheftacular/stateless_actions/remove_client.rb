@@ -5,7 +5,8 @@ class Cheftacular
       @config['documentation']['stateless_action'] <<  [
         "`cft remove_client -n NODE_NAME` removes a client (and its node data) from the chef-server. " +
         "It also removes its dns records from the cloud service (if possible). " +
-        "This should not be done lightly as you will have to wipe the server and trigger another chef-client run to get it to register again"
+        "This should not be done lightly as you will have to wipe the server and trigger another chef-client " +
+        "run to get it to register again. Alternatively, you can run `cft reinitialize IP_ADDRESS NODE_NAME as well."
       ]
     end
   end

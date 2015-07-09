@@ -204,14 +204,11 @@ class Cheftacular
       count = 1
 
       doc_arr.sort {|a, b| a[0] <=> b[0]}.flatten(1).each do |line|
-
         out << "#{ count }. #{ line }" if line.class.to_s == 'String'
 
         out << line if line.class.to_s == 'Array'
 
         count += 1 if line.class.to_s == 'String'
-
-        #puts("#{ out[out.index("#{ count }. #{ line }")] }::#{ line.class }::#{ count }\n") unless line.class.to_s == 'Array'
       end
 
       out

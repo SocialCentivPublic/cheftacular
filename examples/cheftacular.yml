@@ -26,7 +26,7 @@ preferred_cloud_image:  Ubuntu 14.04 LTS (Trusty Tahr) (PV) # preferred cloud im
 virtualization_mode:    PV                       # on rackspace cloud, set your default virtualization mode to this (only PV or PVHVM are supported)
 git_based_deploys:      true
 route_dns_changes_via:  rackspace                # tells cheftacular to send dns changes to this provider instead of the preferred_cloud_option
-node_name_separator:    '-' #on rackspace, can be anything except a space, on most other hosting sites, it must be a valid url character
+node_name_separator:    '.'                      # On rackspace, can be anything except a space, on most other hosting sites, it must be a valid url character
 
 #chef-repo
 keep_chef_repo_cheftacular_yml_up_to_date: false

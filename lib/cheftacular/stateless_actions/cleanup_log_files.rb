@@ -9,6 +9,7 @@ class Cheftacular
   class StatelessAction
     def cleanup_log_files
       #TODO
+      raise "This method is not yet implemented"
     end
   end
 end

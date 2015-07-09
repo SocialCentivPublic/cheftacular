@@ -51,15 +51,11 @@ class Cheftacular
 
       end if inference_modes.include?('stateless_action') || inference_modes.include?('both')
 
-      puts @config['helper'].compile_documentation_lines('action').flatten.join("\n\n") if target_command == 'action'
-
       puts @config['documentation']['arguments'].flatten.join("\n\n") if target_command == 'arguments'
 
-      puts @config['helper'].compile_documentation_lines('stateless_action').flatten.join("\n\n") if target_command == 'stateless_action'
+      puts @config['helper'].compile_documentation_lines('application').flatten.join("\n\n") if target_command.empty?
 
-      puts @config['helper'].compile_documentation_lines('application').flatten.join("\n\n") if target_command == 'application' || target_command.empty?
-
-      puts @config['helper'].compile_documentation_lines('devops').flatten.join("\n\n") if target_command == 'devops'
+      puts @config['helper'].compile_documentation_lines(target_command).flatten.join("\n\n") if target_command =~ /action|stateless_action|application|devops/
 
       if inference_modes.empty? && @config['helper'].is_not_command_or_stateless_command?(target_command)
         methods = @config['action_documentation'].public_methods(false) + @config['stateless_action_documentation'].public_methods(false)
@@ -70,7 +66,7 @@ class Cheftacular
         puts "    #{ sorted_methods.at(0) }"
         puts "    #{ sorted_methods.at(1) }"
         puts "    #{ sorted_methods.at(2) }\n"
-        puts "If so, please run 'cft help COMMAND' with one of the above commands or run 'hip help application' to see a list of commands"
+        puts "If so, please run 'cft help COMMAND' with one of the above commands or run 'cft help #{ @config['cheftacular']['mode'] }' to see a list of commands"
       end
     end
   end

@@ -29,9 +29,6 @@ class Cheftacular
 
       item = @config[env]['logs_bag'].reload
 
-      #TODO use zlib gem to store and display logs https://stackoverflow.com/questions/17882463/compressing-large-string-in-ruby
-      #Zlib::Deflate.deflate(data_to_compress)
-      #Zlib::Inflate.inflate(data_compressed)
       item.attributes = item.attributes.deep_merge(@config[env]['logs_bag_hash'].dup)
 
       begin

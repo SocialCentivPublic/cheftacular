@@ -7,7 +7,7 @@ class Cheftacular
         "This should be done with caution as this *might* break something.",
 
         [
-          "    1. `hip apt_update restart` will prompt to ask if you also want to restart all servers in a rolling restart. " +
+          "    1. `cft apt_update restart` will prompt to ask if you also want to restart all servers in a rolling restart. " +
           "This should be done with extreme caution and only in a worst-case scenario."
         ]
       ]
