@@ -6,25 +6,19 @@ detects `mode: 'devops'` in the cheftacular.yml file in the config folder of the
 directly in the chef-repo for their organization. The second mode is application mode, this occurs when a cheftacular.yml contains `mode: 'application'` and is ideal for 
 applications where non-devops engineers need to be able to deploy or interact with the infrastructure using commands like `cft deploy`.
 
+## No Chef Server?
+
+Read the [initial chef server setup documentation](https://github.com/SocialCentivPublic/cheftacular/blob/master/doc/initial_setup.md)
+
 ## Cheftacular Gem Installation Instructions
 
-1. Check the .chef folder in the example folder to see an example of how to configure your .chef folder
-
-    1. This gem does not require any custom configurations in the .chef folder
-
-2. Check the cheftacular.yml file in the examples folder for an idea on how to set your configurations for the gem.
-
-3. Create a cheftacular.yml file in the config directory of your application (create this directory if it doesn't exist for non-rails apps)
-
-4. Add cheftacular to your Gemfile (create a Gemfile if it doesn't exist)
-
-5. Run `bundle install`
+1. This gem more complex to install than a simple `bundle install`, follow the instructions [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/doc/initial_setup.md#getting-your-repositores-setup)
 
 ## Usage
 
 After you have a successful chef and cheftacular installation you can now connect to the chef server and clients via various tools.
 
-Note: You can substitute cft for cftr, cheftacular, or cftclr.
+Note: You can substitute `cft` for `cftr`, `cheftacular`, or `cftclr`.
 
 1.  To view detailed information about nodes connected to the chef server, run (this is a good command to test installation on)
 
