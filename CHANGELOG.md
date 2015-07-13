@@ -16,6 +16,8 @@
 
 * Added new command `cft chef_server [restart|processes|memory]` that will allow a devops mode repo to interact directly with the chef server.
 
+* Added new command `cft initialize_cheftacular_yml` that will initialize a cheftacular.yml file or create a cheftacular.example.yml file if one already exists.
+
 * `cft help`, `cft initialize_cheftacular_yml` and `cft chef_server` will not talk directly with the chef server and have had their run times dramatically sped up
 
     * These commands will not fetch the state of the environment on their runs and thus will not be logged in the audit bag when run!
@@ -26,9 +28,11 @@
 
 * Added new options to `cft cloud`. The *sshkey* and *region* options have been added to interact with DigitalOcean. Please see `cft help cloud`.
 
-* Added DigitalOcean support. Currently supported top level action(s) for the `cft cloud` command are *server*, *sshkey*, *region*, *flavor*, *image*.
+* Added DigitalOcean support. Currently supported top level action(s) for the `cft cloud` command are **server, sshkey, region, flavor, image**.
 
-* Added DNSimple support. Current supported top level action(s) for the `cft cloud` command are *domain*.
+* Added DNSimple support. Current supported top level action(s) for the `cft cloud` command are **domain**.
+
+* Refactored much of the filesystem and caching logic into the FileSystem class from the Helper class.
 
 ## 2.5.0
 

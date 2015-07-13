@@ -16,5 +16,13 @@ class Cheftacular
 
       nodes
     end
+
+    def exception_output message, exception='', exit_on_call=true, suppress_error_output=false
+      puts "#{ message }\n"
+
+      puts("Error message: #{ exception }\n#{ exception.backtrace.join("\n") }") unless suppress_error_output
+
+      exit if exit_on_call
+    end
   end
 end

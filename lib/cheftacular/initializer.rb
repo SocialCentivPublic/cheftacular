@@ -291,7 +291,7 @@ class Cheftacular
       locs['ssh']               = File.expand_path('~/.ssh')
       locs['chef-log']          = File.expand_path("#{ locs['root']}/log")             unless locs['chef-log']
       locs['app-tmp']           = File.expand_path("#{ locs['app-root']}/tmp")
-
+      locs['examples']          = File.expand_path("../../../examples", __FILE__)
       @config['locs'] = locs
     end
 
@@ -367,7 +367,7 @@ class Cheftacular
           "a ruby string to run commands against was not found in either your cheftacular.yml file or your .ruby-version file."
         ].join(' ')
 
-        @config['helper'].exception_output msg, e
+        @config['error'].exception_output msg, e
       end
       
       @config['ruby_string'] = "ruby-" + @config['ruby_string'] unless @config['ruby_string'].include?('ruby-')
@@ -396,7 +396,7 @@ class Cheftacular
     def initialize_version_check detected_version=""
       current_version = Cheftacular::VERSION
 
-      detected_version = File.exists?( @config['helper'].current_version_file_path ) ? File.read( @config['helper'].current_version_file_path ) : @config['helper'].fetch_remote_version
+      detected_version = File.exists?( @config['filesystem'].current_version_file_path ) ? File.read( @config['filesystem'].current_version_file_path ) : @config['helper'].fetch_remote_version
 
       if @config['helper'].is_higher_version? detected_version, current_version
         puts "\n Your Cheftacular is out of date. Currently #{ current_version } and remote version is #{ detected_version }.\n"
@@ -405,16 +405,16 @@ class Cheftacular
 
         exit
       else
-        unless File.exists?( @config['helper'].current_version_file_path )
+        unless File.exists?( @config['filesystem'].current_version_file_path )
           puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") } (#{ detected_version }). No new version detected."
 
-          @config['helper'].write_version_file detected_version
+          @config['filesystem'].write_version_file detected_version
         end
       end
     end
 
     def initialize_auditing_checks
-      unless File.exists? @config['helper'].current_audit_file_path
+      unless File.exists? @config['filesystem'].current_audit_file_path
         puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") } audit data..."
 
         @config['auditor'].write_audit_cache_file
@@ -427,7 +427,6 @@ class Cheftacular
       @config['getter']                         = Cheftacular::Getter.new(@options, @config)
       @config['action']                         = Cheftacular::Action.new(@options, @config)
       @config['stateless_action']               = Cheftacular::StatelessAction.new(@options, @config)
-      @config['initialization_action']        ||= Cheftacular::InitializationAction.new(@options, @config)
       @config['encryptor']                      = Cheftacular::Encryptor.new(@config['data_bag_secret'])
       @config['decryptor']                      = Cheftacular::Decryptor.new(@config['data_bag_secret'])
       @config['action_documentation']           = Cheftacular::ActionDocumentation.new(@options, @config)
@@ -444,9 +443,9 @@ class Cheftacular
 
       FileUtils.mkdir_p File.join( @config['locs']['app-tmp'], @config['helper'].declassify)
 
-      FileUtils.mkdir_p @config['helper'].current_nodes_file_cache_path
+      FileUtils.mkdir_p @config['filesystem'].current_nodes_file_cache_path
 
-      @config['helper'].cleanup_file_caches
+      @config['filesystem'].cleanup_file_caches
     end
 
     def initialize_cloud_checks exit_on_finish = false
@@ -495,8 +494,8 @@ class Cheftacular
     def initialize_chef_repo_up_to_date
       if @config['helper'].running_in_mode?('devops')
         @config['cheftacular']['wrapper_cookbooks'].split(',').each do |wrapper_cookbook|
-          parsed_hash = if File.exists?( @config['helper'].current_chef_repo_cheftacular_file_cache_path ) 
-                          File.read( @config['helper'].current_chef_repo_cheftacular_file_cache_path )
+          parsed_hash = if File.exists?( @config['filesystem'].current_chef_repo_cheftacular_file_cache_path ) 
+                          File.read( @config['filesystem'].current_chef_repo_cheftacular_file_cache_path )
                         else
                           Digest::SHA2.hexdigest(@config['helper'].compile_chef_repo_cheftacular_yml_as_hash.to_yaml.to_s)
                         end
@@ -507,20 +506,20 @@ class Cheftacular
           unless File.exist?(wrapper_cookbook_cheftacular_loc)
             puts "Wrapper cookbook \"#{ wrapper_cookbook }\" does not have a cheftacular.yml file in #{ @config['cheftacular']['location_of_chef_repo_cheftacular_yml'] }! Creating..."
 
-            @config['helper'].write_chef_repo_cheftacular_yml_file wrapper_cookbook_cheftacular_loc
+            @config['filesystem'].write_chef_repo_cheftacular_yml_file wrapper_cookbook_cheftacular_loc
           end
 
           if parsed_hash == Digest::SHA2.hexdigest(File.read(wrapper_cookbook_cheftacular_loc))
-            next if File.exists?( @config['helper'].current_chef_repo_cheftacular_file_cache_path )
+            next if File.exists?( @config['filesystem'].current_chef_repo_cheftacular_file_cache_path )
           else
             puts "Wrapper cookbook (#{ wrapper_cookbook }) does not have a current cheftacular.yml file in #{ @config['cheftacular']['location_of_chef_repo_cheftacular_yml'] }\"! Overwriting..."
 
-            @config['helper'].write_chef_repo_cheftacular_yml_file wrapper_cookbook_cheftacular_loc
+            @config['filesystem'].write_chef_repo_cheftacular_yml_file wrapper_cookbook_cheftacular_loc
           end
 
           puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") }'s cheftacular.yml."
 
-          @config['helper'].write_chef_repo_cheftacular_cache_file parsed_hash
+          @config['filesystem'].write_chef_repo_cheftacular_cache_file parsed_hash
         end
       end
     end

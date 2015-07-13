@@ -13,7 +13,7 @@ class Cheftacular
       raise "This action can only be performed if the mode is set to devops" if !@config['helper'].running_in_mode?('devops') && !@options['in_scaling']
 
       Dir.foreach(@config['locs']['roles']) do |rd|
-        next if @config['helper'].is_junk_filename?(rd)
+        next if @config['filesystem'].is_junk_filename?(rd)
 
         puts("Loading in role from file #{ rd }") if @options['verbose']
 

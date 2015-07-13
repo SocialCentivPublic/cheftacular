@@ -103,7 +103,7 @@ class Cheftacular
     rescue Ridley::Errors::HTTPRequestEntityTooLarge => e
       msg = "FATAL! Bag #{ bag_name } in environment bag #{ bag_env } was not able to be saved because it has grown too large! This bag must cleaned up ASAP!"
       
-      @config['helper'].exception_output msg, e
+      @config['error'].exception_output msg, e
     end
   end
 end

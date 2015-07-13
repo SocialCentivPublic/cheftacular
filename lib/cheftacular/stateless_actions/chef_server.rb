@@ -38,8 +38,6 @@ class Cheftacular
         raise "Chef server is not currently set to be interactable with the chef-server command"
       end
 
-      @config['parser'].parse_base_chef_server_url
-
       command = ARGV[1]
 
       raise "Unsupported command (#{ command }) for cft chef_server" unless command =~ /restart|processes|memory/

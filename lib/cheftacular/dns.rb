@@ -255,7 +255,7 @@ class Cheftacular
 
                 next
               else
-                @config['helper'].exception_output "There was an issue updating Cloudflare! Please create an issue on the cheftacular repository with this stacktrace!", e
+                @config['error'].exception_output "There was an issue updating Cloudflare! Please create an issue on the cheftacular repository with this stacktrace!", e
               end
             end
 

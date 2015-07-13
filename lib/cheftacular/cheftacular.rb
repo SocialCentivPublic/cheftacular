@@ -32,6 +32,7 @@ class Cheftacular
     @config['start_time']            = Time.now
     @config['helper']                = Helper.new(@options, @config)
     @config['initialization_action'] = InitializationAction.new(@options, @config)
+    @config['filesystem']            = Cheftacular::FileSystem.new(@options, @config)
     @config['initializer']           = Initializer.new(@options, @config)
 
     if @config['helper'].is_initialization_command?(ARGV[0])

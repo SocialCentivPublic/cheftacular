@@ -17,11 +17,11 @@ class Cheftacular
     end
 
     def write_audit_cache_file
-      File.open( @config['helper'].current_audit_file_path, "w") { |f| f.write( fetch_audit_data_hash ) }
+      File.open( @config['filesystem'].current_audit_file_path, "w") { |f| f.write( fetch_audit_data_hash ) }
     end
 
     def read_audit_cache_file_to_hash ret_hash={}
-      ret_hash = Hash.class_eval( File.read( @config['helper'].current_audit_file_path ))
+      ret_hash = Hash.class_eval( File.read( @config['filesystem'].current_audit_file_path ))
       ret_hash['command']   = @options['command']
       ret_hash['options']   = @options.except(:preferred_cloud, :preferred_cloud_region, :preferred_cloud_image) #TODO load preferred_X options if they are not the default?
       ret_hash['arguments'] = ARGV[1..ARGV.length]
@@ -34,9 +34,9 @@ class Cheftacular
 
       ret_hash
     rescue StandardError => exception
-      @config['helper'].cleanup_file_caches('current-audit-only')
+      @config['filesystem'].cleanup_file_caches('current-audit-only')
 
-      @config['helper'].exception_output "Unable to finish parsing auditing hash", exception
+      @config['error'].exception_output "Unable to finish parsing auditing hash", exception
     end
   end
 end

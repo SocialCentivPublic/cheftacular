@@ -23,7 +23,7 @@ class Cheftacular
 
   class StatelessAction
     def client_list
-      @config['helper'].cleanup_file_caches('current')
+      @config['filesystem'].cleanup_file_caches('current')
 
       nodes = @config['getter'].get_true_node_objects(true)
 

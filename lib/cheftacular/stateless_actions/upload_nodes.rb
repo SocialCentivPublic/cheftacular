@@ -38,10 +38,10 @@ class Cheftacular
       node_roles_hash, bag_hash, allowed_changes_hash = {},{},{}
 
       Dir.foreach(@config['locs']['nodes']) do |fr|
-        next if @config['helper'].is_junk_filename?(fr)
+        next if @config['filesystem'].is_junk_filename?(fr)
 
         Dir.foreach("#{ @config['locs']['nodes'] }/#{ fr }") do |f|
-          next if @config['helper'].is_junk_filename?(f)
+          next if @config['filesystem'].is_junk_filename?(f)
 
           node_roles_hash[f.split('.json').first] = JSON.parse(File.read("#{ @config['locs']['nodes'] }/#{ fr }/#{ f }"))
         end
@@ -126,7 +126,7 @@ class Cheftacular
         @config['ChefDataBag'].save_node_roles_bag env
       end if !@options['force_yes'] && @config['helper'].running_in_mode?('devops')
 
-      @config['helper'].cleanup_file_caches('current') if invalidate_file_node_cache
+      @config['filesystem'].cleanup_file_caches('current') if invalidate_file_node_cache
     end
   end
 end
