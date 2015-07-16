@@ -434,6 +434,7 @@ class Cheftacular
       @config['error']                          = Cheftacular::Error.new(@options, @config)
       @config['dummy_sshkit']                   = SSHKit::Backend::Netssh.new(SSHKit::Host.new('127.0.0.1'))
       @config['DNS']                            = Cheftacular::DNS.new(@options, @config)
+      @config['cloud_provider']                 = Cheftacular::CloudProvider.new(@options, @config)
     end
 
     def initialize_directories

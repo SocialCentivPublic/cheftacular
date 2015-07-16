@@ -12,6 +12,8 @@
 
     * **chef_server** (Use this key's children to utilize the `cft chef_server` command. Please run `cft help chef_server` for docs.)
 
+    * _**chef_version**_ (The key **chef_client_version** has been renamed to _**chef_version**_ and now reflects the major version of chef being run)
+
     * Please check the [cheftacular.yml](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/cheftacular.yml) example file for documentation on new keys
 
 * Added new command `cft chef_server [restart|processes|memory]` that will allow a devops mode repo to interact directly with the chef server.
@@ -33,6 +35,8 @@
 * Added DNSimple support. Current supported top level action(s) for the `cft cloud` command are **domain**.
 
 * Refactored much of the filesystem and caching logic into the FileSystem class from the Helper class.
+
+* Added new command `cft check_cheftacular_yml_keys` to verify that cheftacular.ymls contain the correct keys after version 2.5.0 (this is always run)
 
 ## 2.5.0
 

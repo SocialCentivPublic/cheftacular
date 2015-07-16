@@ -13,12 +13,28 @@ class Cheftacular
     def chef_bootstrap out=[]
       raise "This action can only be performed if the mode is set to devops" if !@config['helper'].running_in_mode?('devops') && !@options['in_scaling']
         
-      @options['address'] = ARGV[1] unless @options['address']
+      @options['address']   = ARGV[1] unless @options['address']
       @options['node_name'] = ARGV[2] unless @options['node_name']
 
       @config['stateless_action'].remove_client #just in case
 
-      puts("Starting chef-client initialization...") unless @options['quiet']
+      if @config['cheftacular']['chef_version'].to_i >= 12
+        puts("Starting chef-client installation...") unless @options['quiet']
+
+        commands = [
+          "curl -L https://www.opscode.com/chef/install.sh > ~/chef-install.sh",
+          "#{ @config['helper'].sudo(@options['address']) } bash /home/deploy/chef-install.sh",
+          "rm ~/chef-install.sh"
+        ]
+
+        commands.each do |command|
+          out << `ssh -t -oStrictHostKeyChecking=no #{ @config['cheftacular']['deploy_user'] }@#{ @options['address'] } "#{ command }"`
+
+          puts(out.last) unless @options['quiet'] || @options['in_scaling']
+        end
+      end
+
+      puts("Starting chef bootstrap...") unless @options['quiet']
 
       out << `#{ @config['helper'].knife_bootstrap_command }`
 

@@ -49,6 +49,8 @@ class Cheftacular
       @config['auditor'].audit_run if @config['cheftacular']['auditing']
     end
 
+    @config['stateless_action'].send('check_cheftacular_yml_keys')
+
     @config['action'].send(@options['command']) if @config['helper'].is_command?(@options['command'])
 
     @config['stateless_action'].send(@options['command']) if @config['helper'].is_stateless_command?(@options['command'])

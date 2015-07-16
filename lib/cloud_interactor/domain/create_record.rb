@@ -20,6 +20,8 @@ class CloudInteractor
       else
         specific_fog_object = @classes['auth'].auth_service(RESOURCE).instance_eval('zones').get @main_obj["specific_#{ IDENTITY }"].last['id']
 
+        ap args
+
         specific_fog_object.records.create(name: args['target_domain'], value: args['target_ip'], type: args['type'], ttl: args['ttl'])
 
         puts "Attached #{ args['subdomain'] } (#{ args['target_ip'] }) to #{ args[IDENTITY.singularize] } (#{ args['target_domain'] })..."

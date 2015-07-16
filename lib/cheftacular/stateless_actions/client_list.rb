@@ -38,7 +38,7 @@ class Cheftacular
 
         env_nodes = @config['parser'].exclude_nodes(nodes, [{ if: { not_env: env } }])
         puts "\nFound #{ env_nodes.count } #{ env } nodes:"
-        out = "  #{ 'name'.ljust(22) } #{ 'ip_address'.ljust(20) }"
+        out = "  #{ 'name'.ljust(22) } #{ 'ip_address'.ljust(21) }"
         out << "#{ 'private_address'.ljust(21) }"                   if @options['with_private']
         out << "#{ 'pass?'.ljust(5) } #{ 'domain'.ljust(41) }"      if @options['verbose']
         out << "#{ 'deploy_password'.ljust(21) }"                   if @options['verbose']

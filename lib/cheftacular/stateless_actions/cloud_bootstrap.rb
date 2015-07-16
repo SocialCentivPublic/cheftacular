@@ -36,7 +36,7 @@ class Cheftacular
         raise "sshpass not installed! Please run brew install https://raw.github.com/eugeneoden/homebrew/eca9de1/Library/Formula/sshpass.rb (or get it from your repo for linux)"
       end
 
-      real_node_name = @config['helper'].get_current_real_node_name
+      real_node_name = @config['getter'].get_current_real_node_name
 
       #the output of the cloud command is a hash, this hash is UPDATED every time a rax command is run so you only need to grab it when you need it
       @config['stateless_action'].cloud "server", "create:#{ real_node_name }:#{ @options['flavor_name'] }"
@@ -46,18 +46,10 @@ class Cheftacular
       status_hash['created_servers'].each do |server_hash|
         next unless server_hash['name'] == "#{ real_node_name }"
 
-        @options['address'] = server_hash['ipv4_address']
-
-        @options['private_address'] = server_hash['addresses']['private'][0]['addr']
+        @options['address'], @options['private_address'] = @config['cloud_provider'].parse_addresses_from_server_create_hash server_hash
       end
 
-      begin
-        @options['client_pass'] = status_hash['admin_passwords']["#{ real_node_name }"]
-      rescue NoMethodError => e
-        puts "Unable to locate an admin pass for server #{ @options['node_name'] }, does the server already exist? Exiting #{ __method__ }..."
-
-        return false
-      end
+      @options['client_pass'] = @config['cloud_provider'].parse_server_root_password_from_server_create_hash status_hash, real_node_name
 
       tld = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld']
 

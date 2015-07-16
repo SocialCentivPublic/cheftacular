@@ -15,11 +15,11 @@ default_swap_location:  /mnt/1GB.swap            # default location of the swapf
 backup_directory:       /mnt/my/backup/directory # This is only used for the backup stateless command, can be left blank if other backup plans are being used
 backup_filesystem:      backup_gem               # valid entries are backup_gem | raw
 backup_server:          first_production_slave   # tells the backup command what server to fetch the backup data from. The string first_production_slave is parsed into a TLD / local ip
-chef_client_version:    11.16.4                  # version of chef-client to bootstrap on the remote servers
+chef_version:           12                       # Major Version of the Chef Server (currently supports 11|12)
 data_bag_key_file:      data_bag_key             # name of the data bag key file in the ~/.chef folder for workstations
 server_pass_length:     20
 default_flavor_name:    1 GB Performance         # When booting servers, this flavor name is used if a flavor is not set in some way
-preferred_cloud:        rackspace                # preferred cloud to interact with
+preferred_cloud:        rackspace                # preferred cloud to interact with (currently supports rackspace and digitalocean)
 preferred_cloud_region: dfw                      # preferred cloud region to interact with (please check your cloud provider for specific regions)
 preferred_cloud_os:     ubuntu                   # can be centos|coreos|debian|fedora|redhat|ubuntu|vyatta . Bear in mind not all OSes have supported bootstraps at the moment
 preferred_cloud_image:  Ubuntu 14.04 LTS (Trusty Tahr) (PV) # preferred cloud image to install, can use custom built images here as well. The string is matched to a valid image but specific is better

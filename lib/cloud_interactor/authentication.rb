@@ -15,7 +15,7 @@ class CloudInteractor
       cloud_hash = parse_cloud_hash
 
       if interaction_class == 'DNS'
-        cloud_hash = parse_dns_cloud_hash
+        cloud_hash = parse_dns_cloud_hash cloud_hash
       end
 
       Fog.class_eval(classes_to_inject.join('::')).new(cloud_hash.delete_if { |key, value| except_keys.flatten.include?(key) })
@@ -30,7 +30,7 @@ class CloudInteractor
 
                          'Rackspace::BlockStorage'
                        else
-                         raise "CloudInteractor Does not currently support this #{ options['preferred_cloud'] }'s' volume creation at this time"
+                         raise "CloudInteractor Does not currently support this #{ @options['preferred_cloud'] }'s' volume creation at this time"
                        end
                      when 'dns'
                        case @options['route_dns_changes_via']
@@ -72,7 +72,7 @@ class CloudInteractor
       end
     end
 
-    def parse_dns_cloud_hash
+    def parse_dns_cloud_hash cloud_hash
       if @options['route_dns_changes_via'] == @options['preferred_cloud']
         cloud_hash
       else 

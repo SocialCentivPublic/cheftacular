@@ -152,7 +152,7 @@ class Cheftacular
 
     def get_current_real_node_name other_node_name='', ret=''
       ret << @options['env'] + @config['cheftacular']['node_name_separator']
-      ret << other_node_name.blank? ? @options['node_name'] : other_node_name
+      ret << ( other_node_name.blank? ? @options['node_name'] : other_node_name )
 
       ret
     end

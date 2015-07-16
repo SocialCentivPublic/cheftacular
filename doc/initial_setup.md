@@ -34,7 +34,7 @@ This is a guide from the ground up, setting up a Chef 12 server on digital ocean
 
     2. At this point you can safely follow the guide at http://docs.chef.io/server/install_server.html#standalone
 
-        1. NOTE! Make sure to copy your organization-chef-validator key and your admin key to your local workstation!
+        1. NOTE! Make sure to copy your admin key to your local workstation!
 
         2. Another good guide can be found at https://www.digitalocean.com/community/tutorials/how-to-set-up-a-chef-12-configuration-management-system-on-ubuntu-14-04-servers
 
@@ -85,3 +85,21 @@ This is a guide from the ground up, setting up a Chef 12 server on digital ocean
     5. Add the SSH key you created for this new user to your .chef folder
 
     6. Run `cft create_git_key NAME_OF_DEPLOY_SSH_KEY_FILE OAUTH_TOKEN`
+
+6. Setting up the chef-repo
+
+    1. At this point you should be to run `cft knife_upload` (which is a simple wrapper around the knife equivalent). This will simply create your cookbooks and recipes on the chef server
+
+    2. Next you'll need to create the nodes_dir directory in the root of your chef_repo. References to how this directory should look can be found [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/nodes_dir)
+
+        1. You will need to create a json template file or a json exact match file for each node you want to match to a set of roles
+
+        2. For example, mynode.json would match nodes named mynode01, mynode02, mynode03, etc (along with a node named mynode) but *NOT* mynode01p.json
+
+        3. As another example a file named dbmaster.json could be used to directly refer to a node called dbmaster
+
+        4. It is important that the directory and the chef_environment of the node match
+
+        5. *It is extremely important that none of the files (template or exact match) never match the same node multiple times*
+
+    3. With the nodes directory in place, you now need to populate the roles you referred to in the node directory, an example of a node file can be found [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/role.rb)
