@@ -12,7 +12,7 @@ class Cheftacular
 
         '3.  `-p|--prod` toggles on production mode. Commands passed to cft will hit the production server(s) instead of the default server(s)',
 
-        '4.  `-Q|--qa` toggles on QA mode. Commands passed to cft will hit the QA server=(s) instead of the default server(s)',
+        '4.  `-Q|--qa` toggles on QA mode. Commands passed to cft will hit the QA server(s) instead of the default server(s)',
 
         '5.  `-s|--staging` toggles on staging mode. Commands passed to cft will hit the staging server(s) instead of the default server(s)',
 
