@@ -64,6 +64,8 @@ This is a guide from the ground up, setting up a Chef 12 server on digital ocean
 
     1. NOTE! You must edit this file to reflect your desired environment! Anything not explained by the comments in the file accurately should be raised as an issue!
 
+4. Users setting up chef for the first time should continue on, those just installing this gem for an application within an organization that already has a chef-repo can return to the original README.
+
 4. Run `cft initialize_data_bag_contents`. This command will create many data bags on the chef server and fill them with initial data.
 
     1. NOTE! This command will say what to run to fix various warnings about data bags that require user input. Please read the output.
@@ -90,6 +92,10 @@ This is a guide from the ground up, setting up a Chef 12 server on digital ocean
 
     1. At this point you should be to run `cft knife_upload` (which is a simple wrapper around the knife equivalent). This will simply create your cookbooks and recipes on the chef server
 
+        1. NOTE! The purposes of this guide is not to make you into a Chef expert but to set you up with Cheftacular, you'll still need to create (and test) your chef cookbooks and recipes if you're starting from scratch (this is also the step where actual DevOps Engineers generally come in).
+
+        2. There is a special command called `cft clean_cookbooks [force]` this command will examine the dependencies of your wrapper cookbook(s) (set in your cheftacular.yml) and utilize berkshelf to automatically download them and place them into your working chef repo.
+
     2. Next you'll need to create the nodes_dir directory in the root of your chef_repo. References to how this directory should look can be found [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/nodes_dir)
 
         1. You will need to create a json template file or a json exact match file for each node you want to match to a set of roles
@@ -102,4 +108,36 @@ This is a guide from the ground up, setting up a Chef 12 server on digital ocean
 
         5. *It is extremely important that none of the files (template or exact match) never match the same node multiple times*
 
-    3. With the nodes directory in place, you now need to populate the roles you referred to in the node directory, an example of a node file can be found [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/role.rb)
+    3. With the nodes directory in place, you now need to populate the roles you referred to in the node directory, an example of a role file can be found [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/db.rb)
+
+        1. After populating your roles, you can run `cft upload_roles` (or the knife equivalent) to upload the roles to the chef server
+
+    4. Run `knife environment create staging` and `knife environment create production` along with any other environments you would like to have.
+
+## Setting up your first node
+
+    1. Run `cft help cloud_bootstrap` and `cft help cloud` and have a look over the help dialogs.
+
+    2. Double check your cheftacular.yml to make sure that your *preferred_cloud* key is set to your desired cloud. You will also need to make sure you have VALID api credentials entered into the *cloud_authentication* hash.
+
+    2. Run `cft cloud flavors list`, this will return a list of all *valid* flavor names, find your desired default flavor and enter it's **name** attribute into your cheftacular.yml's *default_flavor_name* key. Also take note of the flavor **name** you would like to use for whatever your first node will be.
+
+        1. A flavor is a "type" of server, for some providers, it is usually a combination of the server's hard drive space and RAM resources though other factors like network IO and bandwidth can be determined here as well.
+
+    3. Run `cft cloud images list`, Image names vary between providers so be sure to find the exact name of the image you want to use as your default. Enter this **name** attribute into your cheftacular.yml
+
+        1. Based off what you chose for your name attribute, enter `centos|coreos|debian|fedora|redhat|ubuntu|vyatta` for your *preferred_cloud_os* in your cheftacular.yml. **NOTE! Only Ubuntu is currently fully supported for bootstrapping**.
+
+        1. An image is a way to describe an operating system of a server, it can be based off a default (like various linux distributions like Debian, Ubuntu, CentOS, etc) or it can be based off of a user-generated image. Most cloud providers allow users to generate their own images based off a server the cloud provider is hosting.
+
+    4. Run `cft cloud regions list` and find the region you would like to create servers in, add this **name** value to your cheftacular.yml under *preferred_cloud_region*
+
+        1. Rackspace does not currently support API calls for regions, you can find the list of regions [here](http://www.rackspace.com/knowledge_center/article/about-regions)
+
+    5. Run `cft cloud_bootstrap YOUR_NODE_NAME YOUR_FLAVOR_NAME`
+
+        1. This will (if everything works correctly) create a node and attach it to your staging environment. It will also use the role and node definitions you set to attempt to match role data to the server automatically. If the process fails, please raise an issue on Github.
+
+    6. With a node in place, you can deploy to it to begin testing your cookbooks and recipes with `cft deploy -r ROLE_NAME_THE_NODE_HAS`
+
+        1. For the full list of flags for `cft deploy` please check `cft arguments` and `cft help deploy`

@@ -110,7 +110,8 @@ class Cheftacular
 
           "        5. `bootstrap` captures the current computer's hostname and checks to see if a key matching this hostname exists on the cloud service. " +
           "If the key does not exist, the command attempts to read the contents of the ~/.ssh/id_rsa.pub file and create a new key with that data and the " +
-          "hostname of the current computer. Run automatically when creating DigitalOcean servers."
+          "hostname of the current computer. Run automatically when creating DigitalOcean servers. It's worth noting that if the computer's key already " +
+          "exists on DigitalOcean under a different name, this specific command will fail with a generic error. Please check your keys."
         ]
       ]
     end

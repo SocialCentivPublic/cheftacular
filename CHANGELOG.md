@@ -20,7 +20,7 @@
 
 * Added new command `cft initialize_cheftacular_yml` that will initialize a cheftacular.yml file or create a cheftacular.example.yml file if one already exists.
 
-* `cft help`, `cft initialize_cheftacular_yml` and `cft chef_server` will not talk directly with the chef server and have had their run times dramatically sped up
+* `cft help`, `cft initialize_cheftacular_yml`, `cft arguments`, and `cft chef_server` will not talk directly with the chef server and have had their run times dramatically sped up
 
     * These commands will not fetch the state of the environment on their runs and thus will not be logged in the audit bag when run!
 
@@ -34,9 +34,11 @@
 
 * Added DNSimple support. Current supported top level action(s) for the `cft cloud` command are **domain**.
 
-* Refactored much of the filesystem and caching logic into the FileSystem class from the Helper class.
+* Refactored all of the filesystem and caching logic into the FileSystem class from the Helper class.
 
-* Added new command `cft check_cheftacular_yml_keys` to verify that cheftacular.ymls contain the correct keys after version 2.5.0 (this is always run)
+* Added new command `cft check_cheftacular_yml_keys` to verify that cheftacular.ymls contain the correct keys after version 2.5.0 (this is run automatically)
+
+* Added new command `cft arguments` that simply displays its documentation and exits. This command returns the same output as `cft help arguments`.
 
 ## 2.5.0
 

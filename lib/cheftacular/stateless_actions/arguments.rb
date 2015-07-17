@@ -12,7 +12,7 @@ class Cheftacular
 
         '3.  `-p|--prod` toggles on production mode. Commands passed to cft will hit the production server(s) instead of the default server(s)',
 
-        '4.  `-Q|--qa` toggles on QA mode. Commands passed to cft will hit the QA server(s) instead of the default server(s)',
+        '4.  `-Q|--qa` toggles on QA mode. Commands passed to cft will hit the QA server=(s) instead of the default server(s)',
 
         '5.  `-s|--staging` toggles on staging mode. Commands passed to cft will hit the staging server(s) instead of the default server(s)',
 
@@ -55,10 +55,17 @@ class Cheftacular
     end
   end
 
+  class InitializationAction
+    def arguments
+      
+    end
+  end
+
   class StatelessAction
     def arguments
-      #TODO point this command to it's help and display?
-      raise "This command currently does nothing, do not try to run it."
+      @config['stateless_action_documentation'].arguments
+
+      puts @config['documentation']['arguments']
     end
   end
 end

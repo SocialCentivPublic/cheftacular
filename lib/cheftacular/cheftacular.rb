@@ -1,4 +1,4 @@
-require 'ridley' #chef tools outside of chef!
+require 'ridley'
 require 'highline/import'
 require 'optparse'
 require 'base64'
