@@ -114,6 +114,8 @@ This is a guide from the ground up, setting up a Chef 12 server on digital ocean
 
     4. Run `knife environment create staging` and `knife environment create production` along with any other environments you would like to have.
 
+    5. Run `cft upload_nodes` to get your node role data in place (You don't need to have nodes active to run this command). It will prompt you if you want to overwrite nil hashes with your node data, just enter "y" or "yes" for each.
+
 ## Setting up your first node
 
     1. Run `cft help cloud_bootstrap` and `cft help cloud` and have a look over the help dialogs.

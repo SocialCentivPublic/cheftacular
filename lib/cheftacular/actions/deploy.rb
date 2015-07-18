@@ -10,7 +10,9 @@ class Cheftacular
           "but only if your cookbooks support switching revisions based on tags / branch names.",
 
           "    2.  This command will also run migrations on both an role's normal servers and its split servers if certain " +
-          "conditions are met (such as the role having a database, etc)."
+          "conditions are met (such as the role having a database, etc).",
+
+          "    3. The `-v|--verbose` option will cause failed deploys to output to the terminal window and to their normal log file. Useful for debugging."
         ]
       ]
     end
@@ -93,6 +95,8 @@ module SSHKit
         ['Successful Deploy', timestamp, 0] #return out to send to logs_bag
       rescue SSHKit::Command::Failed => e
         puts "@@@@@CRITICAL! Deploy failed for #{ name } (#{ ip_address })! Please check your #{ log_loc }/failed-deploy for the logs!@@@@@"
+
+        puts(e.message) if options['verbose']
 
         lines = e.message.split("\n").last(100).join("\n")
 

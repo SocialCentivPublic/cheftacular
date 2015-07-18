@@ -168,7 +168,7 @@ class Cheftacular
     def set_cloud_options
       @options['preferred_cloud']        = @options['preferred_cloud'].nil? ?        @config['cheftacular']['preferred_cloud'].downcase        : @options['preferred_cloud'].downcase
       @options['preferred_cloud_image']  = @options['preferred_cloud_image'].nil? ?  @config['cheftacular']['preferred_cloud_image']           : @options['preferred_cloud_image']
-      @options['preferred_cloud_region'] = @options['preferred_cloud_region'].nil? ? @config['cheftacular']['preferred_cloud_region'].downcase : @options['preferred_cloud_region'].downcase
+      @options['preferred_cloud_region'] = @options['preferred_cloud_region'].nil? ? @config['cheftacular']['preferred_cloud_region']          : @options['preferred_cloud_region']
       @options['virtualization_mode']    = @options['virtualization_mode'].nil? ?    @config['cheftacular']['virtualization_mode']             : @options['virtualization_mode']
       @options['route_dns_changes_via']  = @options['route_dns_changes_via'].nil? ?  @config['cheftacular']['route_dns_changes_via'].downcase  : @options['route_dns_changes_via'].downcase
     end

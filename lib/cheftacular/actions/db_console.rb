@@ -18,12 +18,12 @@ class Cheftacular
     end
 
     def db_console_postgresql
-      nodes = @config['getter'].get_true_node_objects
+      nodes = @config['getter'].get_true_node_objects(true)
 
       #must have rails stack to run migrations and not be a db, only want ONE node
-      psqlable_nodes = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @options['role'] }]" }, { unless: 'role[rails]' }], true )
+      psqlable_nodes = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @options['role'] }]" }, { unless: 'role[rails]' }, { if: { not_env: @options['env'] } }], true )
 
-      database_host  = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @config['getter'].get_current_repo_config['db_primary_host_role'] }]"}], true).first
+      database_host  = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @config['getter'].get_current_repo_config['db_primary_host_role'] }]"}, { if: { not_env: @options['env'] } }], true).first
 
       private_database_host_address = @config['getter'].get_address_hash(database_host.name)[database_host.name]['priv']
 
