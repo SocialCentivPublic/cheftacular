@@ -118,6 +118,8 @@ This is a guide from the ground up, setting up a Chef 12 server on digital ocean
 
 ## Setting up your first node
 
+    1. Run `cft add_ssh_key_to_bag "YOUR_SSH_PUB_KEY"`. You can also use this oppurtunity to add any other SSH keys other users have. 
+
     1. Run `cft help cloud_bootstrap` and `cft help cloud` and have a look over the help dialogs.
 
     2. Double check your cheftacular.yml to make sure that your *preferred_cloud* key is set to your desired cloud. You will also need to make sure you have VALID api credentials entered into the *cloud_authentication* hash.

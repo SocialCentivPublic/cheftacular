@@ -29,6 +29,7 @@ class Cheftacular
   def initialize options={'env'=>'staging'}, config={}
     @options, @config                = options, config
     SSHKit.config.format             = :blackhole
+    #Fog::Logger[:warning]            = nil
     @config['start_time']            = Time.now
     @config['helper']                = Helper.new(@options, @config)
     @config['initialization_action'] = InitializationAction.new(@options, @config)
