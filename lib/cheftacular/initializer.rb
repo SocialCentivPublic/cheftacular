@@ -279,19 +279,22 @@ class Cheftacular
         locs['ssh']      = File.expand_path('/home/deploy/.ssh')
       end
 
-      locs['chef-repo']         = Dir.getwd
-      locs['roles']             = File.expand_path("#{ locs['chef-repo'] }/roles")
-      locs['nodes']             = File.expand_path("#{ locs['chef-repo'] }/nodes_dir") #DO NOT RENAME THIS TO NODES
-      locs['root']              = locs['chef-repo']                                    unless locs['root']
-      locs['app-root']          = locs['chef-repo']                                    unless locs['app-root']
-      locs['chef']              = File.expand_path("~/.chef")                          unless locs['chef']
-      locs['cookbooks']         = File.expand_path("#{ locs['chef-repo'] }/cookbooks")
-      locs['berks']             = File.expand_path('~/.berkshelf/cookbooks')
-      locs['wrapper-cookbooks'] = @config['cheftacular']['wrapper-cookbooks']
-      locs['ssh']               = File.expand_path('~/.ssh')
-      locs['chef-log']          = File.expand_path("#{ locs['root']}/log")             unless locs['chef-log']
-      locs['app-tmp']           = File.expand_path("#{ locs['app-root']}/tmp")
-      locs['examples']          = File.expand_path("../../../examples", __FILE__)
+      locs['chef-repo']             = Dir.getwd
+      locs['roles']                 = File.expand_path("#{ locs['chef-repo'] }/roles")
+      locs['nodes']                 = File.expand_path("#{ locs['chef-repo'] }/nodes_dir") #DO NOT RENAME THIS TO NODES
+      locs['root']                  = locs['chef-repo']                                    unless locs['root']
+      locs['app-root']              = locs['chef-repo']                                    unless locs['app-root']
+      locs['chef']                  = File.expand_path("~/.chef")                          unless locs['chef']
+      locs['cookbooks']             = File.expand_path("#{ locs['chef-repo'] }/cookbooks")
+      locs['berks']                 = File.expand_path('~/.berkshelf/cookbooks')
+      locs['wrapper-cookbooks']     = @config['cheftacular']['wrapper_cookbooks']
+      locs['ssh']                   = File.expand_path('~/.ssh')
+      locs['chef-log']              = File.expand_path("#{ locs['root']}/log")             unless locs['chef-log']
+      locs['app-tmp']               = File.expand_path("#{ locs['app-root']}/tmp")
+      locs['examples']              = File.expand_path("../../../examples", __FILE__)
+      locs['cheftacular-lib']       = File.expand_path("../..", __FILE__)
+      locs['cheftacular-lib-files'] = locs['cheftacular-lib'] + '/cheftacular/files'
+
       @config['locs'] = locs
     end
 

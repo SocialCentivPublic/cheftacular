@@ -20,7 +20,7 @@ class Cheftacular
       case @options['preferred_cloud']
       when 'rackspace'
         begin
-          status_hash['admin_passwords']["#{ real_node_name }"]
+          server_hash['admin_passwords']["#{ real_node_name }"]
         rescue NoMethodError => e
           raise "Unable to locate an admin pass for server #{ @options['node_name'] }, does the server already exist?"
         end

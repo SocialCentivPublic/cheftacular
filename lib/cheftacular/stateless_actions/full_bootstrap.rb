@@ -22,6 +22,8 @@ class Cheftacular
       else                           @config['stateless_action'].instance_eval("#{ @config['cheftacular']['preferred_cloud_os'] }_bootstrap")
       end
 
+      @config['helper'].install_rvm_sh_file if @config['cheftacular']['install_rvm_on_boot']
+
       @config['initializer'].initialize_passwords @options['env'] #reset the passwords var to contain the new deploy pass set in ubuntu_bootstrap
 
       @config['stateless_action'].chef_bootstrap

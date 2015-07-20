@@ -241,6 +241,24 @@ class Cheftacular
 
       master_hash
     end
+
+    def install_rvm_sh_file out=[]
+      puts("Starting rvm.sh installation...") unless @options['quiet']
+
+      commands = [
+        "#{ @config['helper'].sudo(@options['address']) } mv /home/deploy/rvm.sh /etc/profile.d/rvm.sh",
+        "#{ @config['helper'].sudo(@options['address']) } chmod 755 /etc/profile.d/rvm.sh",
+        "#{ @config['helper'].sudo(@options['address']) } chown root:root /etc/profile.d/rvm.sh"
+      ]
+
+      out << `scp -oStrictHostKeyChecking=no #{ @config['locs']['cheftacular-lib-files'] }/rvm.sh #{ @config['cheftacular']['deploy_user'] }@#{ @options['address'] }:/home/#{ @config['cheftacular']['deploy_user'] }`
+
+      commands.each do |command|
+        out << `ssh -t -oStrictHostKeyChecking=no #{ @config['cheftacular']['deploy_user'] }@#{ @options['address'] } "#{ command }"`
+      end
+
+      puts("Completed rvm.sh installation into /etc/profile.d/rvm.sh") unless @options['quiet']
+    end
   end
 end
 
