@@ -26,17 +26,17 @@ class Cheftacular
 
       case CONFIG['host_os']
       when /mswin|windows/i
-        raise "#{ __method__ } does not support this operating system at this time"
+        #raise "#{ __method__ } does not support this operating system at this time"
       when /linux|arch/i
-        raise "#{ __method__ } does not support this operating system at this time"
+        #raise "#{ __method__ } does not support this operating system at this time"
       when /sunos|solaris/i
-        raise "#{ __method__ } does not support this operating system at this time"
+        #raise "#{ __method__ } does not support this operating system at this time"
       when /darwin/i
         puts "Copying #{ nodes.first.name } (#{ nodes.first.public_ipaddress }) sudo password into your clipboard"
         
         `echo '#{ @config[nodes.first.chef_environment]['server_passwords_bag_hash']["#{ nodes.first.public_ipaddress }-deploy-pass"] }' | pbcopy`
       else
-        raise "#{ __method__ } does not support this operating system at this time"
+        #raise "#{ __method__ } does not support this operating system at this time"
       end
     end
   end

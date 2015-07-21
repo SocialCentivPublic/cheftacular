@@ -33,9 +33,9 @@ class Cheftacular
       public_ssh_key = ARGV[1]
 
       if specific_repository.blank?
-        @config['default']['authentication_bag_hash']["authorized_keys"] << public_ssh_key
+        @config['default']['authentication_bag_hash']["authorized_keys"] << public_ssh_key.gsub("'",'')
       else
-        @config['default']['authentication_bag_hash']["specific_authorized_keys"] << public_ssh_key
+        @config['default']['authentication_bag_hash']["specific_authorized_keys"] << public_ssh_key.gsub("'",'')
       end
 
       @config['ChefDataBag'].save_authentication_bag

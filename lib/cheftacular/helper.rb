@@ -246,7 +246,7 @@ class Cheftacular
       puts("Starting rvm.sh installation...") unless @options['quiet']
 
       commands = [
-        "#{ @config['helper'].sudo(@options['address']) } mv /home/deploy/rvm.sh /etc/profile.d/rvm.sh",
+        "#{ @config['helper'].sudo(@options['address']) } mv /home/deploy/rvm.sh /etc/profile.d",
         "#{ @config['helper'].sudo(@options['address']) } chmod 755 /etc/profile.d/rvm.sh",
         "#{ @config['helper'].sudo(@options['address']) } chown root:root /etc/profile.d/rvm.sh"
       ]

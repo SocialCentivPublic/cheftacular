@@ -16,7 +16,7 @@ class Cheftacular
       @options['address']   = ARGV[1] unless @options['address']
       @options['node_name'] = ARGV[2] unless @options['node_name']
 
-      @config['stateless_action'].remove_client #just in case
+      #@config['stateless_action'].remove_client #just in case
 
       if @config['cheftacular']['chef_version'].to_i >= 12
         puts("Starting chef-client installation...") unless @options['quiet']
