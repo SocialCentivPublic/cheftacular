@@ -7,6 +7,7 @@ class CloudInteractor
     @main_obj['output'] = {}
     @auth_hash          = auth_hash
     @classes['helper']  = Helper.new(@main_obj, @classes, @options)
+    @classes['clouds']  = CloudProvider.new(@options)
     @classes['domain']  = Domain.new(@main_obj, @auth_hash, @classes, @options)
     @classes['flavor']  = Flavor.new(@main_obj, @classes, @options)
     @classes['image']   = Image.new(@main_obj, @classes, @options)
