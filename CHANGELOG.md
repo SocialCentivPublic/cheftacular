@@ -40,6 +40,10 @@
 
 * Added new command `cft arguments` that simply displays its documentation and exits. This command returns the same output as `cft help arguments`.
 
+* Added new command `cft location_aliases` that will list the location aliases that can be used in the `cft file` command. These aliases are set in the cheftacular.yml under the **location_aliases** key.
+
+* `cft cloud_bootstrap` has a rescue / retries in place for the first major ssh command. This is to prevent DigitalOcean servers that are not actually active from failing the entire process.
+
 ## 2.5.0
 
 * Fixed issue where most commands that interacted with servers still used the deploy user rather than using the *deploy_user* set in the cheftacular.yml

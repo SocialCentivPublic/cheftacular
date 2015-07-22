@@ -151,6 +151,12 @@ haproxy_config:
   role_name:    haproxy #default role all haproxy servers will have
   default_port: 22002
 
+location_aliases:
+  backups:      /my/backup/location
+  varlog:       /var/log
+  sensu:        /etc/sensu
+  api_root:     /my/api/root/location
+
 chef_server:
   interactable:  false   #this key can be used to easily disable access to the chef-server command
   ssh_user:      deploy  #This is the user who can be ssh'd with onto the chef-server. If root, you can leave sudo_password blank.

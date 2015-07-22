@@ -61,9 +61,11 @@ class Cheftacular
 
         final_commands = [
           "#{ rvm_source } echo '#{ new_deploy_pass }' | rvmsudo -S rvm requirements",
-          "#{ rvm_source } rvm install #{ @config['cheftacular']['ruby_version'] }",
-          "#{ rvm_source } rvm install 1.9.3-p547" #chef's default ruby, we'll need it in a place rvm can find it until the symlink is made 
+          "#{ rvm_source } rvm install #{ @config['cheftacular']['ruby_version'] }"
         ]
+
+        final_commands << "#{ rvm_source } rvm install 1.9.3-p327" if @config['cheftacular']['chef_version'].to_i < 12
+        final_commands << "#{ rvm_source } rvm install 2.1.4"      if @config['cheftacular']['chef_version'].to_i >= 12 #Chef 12 depreciates 1.9.3 as a base ruby in it's embedded installs
       end
 
       

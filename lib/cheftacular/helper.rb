@@ -130,7 +130,7 @@ class Cheftacular
       user     = @config['cheftacular']['deploy_user']
       password = @config['server_passwords'][@options['address']]
       nodename = @options['node_name']
-      chef_ver = @config['cheftacular']['chef_version'].to_i >= 12 ? '11.16.4' : '12.4.0'
+      chef_ver = @config['cheftacular']['chef_version'].to_i >= 12 ? '12.4.0' : '11.16.4'
 
       "knife bootstrap #{ address } -x #{ user } -P #{ password } -N #{ nodename } --sudo --use-sudo-password --bootstrap-version #{ chef_ver }"
     end
