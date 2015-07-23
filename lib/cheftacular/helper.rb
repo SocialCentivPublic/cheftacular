@@ -44,6 +44,7 @@ class Cheftacular
       @config['cheftacular']['mode'] == mode
     end
 
+    #TODO, fix for clients that block amazon hosted rubygems?
     def fetch_remote_version
       puts "Checking remote #{ declassify } version..."
 

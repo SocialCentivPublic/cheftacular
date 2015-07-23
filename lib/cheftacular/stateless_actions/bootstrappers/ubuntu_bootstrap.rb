@@ -55,8 +55,6 @@ class Cheftacular
         deploy_commands << "gpg --keyserver hkp://keys.gnupg.net --recv-keys #{ @config['cheftacular']['rvm_gpg_key'] }"
         deploy_commands << "curl -L https://get.rvm.io | bash -s stable"
 
-        final_commands
-
         rvm_source = "source /home/deploy/.rvm/bin/rvm &&"
 
         final_commands = [
@@ -65,9 +63,7 @@ class Cheftacular
         ]
 
         final_commands << "#{ rvm_source } rvm install 1.9.3-p327" if @config['cheftacular']['chef_version'].to_i < 12
-        final_commands << "#{ rvm_source } rvm install 2.1.4"      if @config['cheftacular']['chef_version'].to_i >= 12 #Chef 12 depreciates 1.9.3 as a base ruby in it's embedded installs
       end
-
       
       root_execute_string = "sshpass -p \"#{ @options['client_pass'] }\" ssh -t -oStrictHostKeyChecking=no root@#{ @options['address'] } '#{ root_commands.join(' && ') } && service ssh restart'"
 

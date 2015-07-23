@@ -4,7 +4,7 @@ class CloudInteractor
       read args, false
 
       @main_obj['specific_records'][args[IDENTITY.singularize]].each do |record_hash|
-        already_exists = true if record_hash['name'] == "#{ args['subdomain'] }.#{ args[IDENTITY.singularize] }"
+        already_exists = true if record_hash['name'] == @classes['clouds'].parse_provider_domain_record_name(args)
 
         args['id'] = record_hash['id']
 

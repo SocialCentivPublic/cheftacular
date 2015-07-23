@@ -50,7 +50,7 @@ class Cheftacular
 
       @options['force_yes'] = true # have the upload_nodes grab the new nodes
 
-      @config['stateless_action'].upload_nodes
+      @config['stateless_action'].upload_nodes(true)
     end
   end
 end

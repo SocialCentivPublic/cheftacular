@@ -1,9 +1,9 @@
 class CloudInteractor
   class Domain
     def update_record args, already_created=false
-      args['type'] ||= 'A'
-      args['ttl']  ||= 300
-      args['target_domain'] ||= "#{ args['subdomain'] }.#{ args[IDENTITY.singularize] }"
+      args['type']          ||= 'A'
+      args['ttl']           ||= 300
+      args['target_domain'] ||= @classes['clouds'].parse_provider_domain_record_name(args)
       args['target_domain']   = args[IDENTITY.singularize] if args['subdomain'].blank?
 
       read args, false
