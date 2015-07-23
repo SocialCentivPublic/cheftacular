@@ -8,11 +8,11 @@ class CloudInteractor
     def parse_provider_domain_record_name args
       case @options['route_dns_changes_via']
       when 'rackspace'
-        "#{ args['subdomain'] }.#{ args[IDENTITY.singularize] }"
+        "#{ args['subdomain'] }.#{ args['domain'] }"
       when 'dnsimple'
         args['subdomain']
       else
-        "#{ args['subdomain'] }.#{ args[IDENTITY.singularize] }"
+        "#{ args['subdomain'] }.#{ args['domain'] }"
       end
     end
   end
