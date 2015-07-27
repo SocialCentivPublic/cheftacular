@@ -14,6 +14,8 @@
 
     * _**chef_version**_ (The key **chef_client_version** has been renamed to _**chef_version**_ and now reflects the major version of chef being run)
 
+    * **pre_install_packages** (Space delimited list of packages to install during a  node's initial setup process, can be blank)
+
     * Please check the [cheftacular.yml](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/cheftacular.yml) example file for documentation on new keys
 
 * Added new command `cft chef_server [restart|processes|memory]` that will allow a devops mode repo to interact directly with the chef server.

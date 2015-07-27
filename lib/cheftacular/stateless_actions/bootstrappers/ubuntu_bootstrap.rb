@@ -45,7 +45,7 @@ class Cheftacular
 
       deploy_commands = [
         "#{ sudo } apt-get update",
-        "#{ sudo } apt-get install curl git-core shorewall -y",
+        "#{ sudo } apt-get install curl #{ @config['cheftacular']['pre_install_packages'] } -y",
         "#{ sudo } apt-get upgrade -y"
       ]
 

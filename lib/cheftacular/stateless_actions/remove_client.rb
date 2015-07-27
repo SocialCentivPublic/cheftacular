@@ -54,13 +54,13 @@ class Cheftacular
           if @options['delete_server_on_remove'] == 'destroy'
             @config['stateless_action'].cloud "server", "destroy:#{ @config['getter'].get_current_real_node_name(n.name) }"
           end
+
+          @config[@options['env']]['addresses_bag_hash'] = @config[@options['env']]['addresses_bag'].reload.to_hash
+
+          @config['DNS'].compile_address_hash_for_server_from_options('set_hash_to_nil')
+
+          @config['ChefDataBag'].save_addresses_bag
         end
-
-        @config[@options['env']]['addresses_bag_hash'] = @config[@options['env']]['addresses_bag'].reload.to_hash
-
-        @config['DNS'].compile_address_hash_for_server_from_options('set_hash_to_nil')
-
-        @config['ChefDataBag'].save_addresses_bag
       end
 
       puts("Done. Please verify that the output of the next line(s) match your expectations (running client-list)") if @options['verbose']

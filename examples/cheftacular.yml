@@ -27,6 +27,7 @@ virtualization_mode:    PV                       # on rackspace cloud, set your 
 git_based_deploys:      true
 route_dns_changes_via:  rackspace                # tells cheftacular to send dns changes to this provider instead of the preferred_cloud_option
 node_name_separator:    '.'                      # On rackspace, can be anything except a space, on most other hosting sites, it must be a valid url character
+pre_install_packages:   ''                       # space delimited list of packages to install during a  node's initial setup process
 
 #chef-repo
 keep_chef_repo_cheftacular_yml_up_to_date: false

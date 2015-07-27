@@ -48,6 +48,14 @@ class Cheftacular
         exit_on_missing = true
       end
 
+      unless @config['cheftacular'].has_key?('pre_install_packages')
+        puts base_message.gsub('KEY', 'pre_install_packages').gsub('DEFAULT', '')
+
+        @config['cheftacular']['pre_install_packages'] = ''
+
+        warn_on_missing = true
+      end
+
       if warn_on_missing || exit_on_missing
         puts "Please enter your missing keys into your cheftacular.yml based off of the cheftacular.yml at"
         puts "\n  https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/cheftacular.yml"
