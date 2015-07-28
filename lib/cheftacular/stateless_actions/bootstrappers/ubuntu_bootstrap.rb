@@ -59,7 +59,9 @@ class Cheftacular
 
         final_commands = [
           "#{ rvm_source } echo '#{ new_deploy_pass }' | rvmsudo -S rvm requirements",
-          "#{ rvm_source } rvm install #{ @config['cheftacular']['ruby_version'] }"
+          "#{ rvm_source } rvm install #{ @config['cheftacular']['ruby_version'] }",
+          "#{ rvm_source } rvm alias create default #{ @config['cheftacular']['ruby_version'] }",
+          "#{ rvm_source } rvm gemset empty --force"
         ]
 
         final_commands << "#{ rvm_source } rvm install 1.9.3-p327" if @config['cheftacular']['chef_version'].to_i < 12

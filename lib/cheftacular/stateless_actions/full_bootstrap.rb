@@ -27,11 +27,6 @@ class Cheftacular
       @config['helper'].install_rvm_sh_file if @config['cheftacular']['install_rvm_on_boot']
 
       @config['stateless_action'].chef_bootstrap
-
-      case @config['cheftacular']['preferred_cloud_os']
-      when 'ubuntu' || 'debian' then @config['stateless_action'].ubuntu_swap_bootstrap
-      else                           @config['stateless_action'].instance_eval("#{ @config['cheftacular']['preferred_cloud_os'] }_swap_bootstrap")
-      end
     end
   end
 end
