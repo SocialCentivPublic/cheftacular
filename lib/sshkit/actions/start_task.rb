@@ -9,7 +9,7 @@ module SSHKit
 
         target_loc = "/var/www/vhosts/#{ options['repository'] }/current"
 
-        if !test( target_loc ) #true if file exists
+        if test( target_loc )
           puts "#{ name } (#{ ip_address }) cannot run #{ command } as there is no directory at #{ target_loc }!"
 
           return ['', timestamp]
