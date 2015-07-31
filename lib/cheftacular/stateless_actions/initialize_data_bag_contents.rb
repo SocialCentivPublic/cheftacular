@@ -10,7 +10,7 @@ class Cheftacular
 
   class StatelessAction
     def initialize_data_bag_contents env=""
-      raise "Environment does not exist on chef server!" unless @config['chef_environments'].include?(env)
+      raise "Environment #{ env } does not exist on chef server!" if !env.blank? && !@config['chef_environments'].include?(env)
 
       env = ARGV[1] if env.blank?
 
