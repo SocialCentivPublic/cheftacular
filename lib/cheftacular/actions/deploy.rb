@@ -51,20 +51,22 @@ class Cheftacular
 
       split_nodes_hash = {}
 
-      @config['cheftacular']['run_list_environments'][@options['env']].each_key do |role_name|
-        split_nodes_hash[role_name] = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ role_name }]" }])
-      end
+      if @config['cheftacular']['run_list_environments'].has_key?(@options['env'])
+        @config['cheftacular']['run_list_environments'][@options['env']].each_key do |role_name|
+          split_nodes_hash[role_name] = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ role_name }]" }])
+        end
 
-      split_nodes_hash.each_pair do |role, split_nodes|
-        next if split_nodes.empty?
+        split_nodes_hash.each_pair do |role, split_nodes|
+          next if split_nodes.empty?
 
-        unless @options["run_#{ role }_migrations_already"]
-          @options["run_#{ role }_migrations_already"] = true
-          
-          if @config['getter'].get_current_repo_config['database'] != 'none'
-            puts("Running migration on split environment #{ role }...") if !@options['quiet']
+          unless @options["run_#{ role }_migrations_already"]
+            @options["run_#{ role }_migrations_already"] = true
             
-            migrate(split_nodes)
+            if @config['getter'].get_current_repo_config['database'] != 'none'
+              puts("Running migration on split environment #{ role }...") if !@options['quiet']
+              
+              migrate(split_nodes)
+            end
           end
         end
       end
