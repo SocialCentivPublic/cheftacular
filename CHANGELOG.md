@@ -46,6 +46,10 @@
 
 * `cft cloud_bootstrap` has a rescue / retries in place for the first major ssh command. This is to prevent DigitalOcean servers that are not actually active from failing the entire process.
 
+* `cft role_toggle NODE_NAME ROLE_NAME activate|deactivate` will toggle toggleable roles and deploy the new role to the server. Please run `cft help role_toggle` for more information.
+
+* `cft list_toggleable_roles NODE_NAME` will list all toggleable roles for a node (roles that have a deactivation suffix).
+
 ## 2.5.0
 
 * Fixed issue where most commands that interacted with servers still used the deploy user rather than using the *deploy_user* set in the cheftacular.yml

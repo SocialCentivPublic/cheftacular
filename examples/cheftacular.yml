@@ -162,3 +162,8 @@ chef_server:
   interactable:  false   #this key can be used to easily disable access to the chef-server command
   ssh_user:      deploy  #This is the user who can be ssh'd with onto the chef-server. If root, you can leave sudo_password blank.
   sudo_password: MY_PASS #sudo password for accessing the chef-server-ctl command for the chef-server command
+
+role_toggling:
+  deactivated_role_suffix: '_deactivate' #for the cft role_toggle command, the suffix for your deactivated roles
+  strict_roles:            true           #for the cft role_toggle command, if roles should be able to be set for a node that did not have the role (at all) before
+  skip_confirm:            false          # skips confirming for role toggle command

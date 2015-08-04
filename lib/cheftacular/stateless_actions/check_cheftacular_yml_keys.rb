@@ -56,6 +56,18 @@ class Cheftacular
         warn_on_missing = true
       end
 
+      unless @config['cheftacular'].has_key?('role_toggling')
+        puts base_message.gsub('KEY', 'role_toggling').gsub('DEFAULT', "it's default nested keys")
+
+        @config['cheftacular']['role_toggling'] = {}
+        @config['cheftacular']['role_toggling']['deactivated_role_suffix'] = '_deactivated'
+        @config['cheftacular']['role_toggling']['strict_roles']            = true
+        @config['cheftacular']['role_toggling']['skip_confirm']            = false
+        @config['cheftacular']['role_toggling']['do_not_allow_toggling']   = true
+
+        warn_on_missing = true
+      end
+
       if warn_on_missing || exit_on_missing
         puts "Please enter your missing keys into your cheftacular.yml based off of the cheftacular.yml at"
         puts "\n  https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/cheftacular.yml"
