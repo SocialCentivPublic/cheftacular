@@ -73,6 +73,8 @@ class Cheftacular
 
         #TODO INTEGRATE backups TO LOAD DATA INTO THE NEWLY BOOTED ENV
       when 'destroy'
+        raise "This action can only be performed if the mode is set to devops" if !@config['helper'].running_in_mode?('devops')
+        
         if ask_on_destroy
           puts "Preparing to delete nodes in #{ @options['env'] }.\nEnter Y/y to confirm."
 

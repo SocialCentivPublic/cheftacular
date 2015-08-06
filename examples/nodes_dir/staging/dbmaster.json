@@ -1,0 +1,10 @@
+{
+  "name": "dbmaster",
+  "chef_environment": "staging",
+  "run_list": [
+    "role[db]",
+    "role[my_repository_role]",
+    //"role[db_replication]",
+    "role[db_primary]"
+  ]
+}

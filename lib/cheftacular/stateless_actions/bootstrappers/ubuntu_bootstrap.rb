@@ -45,7 +45,7 @@ class Cheftacular
 
       deploy_commands = [
         "#{ sudo } apt-get update",
-        "#{ sudo } apt-get install curl git-core shorewall -y",
+        "#{ sudo } apt-get install curl #{ @config['cheftacular']['pre_install_packages'] } -y",
         "#{ sudo } apt-get upgrade -y"
       ]
 
@@ -55,18 +55,29 @@ class Cheftacular
         deploy_commands << "gpg --keyserver hkp://keys.gnupg.net --recv-keys #{ @config['cheftacular']['rvm_gpg_key'] }"
         deploy_commands << "curl -L https://get.rvm.io | bash -s stable"
 
-        final_commands
-
         rvm_source = "source /home/deploy/.rvm/bin/rvm &&"
 
         final_commands = [
           "#{ rvm_source } echo '#{ new_deploy_pass }' | rvmsudo -S rvm requirements",
           "#{ rvm_source } rvm install #{ @config['cheftacular']['ruby_version'] }",
-          "#{ rvm_source } rvm install 1.9.3-p327" #chef's default ruby, we'll need it in a place rvm can find it until the symlink is made 
+          "#{ rvm_source } rvm alias create default #{ @config['cheftacular']['ruby_version'] }",
+          "#{ rvm_source } rvm gemset empty --force"
         ]
+
+        final_commands << "#{ rvm_source } rvm install 1.9.3-p327" if @config['cheftacular']['chef_version'].to_i < 12
+      end
+      
+      root_execute_string = "sshpass -p \"#{ @options['client_pass'] }\" ssh -t -oStrictHostKeyChecking=no root@#{ @options['address'] } '#{ root_commands.join(' && ') } && service ssh restart'"
+
+      while system(root_execute_string) != true
+        tries ||= 5
+        puts "Unable to complete step 1 of setup process, trying again in 60 seconds, there are #{ tries } more tries"
+        sleep 60
+        tries -= 1
+        raise "Unable to complete step 1 of setup process!" if tries <= 0
       end
 
-      out << `sshpass -p "#{ @options['client_pass'] }" ssh -t -oStrictHostKeyChecking=no root@#{ @options['address'] } '#{ root_commands.join(' && ') } && service ssh restart'`
+      out << $?.to_s #output from the system command above
 
       puts("Finished initial setup...stage 1 of 3 for server #{ @options['address'] }") if @options['in_scaling']
 

@@ -38,7 +38,7 @@ class Cheftacular
         berkshelf_cookbooks = {}
 
         Dir.foreach(@config['locs']['berks']) do |berkshelf_cookbook|
-          next if @config['helper'].is_junk_filename?(berkshelf_cookbook)
+          next if @config['filesystem'].is_junk_filename?(berkshelf_cookbook)
           skip = false
 
           berkshelf_cookbooks.keys.each do |processed_berkshelf_cookbook|
@@ -62,7 +62,7 @@ class Cheftacular
         chef_repo_cookbooks = {}
 
         Dir.foreach(@config['locs']['cookbooks']) do |chef_repo_cookbook|
-          next if @config['helper'].is_junk_filename?(chef_repo_cookbook)
+          next if @config['filesystem'].is_junk_filename?(chef_repo_cookbook)
             
           new_name = chef_repo_cookbook.rpartition('-').first
 

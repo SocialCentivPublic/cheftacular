@@ -126,9 +126,11 @@ class Cheftacular
         target_loc = "#{ location }/#{ file_name }"
         puts("Beginning #{ command } run on #{ target_loc } for #{ n.name } (#{ n.public_ipaddress })") unless @options['quiet']
 
-        download_location = @options['save_to_file'] ? @options['save_to_file'] : "#{ @config['locs']['chef-log'] }/#{ file_name }"
+        download_location = @options['save_to_file'] ? @options['save_to_file'] : "#{ @config['locs']['chef-log'] }/#{ file_name.split('/').last }"
 
         `scp -oStrictHostKeyChecking=no #{ @config['cheftacular']['deploy_user'] }@#{ n.public_ipaddress }:#{ location }/#{ file_name } #{ download_location } > /dev/tty`
+
+        puts "Finished downloading #{ file_name } to #{ download_location }!"
       end
     end
   end

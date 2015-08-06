@@ -14,7 +14,7 @@ class CloudInteractor
     end
 
     def generic_list_call identity, resource, output=true
-      puts "Returning list of #{ identity } for #{ @options['preferred_cloud'] }..."
+      puts "Returning list of #{ identity } for #{ resource == 'DNS' ? @options['route_dns_changes_via'] : @options['preferred_cloud'] }..."
 
       @main_obj[identity] = JSON.parse(@classes['auth'].auth_service(resource).instance_eval(identity).to_json)
 

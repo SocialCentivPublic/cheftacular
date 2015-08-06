@@ -83,7 +83,35 @@ class Cheftacular
           "        2. `read:FLAVOR SIZE` behaves the same as list unless a flavor size is supplied.",
 
           "            1. Standard servers are listed as XGB with no spaces in their size, performance servers are listed as X GB with " +
-          "a space in their size. If you are about to create a server and are unsure, query flavors first."
+          "a space in their size. If you are about to create a server and are unsure, query flavors first.",
+
+          "    5. `image` first level argument for listing the images available on the cloud service",
+
+          "        1. `list` default behavior",
+
+          "        2. `read:NAME` behaves the same as list unless a specific image name is supplied",
+
+          "    6. `region` first level argument for listing the regions available on the cloud service (only supported by DigitalOcean)",
+
+          "        1. `list` default behavior",
+
+          "        2. `read:REGION` behaves the same as list unless a specific region name is supplied",
+
+          "    7. `sshkey` first level argument for listing the sshkeys added to the cloud service (only supported by DigitalOcean)",
+
+          "        1. `list` default behavior",
+
+          "        2. `read:KEY_NAME` behaves the same as list unless a specific sshkey name is supplied",
+
+          "        3. `\"create:KEY_NAME:KEY_STRING\"` creates an sshkey object. KEY_STRING must contain the entire value of the ssh public key file. " +
+          "The command must be enclosed in quotes.",
+
+          "        4. `destroy:KEY_NAME` destroys the sshkey object",
+
+          "        5. `bootstrap` captures the current computer's hostname and checks to see if a key matching this hostname exists on the cloud service. " +
+          "If the key does not exist, the command attempts to read the contents of the ~/.ssh/id_rsa.pub file and create a new key with that data and the " +
+          "hostname of the current computer. Run automatically when creating DigitalOcean servers. It's worth noting that if the computer's key already " +
+          "exists on DigitalOcean under a different name, this specific command will fail with a generic error. Please check your keys."
         ]
       ]
     end
@@ -95,7 +123,7 @@ class Cheftacular
 
       args = ARGV[1..ARGV.length] if args.empty?
 
-      @config['cloud_interactor'] ||= CloudInteractor.new(@config['default']['authentication_bag_hash'], @options)
+      @config['cloud_interactor'] ||= CloudInteractor.new(@config['cheftacular'], @options)
 
       @config['cloud_interactor'].run args
     end

@@ -9,3 +9,15 @@ module Ridley
     end
   end
 end
+
+module Ridley
+  class NodeObject < Ridley::ChefObject
+    def public_ipv4
+      address = self.cloud? ? self.automatic[:cloud][:public_ipv4] || self.automatic[:ipaddress] : self.automatic[:ipaddress]
+      
+      address.is_a?(Hash) ? address['ip_address'] : address
+    end
+
+    alias_method :public_ipaddress, :public_ipv4
+  end
+end

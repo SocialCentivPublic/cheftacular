@@ -1,4 +1,4 @@
-require 'ridley' #chef tools outside of chef!
+require 'ridley'
 require 'highline/import'
 require 'optparse'
 require 'base64'
@@ -21,32 +21,36 @@ require 'net/http'
 require 'timeout'
 require 'slack-notifier'
 require 'cloudflare'
-require 'zlib'
 require 'csv'
 
 Dir["#{File.dirname(__FILE__)}/../**/*.rb"].each { |f| require f }
 
 class Cheftacular
   def initialize options={'env'=>'staging'}, config={}
-    @options, @config = options, config
+    @options, @config                = options, config
+    SSHKit.config.format             = :blackhole
+    #Fog::Logger[:warning]            = nil
+    @config['start_time']            = Time.now
+    @config['helper']                = Helper.new(@options, @config)
+    @config['initialization_action'] = InitializationAction.new(@options, @config)
+    @config['filesystem']            = Cheftacular::FileSystem.new(@options, @config)
+    @config['initializer']           = Initializer.new(@options, @config)
 
-    SSHKit.config.format = :blackhole
+    if @config['helper'].is_initialization_command?(ARGV[0])
+      @options['command'] = ARGV[0] #this is normally set by parse_context but that is not run for initialization commands
+    else
+      @config['stateless_action'].initialize_data_bag_contents(@options['env']) #ensure basic structure are always maintained before each run
 
-    @config['start_time']  = Time.now
+      @config['parser'].parse_application_context if @config['cheftacular']['mode'] == 'application'
 
-    @config['helper']      = Helper.new(@options, @config)
+      @config['parser'].parse_context
 
-    @config['initializer'] = Initializer.new(@options, @config)
+      puts("Preparing to run command \"#{ @options['command'] }\"...") if @options['verbose']
 
-    @config['stateless_action'].initialize_data_bag_contents @options['env'] #ensure basic structure are always maintained before each run
+      @config['auditor'].audit_run if @config['cheftacular']['auditing']
+    end
 
-    @config['parser'].parse_application_context if @config['cheftacular']['mode'] == 'application'
-
-    @config['parser'].parse_context
-
-    puts("Preparing to run command \"#{ @options['command'] }\"...") if @options['verbose']
-
-    @config['auditor'].audit_run if @config['cheftacular']['auditing']
+    @config['stateless_action'].send('check_cheftacular_yml_keys')
 
     @config['action'].send(@options['command']) if @config['helper'].is_command?(@options['command'])
 

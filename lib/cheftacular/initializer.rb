@@ -20,39 +20,44 @@ class Cheftacular
 
       initialize_documentation_hash
 
-      @config['helper'].completion_rate? 0, 'initializer'
-
-      initialize_ridley
-
-      @config['helper'].completion_rate? 10, 'initializer'
-
-      initialize_ridley_environments
-
-      @config['helper'].completion_rate? 20, 'initializer'
-
-      initialize_ridley_roles_and_nodes
-
-      @config['helper'].completion_rate? 30, 'initializer'
-
-      initialize_data_bags_for_environment @options['env'], true
-
-      @config['helper'].completion_rate? 90, 'initializer'
-
       initialize_ruby_config
 
-      initialize_passwords @options['env']
+      initialize_ridley unless @config['helper'].is_initialization_command?(ARGV[0])
 
       initialize_classes
 
       initialize_directories
 
-      @config['helper'].completion_rate? 100, 'initializer'
+      initialize_cloud_checks
 
-      initialize_version_check if @config['cheftacular']['strict_version_checks']
+      unless @config['helper'].is_initialization_command?(ARGV[0])
 
-      initialize_auditing_checks if @config['cheftacular']['auditing']
+        @config['helper'].completion_rate? 0, 'initializer'
 
-      initialize_chef_repo_up_to_date if @config['cheftacular']['keep_chef_repo_cheftacular_yml_up_to_date']
+        @config['helper'].completion_rate? 10, 'initializer'
+
+        initialize_ridley_environments
+
+        @config['helper'].completion_rate? 20, 'initializer'
+
+        initialize_ridley_roles_and_nodes
+
+        @config['helper'].completion_rate? 30, 'initializer'
+
+        initialize_data_bags_for_environment @options['env'], true
+
+        @config['helper'].completion_rate? 90, 'initializer'
+
+        initialize_passwords @options['env']
+
+        @config['helper'].completion_rate? 100, 'initializer'
+
+        initialize_version_check if @config['cheftacular']['strict_version_checks']
+
+        initialize_auditing_checks if @config['cheftacular']['auditing']
+
+        initialize_chef_repo_up_to_date if @config['cheftacular']['keep_chef_repo_cheftacular_yml_up_to_date']
+      end
     end
 
     #changes to arguments should show up in the documentation methods in their appropriate method file
@@ -198,6 +203,10 @@ class Cheftacular
           @options['preferred_cloud'] = 'aws'
         end
 
+        opts.on('--do', "On cft cloud calls, set the cloud to DigitalOcean") do
+          @options['preferred_cloud'] = 'digitalocean'
+        end
+
         opts.on('--region REGION', 'On cft cloud calls, set the cloud region to perform operations on to this region') do |region|
           @options['preferred_cloud_region'] = region
         end
@@ -210,8 +219,12 @@ class Cheftacular
           @options['virtualization_mode'] = v_mode
         end
 
-        #file
-        opts.on('--save-to-file FILE_NAME', 'On cft file, this option can be used to save the output of the file display methods to your system. Also works in the fetch context') do |path|
+        opts.on('--route-dns-changes-via SERVICE', 'On cft cloud calls, set the default dns provider to this service') do |service|
+          @options['route_dns_changes_via'] = service
+        end
+
+        #file | chef_server
+        opts.on('--save-to-file FILE_NAME', 'On cft file or chef_server, this option can be used to save the output of the file display methods to your system. Also works in the fetch context') do |path|
           @options['save_to_file'] = path
         end
 
@@ -266,18 +279,21 @@ class Cheftacular
         locs['ssh']      = File.expand_path('/home/deploy/.ssh')
       end
 
-      locs['chef-repo']         = Dir.getwd
-      locs['roles']             = File.expand_path("#{ locs['chef-repo'] }/roles")
-      locs['nodes']             = File.expand_path("#{ locs['chef-repo'] }/nodes_dir") #DO NOT RENAME THIS TO NODES
-      locs['root']              = locs['chef-repo']                                    unless locs['root']
-      locs['app-root']          = locs['chef-repo']                                    unless locs['app-root']
-      locs['chef']              = File.expand_path("~/.chef")                          unless locs['chef']
-      locs['cookbooks']         = File.expand_path("#{ locs['chef-repo'] }/cookbooks")
-      locs['berks']             = File.expand_path('~/.berkshelf/cookbooks')
-      locs['wrapper-cookbooks'] = @config['cheftacular']['wrapper-cookbooks']
-      locs['ssh']               = File.expand_path('~/.ssh')
-      locs['chef-log']          = File.expand_path("#{ locs['root']}/log")             unless locs['chef-log']
-      locs['app-tmp']           = File.expand_path("#{ locs['app-root']}/tmp")
+      locs['chef-repo']             = Dir.getwd
+      locs['roles']                 = File.expand_path("#{ locs['chef-repo'] }/roles")
+      locs['nodes']                 = File.expand_path("#{ locs['chef-repo'] }/nodes_dir") #DO NOT RENAME THIS TO NODES
+      locs['root']                  = locs['chef-repo']                                    unless locs['root']
+      locs['app-root']              = locs['chef-repo']                                    unless locs['app-root']
+      locs['chef']                  = File.expand_path("~/.chef")                          unless locs['chef']
+      locs['cookbooks']             = File.expand_path("#{ locs['chef-repo'] }/cookbooks")
+      locs['berks']                 = File.expand_path('~/.berkshelf/cookbooks')
+      locs['wrapper-cookbooks']     = @config['cheftacular']['wrapper_cookbooks']
+      locs['ssh']                   = File.expand_path('~/.ssh')
+      locs['chef-log']              = File.expand_path("#{ locs['root']}/log")             unless locs['chef-log']
+      locs['app-tmp']               = File.expand_path("#{ locs['app-root']}/tmp")
+      locs['examples']              = File.expand_path("../../../examples", __FILE__)
+      locs['cheftacular-lib']       = File.expand_path("../..", __FILE__)
+      locs['cheftacular-lib-files'] = locs['cheftacular-lib'] + '/cheftacular/files'
 
       @config['locs'] = locs
     end
@@ -354,7 +370,7 @@ class Cheftacular
           "a ruby string to run commands against was not found in either your cheftacular.yml file or your .ruby-version file."
         ].join(' ')
 
-        @config['helper'].exception_output msg, e
+        @config['error'].exception_output msg, e
       end
       
       @config['ruby_string'] = "ruby-" + @config['ruby_string'] unless @config['ruby_string'].include?('ruby-')
@@ -383,7 +399,7 @@ class Cheftacular
     def initialize_version_check detected_version=""
       current_version = Cheftacular::VERSION
 
-      detected_version = File.exists?( @config['helper'].current_version_file_path ) ? File.read( @config['helper'].current_version_file_path ) : @config['helper'].fetch_remote_version
+      detected_version = File.exists?( @config['filesystem'].current_version_file_path ) ? File.read( @config['filesystem'].current_version_file_path ) : @config['helper'].fetch_remote_version
 
       if @config['helper'].is_higher_version? detected_version, current_version
         puts "\n Your Cheftacular is out of date. Currently #{ current_version } and remote version is #{ detected_version }.\n"
@@ -392,16 +408,16 @@ class Cheftacular
 
         exit
       else
-        unless File.exists?( @config['helper'].current_version_file_path )
+        unless File.exists?( @config['filesystem'].current_version_file_path )
           puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") } (#{ detected_version }). No new version detected."
 
-          @config['helper'].write_version_file detected_version
+          @config['filesystem'].write_version_file detected_version
         end
       end
     end
 
     def initialize_auditing_checks
-      unless File.exists? @config['helper'].current_audit_file_path
+      unless File.exists? @config['filesystem'].current_audit_file_path
         puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") } audit data..."
 
         @config['auditor'].write_audit_cache_file
@@ -421,6 +437,7 @@ class Cheftacular
       @config['error']                          = Cheftacular::Error.new(@options, @config)
       @config['dummy_sshkit']                   = SSHKit::Backend::Netssh.new(SSHKit::Host.new('127.0.0.1'))
       @config['DNS']                            = Cheftacular::DNS.new(@options, @config)
+      @config['cloud_provider']                 = Cheftacular::CloudProvider.new(@options, @config)
     end
 
     def initialize_directories
@@ -430,16 +447,59 @@ class Cheftacular
 
       FileUtils.mkdir_p File.join( @config['locs']['app-tmp'], @config['helper'].declassify)
 
-      FileUtils.mkdir_p @config['helper'].current_nodes_file_cache_path
+      FileUtils.mkdir_p @config['filesystem'].current_nodes_file_cache_path
 
-      @config['helper'].cleanup_file_caches
+      @config['filesystem'].cleanup_file_caches
+    end
+
+    def initialize_cloud_checks exit_on_finish = false
+      hash = @config['cheftacular']['cloud_authentication']
+
+      unless hash.has_key?(@options['preferred_cloud'])
+        puts "Critical! No Cloud credentials detected for your preferred cloud #{ @options['preferred_cloud'] }, " +
+        "Please update the cheftacular.yml cloud_authentication:#{ @options['preferred_cloud'] } key!"
+
+        exit_on_finish = true
+      end
+
+      if hash.has_key?('rackspace')
+        if !( hash['rackspace'].has_key?('username') || hash['rackspace'].has_key?('api_key') || hash['rackspace'].has_key?('email')) 
+
+          puts "Critical! No cloud credentials detected for the rackspace cloud_authentication hash! There must be both a valid username and an api_key in this hash!"
+          puts "Please update the cheftacular.yml cloud_authentication:rackspace key!"
+
+          exit_on_finish = true
+        elsif hash['rackspace']['username'].empty? || hash['rackspace']['api_key'].empty? || hash['rackspace']['email'].empty?
+          puts "Critical! Cloud credentials detected for the rackspace cloud_authentication hash are blank!"
+          puts "Please update the cheftacular.yml cloud_authentication:rackspace key!"
+
+          exit_on_finish = true
+        end
+      end
+
+      if hash.has_key?('digitalocean')
+        if !( hash['digitalocean'].has_key?('client_id') || hash['digitalocean'].has_key?('api_key')) 
+
+          puts "Critical! No cloud credentials detected for the digitalocean cloud_authentication hash! There must be both a valid client_id and an api_key in this hash!"
+          puts "Please update the cheftacular.yml cloud_authentication:digitalocean key!"
+
+          exit_on_finish = true
+        elsif hash['digitalocean']['client_id'].empty? || hash['digitalocean']['api_key'].empty?
+          puts "Critical! Cloud credentials detected for the digitalocean cloud_authentication hash are blank!"
+          puts "Please update the cheftacular.yml cloud_authentication:digitalocean key!"
+
+          exit_on_finish = true
+        end
+      end
+
+      exit if exit_on_finish
     end
 
     def initialize_chef_repo_up_to_date
       if @config['helper'].running_in_mode?('devops')
         @config['cheftacular']['wrapper_cookbooks'].split(',').each do |wrapper_cookbook|
-          parsed_hash = if File.exists?( @config['helper'].current_chef_repo_cheftacular_file_cache_path ) 
-                          File.read( @config['helper'].current_chef_repo_cheftacular_file_cache_path )
+          parsed_hash = if File.exists?( @config['filesystem'].current_chef_repo_cheftacular_file_cache_path ) 
+                          File.read( @config['filesystem'].current_chef_repo_cheftacular_file_cache_path )
                         else
                           Digest::SHA2.hexdigest(@config['helper'].compile_chef_repo_cheftacular_yml_as_hash.to_yaml.to_s)
                         end
@@ -450,20 +510,20 @@ class Cheftacular
           unless File.exist?(wrapper_cookbook_cheftacular_loc)
             puts "Wrapper cookbook \"#{ wrapper_cookbook }\" does not have a cheftacular.yml file in #{ @config['cheftacular']['location_of_chef_repo_cheftacular_yml'] }! Creating..."
 
-            @config['helper'].write_chef_repo_cheftacular_yml_file wrapper_cookbook_cheftacular_loc
+            @config['filesystem'].write_chef_repo_cheftacular_yml_file wrapper_cookbook_cheftacular_loc
           end
 
           if parsed_hash == Digest::SHA2.hexdigest(File.read(wrapper_cookbook_cheftacular_loc))
-            next if File.exists?( @config['helper'].current_chef_repo_cheftacular_file_cache_path )
+            next if File.exists?( @config['filesystem'].current_chef_repo_cheftacular_file_cache_path )
           else
             puts "Wrapper cookbook (#{ wrapper_cookbook }) does not have a current cheftacular.yml file in #{ @config['cheftacular']['location_of_chef_repo_cheftacular_yml'] }\"! Overwriting..."
 
-            @config['helper'].write_chef_repo_cheftacular_yml_file wrapper_cookbook_cheftacular_loc
+            @config['filesystem'].write_chef_repo_cheftacular_yml_file wrapper_cookbook_cheftacular_loc
           end
 
           puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") }'s cheftacular.yml."
 
-          @config['helper'].write_chef_repo_cheftacular_cache_file parsed_hash
+          @config['filesystem'].write_chef_repo_cheftacular_cache_file parsed_hash
         end
       end
     end

@@ -32,7 +32,7 @@ class Cheftacular
 
         entry_count, int_times = 1, []
 
-        compiled_audit_hash[day].keys.each do |time|
+        compiled_audit_hash[day].keys.sort.each do |time|
           out << "#{ entry_count }. #{ time }"
 
           log_array_entry_count = 1

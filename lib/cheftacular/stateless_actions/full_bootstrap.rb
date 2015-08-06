@@ -24,6 +24,8 @@ class Cheftacular
 
       @config['initializer'].initialize_passwords @options['env'] #reset the passwords var to contain the new deploy pass set in ubuntu_bootstrap
 
+      @config['helper'].install_rvm_sh_file if @config['cheftacular']['install_rvm_on_boot']
+
       @config['stateless_action'].chef_bootstrap
     end
   end

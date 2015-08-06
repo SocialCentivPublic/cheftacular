@@ -1,9 +1,9 @@
 class CloudInteractor
   class Domain
     def update_record args, already_created=false
-      args['type'] ||= 'A'
-      args['ttl']  ||= 300
-      args['target_domain'] ||= "#{ args['subdomain'] }.#{ args[IDENTITY.singularize] }"
+      args['type']          ||= 'A'
+      args['ttl']           ||= 300
+      args['target_domain'] ||= @classes['clouds'].parse_provider_domain_record_name(args)
       args['target_domain']   = args[IDENTITY.singularize] if args['subdomain'].blank?
 
       read args, false
@@ -24,8 +24,8 @@ class CloudInteractor
         #the fact that there is no public update method is silly
         specific_record = specific_fog_object.records.get(args['id'])
 
-        case @options['preferred_cloud']
-        when 'rackspace'
+        case @options['route_dns_changes_via']
+        when /rackspace|dnsimple/
           specific_record.type  = args['type']
           specific_record.value = args['target_ip']
           specific_record.ttl   = args['ttl']

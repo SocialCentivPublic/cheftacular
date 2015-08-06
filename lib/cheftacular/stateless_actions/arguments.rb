@@ -55,10 +55,17 @@ class Cheftacular
     end
   end
 
+  class InitializationAction
+    def arguments
+      
+    end
+  end
+
   class StatelessAction
     def arguments
-      #TODO point this command to it's help and display?
-      raise "This command currently does nothing, do not try to run it."
+      @config['stateless_action_documentation'].arguments
+
+      puts @config['documentation']['arguments']
     end
   end
 end

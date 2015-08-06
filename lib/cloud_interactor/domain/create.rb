@@ -9,7 +9,7 @@ class CloudInteractor
         return false
       end
 
-      @classes['auth'].auth_service(RESOURCE).instance_eval('zones').create(domain: args[IDENTITY.singularize], email: @auth_hash['cloud_auth'][@options['preferred_cloud']]['email'])
+      @classes['auth'].auth_service(RESOURCE).instance_eval('zones').create(domain: args[IDENTITY.singularize], email: @auth_hash['cloud_authentication'][@options['preferred_cloud']]['email'])
 
       puts "Created #{ IDENTITY } #{ args[IDENTITY.singularize] }..."
     end

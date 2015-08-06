@@ -42,11 +42,12 @@ class Cheftacular
       end
 
       targets.each do |target|
+        puts "clearing #{ target }"
         case CONFIG['host_os']
         when /mswin|windows/i
           raise "#{ __method__ } does not support this operating system at this time"
         when /linux|arch/i
-          cleanup_known_hosts_for_BSD_linux_architecture target
+          puts "#{ __method__ } does not support this operating system at this time"
         when /sunos|solaris/i
           raise "#{ __method__ } does not support this operating system at this time"
         when /darwin/i

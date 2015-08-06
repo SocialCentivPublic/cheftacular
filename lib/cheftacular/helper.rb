@@ -28,24 +28,27 @@ class Cheftacular
       !@config['action'].public_methods(false).include?(command.to_sym) && !@config['stateless_action'].public_methods(false).include?(command.to_sym)
     end
 
-    def running_on_chef_node?
-      Dir.entries('/etc').include?('chef')
+    def is_initialization_command? command=''
+      command ||= ''
+            
+      @config['initialization_action'].public_methods(false).include?(command.to_sym)
+    end
+
+    def running_on_chef_node? ret = false
+      Dir.entries('/etc').include?('chef') && File.exist?('/etc/chef/client.rb') && !File.size?('/etc/chef/client.rb').nil?
     rescue StandardError => e
-      exception_output "An error occurred while trying to see if this system is a chef node. Assuming the system is not a chef node.", e, false
+      @config['error'].exception_output "An error occurred while trying to see if this system is a chef node. Assuming the system is not a chef node.", e, false
     end
 
     def running_in_mode? mode
       @config['cheftacular']['mode'] == mode
     end
 
+    #TODO, fix for clients that block amazon hosted rubygems?
     def fetch_remote_version
       puts "Checking remote #{ declassify } version..."
 
       `gem list #{ declassify } --remote`[/(\d+\.\d+\.\d+)/]
-    end
-
-    def is_junk_filename? filename
-      filename =~ /.DS_Store|.com.apple.timemachine.supported|README.*/ || filename == '.' || filename == '..' && File.directory?(filename)
     end
 
     def completion_rate? percent, mode
@@ -102,10 +105,6 @@ class Cheftacular
       puts("\nDone in #{ Time.now - @config['start_time'] } seconds at #{ Time.now.strftime('%Y-%m-%d %l:%M:%S %P') }.") unless @options['quiet']
     end
 
-    def write_version_file version
-      File.open( current_version_file_path, "w") { |f| f.write(version) }
-    end
-
     def set_local_instance_vars
       [ 
         @options, 
@@ -117,61 +116,6 @@ class Cheftacular
         @config['cheftacular'],
         @config['server_passwords']
       ]
-    end
-
-    def exception_output message, exception='', exit_on_call=true, suppress_error_output=false
-      puts "#{ message }\n"
-
-      puts("Error message: #{ exception }\n#{ exception.backtrace.join("\n") }") unless suppress_error_output
-
-      exit if exit_on_call
-    end
-
-    def write_nodes_file_cache nodes
-      nodes.each do |node|
-        File.open( File.join( current_nodes_file_cache_path, "#{ node.name }.json"), "w") { |f| f.write(node.to_json) }
-      end
-    end
-
-    def check_nodes_file_cache nodes=[]
-      Dir.entries(current_nodes_file_cache_path).each do |location|
-        next if is_junk_filename?(location)
-
-        nodes << @config['ridley'].node.from_file("#{ current_nodes_file_cache_path }/#{ location }" )
-      end
-
-      nodes
-    end
-
-    def current_version_file_path
-      current_file_path 'version-check.txt'
-    end
-
-    def current_audit_file_path
-      current_file_path 'audit-check.txt'
-    end
-
-    def compare_file_node_cache_against_chef_nodes mode='include?'
-      chef_server_names, nodes_file_cache_names = [],[]
-      included = true 
-
-      @config['chef_nodes'].each { |node| chef_server_names << node.name }
-
-      check_nodes_file_cache.each { |node| nodes_file_cache_names << node.name }
-
-      nodes_file_cache_names.each do |node_name|
-        unless chef_server_names.include?(node_name)
-          included = false
-
-          break
-        end
-      end
-
-      case mode
-      when 'include?'  then return included
-      when 'not_equal' then return check_nodes_file_cache.count != names.count
-      when 'equal'     then return chef_server_names.sort == nodes_file_cache_names.sort
-      end
     end
 
     def is_higher_version? vstr1, vstr2
@@ -187,7 +131,7 @@ class Cheftacular
       user     = @config['cheftacular']['deploy_user']
       password = @config['server_passwords'][@options['address']]
       nodename = @options['node_name']
-      chef_ver = @config['cheftacular']['chef_client_version']
+      chef_ver = @config['cheftacular']['chef_version'].to_i >= 12 ? '12.4.0' : '11.16.4'
 
       "knife bootstrap #{ address } -x #{ user } -P #{ password } -N #{ nodename } --sudo --use-sudo-password --bootstrap-version #{ chef_ver }"
     end
@@ -204,14 +148,11 @@ class Cheftacular
       count = 1
 
       doc_arr.sort {|a, b| a[0] <=> b[0]}.flatten(1).each do |line|
-
         out << "#{ count }. #{ line }" if line.class.to_s == 'String'
 
         out << line if line.class.to_s == 'Array'
 
         count += 1 if line.class.to_s == 'String'
-
-        #puts("#{ out[out.index("#{ count }. #{ line }")] }::#{ line.class }::#{ count }\n") unless line.class.to_s == 'Array'
       end
 
       out
@@ -226,49 +167,11 @@ class Cheftacular
     end
 
     def set_cloud_options
-      @options['preferred_cloud']        = @options['preferred_cloud'].nil? ?        @config['cheftacular']['preferred_cloud'] :        @options['preferred_cloud']
-      @options['preferred_cloud_image']  = @options['preferred_cloud_image'].nil? ?  @config['cheftacular']['preferred_cloud_image'] :  @options['preferred_cloud_image']
-      @options['preferred_cloud_region'] = @options['preferred_cloud_region'].nil? ? @config['cheftacular']['preferred_cloud_region'] : @options['preferred_cloud_region']
-      @options['virtualization_mode']    = @options['virtualization_mode'].nil? ?    @config['cheftacular']['virtualization_mode'] :    @options['virtualization_mode']
-    end
-
-    def current_nodes_file_cache_path
-      current_file_path 'node_cache'
-    end
-
-    def cleanup_file_caches mode='old', check_current_day_entry=false
-      base_dir = File.join( @config['locs']['app-root'], 'tmp', declassify )
-
-      Dir.entries(base_dir).each do |entry|
-        next if is_junk_filename?(entry)
-
-        case mode
-        when 'old'
-          FileUtils.rm("#{ base_dir }/#{ entry }") if File.file?("#{ base_dir }/#{ entry }") && !entry.include?(Time.now.strftime("%Y%m%d"))
-        when 'current'
-          check_current_day_entry = true
-        when 'current-audit-only'
-          FileUtils.rm("#{ base_dir }/#{ entry }") if File.file?("#{ base_dir }/#{ entry }") && entry.include?(Time.now.strftime("%Y%m%d"))
-        end
-
-        if File.exists?("#{ base_dir }/#{ entry }") && File.directory?("#{ base_dir }/#{ entry }")
-          FileUtils.rm_rf("#{ base_dir }/#{ entry }") if !check_current_day_entry && !entry.include?(Time.now.strftime("%Y%m%d"))
-          
-          FileUtils.rm_rf("#{ base_dir }/#{ entry }") if check_current_day_entry && entry.include?(Time.now.strftime("%Y%m%d"))
-
-          FileUtils.mkdir_p @config['helper'].current_nodes_file_cache_path
-        end
-      end
-    end
-
-    def remove_current_file_node_cache
-      base_dir = File.join( @config['locs']['app-root'], 'tmp', declassify )
-
-      Dir.entries(base_dir).each do |entry|
-        next if is_junk_filename?(entry)
-
-        FileUtils.rm_rf("#{ base_dir }/#{ entry }") if File.directory?("#{ base_dir }/#{ entry }") && entry.include?(Time.now.strftime("%Y%m%d"))
-      end      
+      @options['preferred_cloud']        = @options['preferred_cloud'].nil? ?        @config['cheftacular']['preferred_cloud'].downcase        : @options['preferred_cloud'].downcase
+      @options['preferred_cloud_image']  = @options['preferred_cloud_image'].nil? ?  @config['cheftacular']['preferred_cloud_image']           : @options['preferred_cloud_image']
+      @options['preferred_cloud_region'] = @options['preferred_cloud_region'].nil? ? @config['cheftacular']['preferred_cloud_region']          : @options['preferred_cloud_region']
+      @options['virtualization_mode']    = @options['virtualization_mode'].nil? ?    @config['cheftacular']['virtualization_mode']             : @options['virtualization_mode']
+      @options['route_dns_changes_via']  = @options['route_dns_changes_via'].nil? ?  @config['cheftacular']['route_dns_changes_via'].downcase  : @options['route_dns_changes_via'].downcase
     end
 
     def does_cheftacular_config_have? key_array
@@ -331,14 +234,6 @@ class Cheftacular
       exit
     end
 
-    def current_chef_repo_cheftacular_file_cache_path
-      current_file_path "chef_repo_cheftacular_cache"
-    end
-
-    def write_chef_repo_cheftacular_cache_file hash
-      File.open( current_chef_repo_cheftacular_file_cache_path, "w") { |f| f.write(hash) }
-    end
-
     def compile_chef_repo_cheftacular_yml_as_hash
       master_hash = get_cheftacular_yml_as_hash
       master_hash['replace_keys_in_chef_repo'].each_pair do |key, val|
@@ -348,13 +243,22 @@ class Cheftacular
       master_hash
     end
 
-    def write_chef_repo_cheftacular_yml_file file_location
-      File.open( file_location, "w") { |f| f.write(compile_chef_repo_cheftacular_yml_as_hash.to_yaml) }
-    end
+    def install_rvm_sh_file out=[]
+      puts("Starting rvm.sh installation...") unless @options['quiet']
 
-    private
-    def current_file_path file_name
-      File.join( @config['locs']['app-root'], 'tmp', declassify, "#{ Time.now.strftime("%Y%m%d") }-#{ file_name }")
+      commands = [
+        "#{ @config['helper'].sudo(@options['address']) } mv /home/deploy/rvm.sh /etc/profile.d",
+        "#{ @config['helper'].sudo(@options['address']) } chmod 755 /etc/profile.d/rvm.sh",
+        "#{ @config['helper'].sudo(@options['address']) } chown root:root /etc/profile.d/rvm.sh"
+      ]
+
+      out << `scp -oStrictHostKeyChecking=no #{ @config['locs']['cheftacular-lib-files'] }/rvm.sh #{ @config['cheftacular']['deploy_user'] }@#{ @options['address'] }:/home/#{ @config['cheftacular']['deploy_user'] }`
+
+      commands.each do |command|
+        out << `ssh -t -oStrictHostKeyChecking=no #{ @config['cheftacular']['deploy_user'] }@#{ @options['address'] } "#{ command }"`
+      end
+
+      puts("Completed rvm.sh installation into /etc/profile.d/rvm.sh") unless @options['quiet']
     end
   end
 end

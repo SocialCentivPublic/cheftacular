@@ -1,0 +1,10 @@
+{
+  "name": "dbmasterp",
+  "chef_environment": "production",
+  "run_list": [
+    "role[db]",
+    "role[my_repository_role]",
+    //"role[db_replication]",
+    "role[db_primary]"
+  ]
+}

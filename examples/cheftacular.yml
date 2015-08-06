@@ -5,7 +5,7 @@ default_environment:    staging                  # the default environment all c
 ruby_version:           ruby-2.1.2               # Default ruby version to run commands against, only matters explicitly if your repo does not have a .ruby-version file
 deploy_user:            deploy                   # User on the remote systems that all remote commands will be done with
 cheftacular_chef_user:  mychefuser               # Chef user on the chef user. You must have a CHEFUSERNAME.pem file in your .chef directory to authenticate
-chef_server_url:        https://chef.example.com # can be any address that has a valid chef server behind it
+chef_server_url:        https://chef.example.com/organizations/your_organization # can be any address that has a valid chef server behind it (for chef 11). For Chef 12 the string must include the full path
 ssl_verify:             false                    # Only matters if using a CA authority for your chef cert
 wrapper_cookbooks:      MyCookbook               # comma delim string of wrapper cookbooks to do clean_cookbooks on
 strict_version_checks:  false                    # when true, the gem will check rubygems once per day to see if theres a new version and prevent execution until this new version is bundled
@@ -15,16 +15,19 @@ default_swap_location:  /mnt/1GB.swap            # default location of the swapf
 backup_directory:       /mnt/my/backup/directory # This is only used for the backup stateless command, can be left blank if other backup plans are being used
 backup_filesystem:      backup_gem               # valid entries are backup_gem | raw
 backup_server:          first_production_slave   # tells the backup command what server to fetch the backup data from. The string first_production_slave is parsed into a TLD / local ip
-chef_client_version:    11.16.4                  # version of chef-client to bootstrap on the remote servers
+chef_version:           12                       # Major Version of the Chef Server (currently supports 11|12)
 data_bag_key_file:      data_bag_key             # name of the data bag key file in the ~/.chef folder for workstations
 server_pass_length:     20
 default_flavor_name:    1 GB Performance         # When booting servers, this flavor name is used if a flavor is not set in some way
-preferred_cloud:        rackspace                # preferred cloud to interact with (uses the default -> authentication bag as storage for the auth creds)
-preferred_cloud_region: dfw                      # preferred cloud region to interact with
+preferred_cloud:        rackspace                # preferred cloud to interact with (currently supports rackspace and digitalocean)
+preferred_cloud_region: dfw                      # preferred cloud region to interact with (please check your cloud provider for specific regions)
 preferred_cloud_os:     ubuntu                   # can be centos|coreos|debian|fedora|redhat|ubuntu|vyatta . Bear in mind not all OSes have supported bootstraps at the moment
 preferred_cloud_image:  Ubuntu 14.04 LTS (Trusty Tahr) (PV) # preferred cloud image to install, can use custom built images here as well. The string is matched to a valid image but specific is better
 virtualization_mode:    PV                       # on rackspace cloud, set your default virtualization mode to this (only PV or PVHVM are supported)
 git_based_deploys:      true
+route_dns_changes_via:  rackspace                # tells cheftacular to send dns changes to this provider instead of the preferred_cloud_option
+node_name_separator:    '.'                      # On rackspace, can be anything except a space, on most other hosting sites, it must be a valid url character
+pre_install_packages:   ''                       # space delimited list of packages to install during a  node's initial setup process
 
 #chef-repo
 keep_chef_repo_cheftacular_yml_up_to_date: false
@@ -44,6 +47,19 @@ cloudflare:
   api_key:     
   user_email:  
   default_ttl: 300
+
+cloud_authentication:
+  #rackspace:
+  #  api_key: 
+  #  email:   
+  #  username:
+  #digitalocean:
+  #  api_key:
+  #  client_id:
+  #dnsimple:
+  #  email:
+  #  password:
+  #  token:
 
 # the first comma in the list of log_locs is what is tailable, the others are only loggable
 role_maps: # role maps for log tailing
@@ -135,3 +151,19 @@ global_chef_passwords: #passwords you want auto-generated for a chef_env for all
 haproxy_config:
   role_name:    haproxy #default role all haproxy servers will have
   default_port: 22002
+
+location_aliases:
+  backups:      /my/backup/location
+  varlog:       /var/log
+  sensu:        /etc/sensu
+  api_root:     /my/api/root/location
+
+chef_server:
+  interactable:  false   #this key can be used to easily disable access to the chef-server command
+  ssh_user:      deploy  #This is the user who can be ssh'd with onto the chef-server. If root, you can leave sudo_password blank.
+  sudo_password: MY_PASS #sudo password for accessing the chef-server-ctl command for the chef-server command
+
+role_toggling:
+  deactivated_role_suffix: '_deactivate' #for the cft role_toggle command, the suffix for your deactivated roles
+  strict_roles:            true           #for the cft role_toggle command, if roles should be able to be set for a node that did not have the role (at all) before
+  skip_confirm:            false          # skips confirming for role toggle command

@@ -7,12 +7,18 @@ module SSHKit
 
         puts "Running #{ command } for #{ name } (#{ ip_address }) (Run with with --debug to generate a log as well)"
 
-        mig_loc = "/var/www/vhosts/#{ options['repository'] }/current"
+        target_loc = "/var/www/vhosts/#{ options['repository'] }/current"
+
+        if test( target_loc )
+          puts "#{ name } (#{ ip_address }) cannot run #{ command } as there is no directory at #{ target_loc }!"
+
+          return ['', timestamp]
+        end
 
         capture_args = ["RAILS_ENV=#{ true_env }"]
         capture_args << command.split(' ')
 
-        within mig_loc do
+        within target_loc do
           out << capture( *capture_args.flatten )
         end
 

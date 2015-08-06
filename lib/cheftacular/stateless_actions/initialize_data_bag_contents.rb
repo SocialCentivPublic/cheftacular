@@ -10,7 +10,7 @@ class Cheftacular
 
   class StatelessAction
     def initialize_data_bag_contents env=""
-      raise "Environment does not exist on chef server!" unless @config['chef_environments'].include?(env)
+      raise "Environment #{ env } does not exist on chef server!" if !env.blank? && !@config['chef_environments'].include?(env)
 
       env = ARGV[1] if env.blank?
 
@@ -29,6 +29,8 @@ class Cheftacular
       #@config['initializer'].initialize_logs_bag_contents env
 
       #@config['ChefDataBag'].initialize_node_roles_bag_contents env
+
+      exit if @options['command'] == __method__
     end
   end
 
@@ -58,48 +60,15 @@ class Cheftacular
         end 
       end
 
-      hash['cloud_auth'] = {} unless hash.has_key?('cloud_auth')
-
-      unless hash['cloud_auth'].has_key?(@options['preferred_cloud'])
-        hash['cloud_auth'][@options['preferred_cloud']] = {}
-
-        puts "Critical! No Cloud credentials detected for cloud #{ @options['preferred_cloud'] }, " +
-        "Someone will need to edit the authentication data bag with the command " +
-        auth_fix_message +
-        "And add the correct cloud credentials to the hash for your preferred cloud!"
-
-        save_on_finish, exit_on_finish = true,true
-      end
-
-      if hash['cloud_auth'].has_key?('rackspace')
-        if !( hash['cloud_auth']['rackspace'].has_key?('username') || hash['cloud_auth']['rackspace'].has_key?('api_key') || hash['cloud_auth']['rackspace'].has_key?('email')) 
-
-          hash['cloud_auth']['rackspace']['username'] = "" unless hash['cloud_auth']['rackspace'].has_key?('username')
-          hash['cloud_auth']['rackspace']['api_key']  = "" unless hash['cloud_auth']['rackspace'].has_key?('api_key')
-          hash['cloud_auth']['rackspace']['email']    = "" unless hash['cloud_auth']['rackspace'].has_key?('email')
-
-
-          puts "Critical! No cloud credentials detected for the rackspace cloud_auth hash! There must be both a valid username and an api_key in this hash!"
-          puts "Please run #{ auth_fix_message }Fill in the blank strings with your rackspace credentials."
-
-          save_on_finish, exit_on_finish = true,true
-        elsif hash['cloud_auth']['rackspace']['username'].empty? || hash['cloud_auth']['rackspace']['api_key'].empty? || hash['cloud_auth']['rackspace']['api_key'].empty?
-          puts "Critical! Cloud credentials detected for the rackspace cloud_auth hash are blank!"
-          puts "Please run #{ auth_fix_message }Fill in the blank strings with your rackspace credentials."
-
-          exit_on_finish = true
-        end
-      end
-
       if @config['cheftacular']['git_based_deploys']
         if !hash.has_key?('git_private_key') || !hash.has_key?('git_public_key') || !hash.has_key?('git_OAuth')
-          puts "Warning! github user credentials in default authentication bag were not found! Please run `cft help create_git_key` and then run that command itself!" unless @command == 'help'
+          puts "Warning! github user credentials in default authentication bag were not found! Please run `cft help create_git_key` and then run that command itself!" unless @options['command'] == 'help'
         end
       end
 
       @config['ChefDataBag'].save_authentication_bag if save_on_finish
 
-      exit if exit_on_finish
+      exit if exit_on_finish && @options['command'] != 'create_git_key'
     end
 
     #User Action Generated: {"1.2.3.4-deploy-pass": "S325DSAGBCVfg5", "1.2.3.4-root-pass": "7dfDSFgb5%231", "1.2.3.4-name": "test"}

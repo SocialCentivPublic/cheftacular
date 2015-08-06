@@ -7,6 +7,9 @@ class CloudInteractor
       #Note, if no flavor is passed it defaults to a 512MB standard!
       @classes['flavor'].read args['flavor']
 
+      @classes['region'].read(@options['preferred_cloud_region'], false) if @options['preferred_cloud'] == 'digitalocean'
+      @classes['sshkey'].bootstrap if @options['preferred_cloud'] == 'digitalocean'
+
       read args, false
 
       unless @main_obj["specific_#{ IDENTITY }"].empty?
@@ -22,6 +25,12 @@ class CloudInteractor
         flavor_id: @main_obj['specific_flavors'].first['id'],
         image_id:  @main_obj['specific_images'].first['id']
       }
+
+      if @options['preferred_cloud'] == 'digitalocean'
+        final_create_args[:region_id]          = @main_obj['specific_regions'].first['id']
+        final_create_args[:ssh_key_ids]        = @main_obj['specific_ssh_keys'].first['id']
+        final_create_args[:private_networking] = true
+      end
 
       @main_obj["#{ IDENTITY }_create_request"] = JSON.parse(@classes['auth'].auth_service(RESOURCE).instance_eval(IDENTITY).create(final_create_args).to_json)
 

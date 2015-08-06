@@ -3,9 +3,14 @@ class Cheftacular
   class StatelessActionDocumentation
     def remove_client
       @config['documentation']['stateless_action'] <<  [
-        "`cft remove_client -n NODE_NAME` removes a client (and its node data) from the chef-server. " +
+        "`cft remove_client NODE_NAME [destroy]` removes a client (and its node data) from the chef-server. " +
         "It also removes its dns records from the cloud service (if possible). " +
-        "This should not be done lightly as you will have to wipe the server and trigger another chef-client run to get it to register again"
+        "This should not be done lightly as you will have to wipe the server and trigger another chef-client " +
+        "run to get it to register again. Alternatively, you can run `cft reinitialize IP_ADDRESS NODE_NAME as well.",
+
+        [
+          "    1. `destroy` deletes the server as well as removing it from the chef environment."
+        ]
       ]
     end
   end
@@ -47,15 +52,15 @@ class Cheftacular
           @config['ridley'].client.delete(client)
 
           if @options['delete_server_on_remove'] == 'destroy'
-            @config['stateless_action'].cloud "server", "destroy:#{ @options['env'] }_#{ n.name }"
+            @config['stateless_action'].cloud "server", "destroy:#{ @config['getter'].get_current_real_node_name(n.name) }"
           end
+
+          @config[@options['env']]['addresses_bag_hash'] = @config[@options['env']]['addresses_bag'].reload.to_hash
+
+          @config['DNS'].compile_address_hash_for_server_from_options('set_hash_to_nil')
+
+          @config['ChefDataBag'].save_addresses_bag
         end
-
-        @config[@options['env']]['addresses_bag_hash'] = @config[@options['env']]['addresses_bag'].reload.to_hash
-
-        @config['DNS'].compile_address_hash_for_server_from_options('set_hash_to_nil')
-
-        @config['ChefDataBag'].save_addresses_bag
       end
 
       puts("Done. Please verify that the output of the next line(s) match your expectations (running client-list)") if @options['verbose']

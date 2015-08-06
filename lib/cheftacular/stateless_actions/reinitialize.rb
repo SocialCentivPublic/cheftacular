@@ -30,17 +30,11 @@ class Cheftacular
 
       out << `ssh -t -oStrictHostKeyChecking=no #{ chef_user }@#{ @options['address'] } "#{ sudo(@options['address']) } rm /etc/chef/client.pem"`
 
-      #remove_client #just in case
-
       puts("Starting reinitialization...") unless @options['quiet']
 
       out << `#{ @config['helper'].knife_bootstrap_command }`
 
       puts(out.last) unless @options['quiet']
-
-      #@options['multi-step'] = true # have the upload_nodes grab the new nodes
-
-      #upload_nodes
     end
   end
 end

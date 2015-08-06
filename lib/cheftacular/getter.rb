@@ -17,13 +17,13 @@ class Cheftacular
 
       @config['helper'].completion_rate? 0, __method__
 
-      file_cache_nodes = @config['helper'].check_nodes_file_cache if @config['helper'].compare_file_node_cache_against_chef_nodes('equal')
+      file_cache_nodes = @config['filesystem'].check_nodes_file_cache if @config['filesystem'].compare_file_node_cache_against_chef_nodes('equal')
 
       @config['chef_nodes'].each do |n|
         true_obj = if !file_cache_nodes.empty? && @config['parser'].array_of_nodes_contains_node_name?(file_cache_nodes, n.name)
                      file_cache_nodes[@config['parser'].index_of_node_name_in_array_of_nodes(file_cache_nodes, n.name)]
                    else
-                     @config['helper'].cleanup_file_caches('current')
+                     @config['filesystem'].cleanup_file_caches('current')
 
                      @config['ridley'].node.find(n.name)
                    end
@@ -80,7 +80,7 @@ class Cheftacular
 
       names.sort.each { |name| nodes << h[name] }
 
-      @config['helper'].write_nodes_file_cache(all_nodes) unless @config['helper'].compare_file_node_cache_against_chef_nodes('equal')
+      @config['filesystem'].write_nodes_file_cache(all_nodes) unless @config['filesystem'].compare_file_node_cache_against_chef_nodes('equal')
 
       puts("") unless @options['quiet']
       
@@ -146,6 +146,13 @@ class Cheftacular
         
         ret[repo_hash['repo_name']]['role'] = name
       end
+
+      ret
+    end
+
+    def get_current_real_node_name other_node_name='', ret=''
+      ret << @options['env'] + @config['cheftacular']['node_name_separator']
+      ret << ( other_node_name.blank? ? @options['node_name'] : other_node_name )
 
       ret
     end
