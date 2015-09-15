@@ -120,6 +120,13 @@ class Cheftacular
       ret_hash
     end
 
+    def get_db_primary_node
+      nodes          = get_true_node_objects true
+      target_db_role = get_current_repo_config['db_primary_host_role']
+      
+      @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ target_db_role }]" }, { if: { not_env: @options['env'] } }], true)
+    end
+
     def get_split_branch_hash ret={}
       @config['cheftacular']['repositories'].each_pair do |name, repo_hash|
         ret[repo_hash['name']] = repo_hash if repo_hash.has_key?('has_split_branches') && repo_hash['has_split_branches']

@@ -14,6 +14,10 @@ class Cheftacular
       end
     end
 
+    def write_environment_config_cache
+      File.open( current_environment_config_cache_file_path, "w") { |f| f.write("set for #{ Time.now.strftime("%Y%m%d") }") }
+    end
+
     def check_nodes_file_cache nodes=[]
       Dir.entries(current_nodes_file_cache_path).each do |location|
         next if is_junk_filename?(location)
@@ -30,6 +34,10 @@ class Cheftacular
 
     def current_audit_file_path
       current_file_path 'audit-check.txt'
+    end
+
+    def current_environment_config_cache_file_path
+      current_file_path 'environment_config-check.txt'
     end
 
     def is_junk_filename? filename

@@ -62,7 +62,15 @@
 
 1. [NYI]`cft get_active_ssh_connections` will fetch the active ssh connections from every server and output it into your log directory.
 
-2. `cft backup [activate|deactivate]` this command sets the fetch_backups and restore_backups flags in your config data bag for an environment. These can be used to give application developers a way to trigger / untrigger restores in an environment
+2. `cft backups [activate|deactivate|load|run]` this command sets the fetch_backups and restore_backups flags in your config data bag for an environment. These can be used to give application developers a way to trigger / untrigger restores in an environment
+
+    1. `activate` will turn on automated backup running (turns on the flag for the env in the config bag).
+
+    2. `deactivate` will turn off automated backup running.
+
+    3. `load` will fetch the latest backup from the production primary **if it doesn't already exist on the server** and run the _backup loading command_ to load this backup into the env.
+
+    4. `run` will simply just run the _backup loading command_ to load the latest backup onto the server.
 
 3. `cft check` Checks the commits for all servers for a repository (for an environment) and returns them in a simple chart. Also shows when these commits were deployed to the server.
 
@@ -221,7 +229,15 @@
 
     1. `SPECIFIC_REPOSITORY` is a special argument, if left blank the key will be placed in the authorized_keys array in the bag, otherwise it will be placed in the specific_authorized_keys hash under a key named for the repository that is passed. The script will error if SPECIFIC_REPOSITORY does not exist in the cheftacular.yml respositories hash. You can then use this data to give users selective ssh access to certain servers.
 
-5. `cft backup [activate|deactivate]` this command sets the fetch_backups and restore_backups flags in your config data bag for an environment. These can be used to give application developers a way to trigger / untrigger restores in an environment
+5. `cft backup [activate|deactivate|load|run]` this command sets the fetch_backups and restore_backups flags in your config data bag for an environment. These can be used to give application developers a way to trigger / untrigger restores in an environment
+
+    1. `activate` will turn on automated backup running (turns on the flag for the env in the config bag).
+
+    2. `deactivate` will turn off automated backup running.
+
+    3. `load` will fetch the latest backup from the production primary **if it doesn't already exist on the server** and run the _backup loading command_ to load this backup into the env.
+
+    4. `run` will simply just run the _backup loading command_ to load the latest backup onto the server.
 
 6. `cft check_cheftacular_yml_keys` allows you to check to see if your cheftacular yml keys are valid to the current version of cheftacular. It will also set your missing keys to their likely default and let you know to update the cheftacular.yml file.
 

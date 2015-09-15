@@ -7,16 +7,16 @@ class Cheftacular
 
     #this will only intialize bags (and their hashes) if they don't exist. Use ridley data bag methods to reload the data etc
     def init_bag bag_env, bag_name, encrypted=true
-      self.instance_eval("@config['ridley'].data_bag.create(name: '#{ bag_env }')") if self.instance_eval("@config['ridley'].data_bag.find('#{ bag_env }').nil?")
+      @config['ridley'].data_bag.create(name: bag_env) if @config['ridley'].data_bag.find(bag_env).nil?
 
-      if self.instance_eval("@config['ridley'].data_bag.find('#{ bag_env }').item.find('#{ bag_name }').nil?")
-        self.instance_eval("@config['ridley'].data_bag.find('#{ bag_env }').item.create(id: '#{ bag_name }')")
+      if @config['ridley'].data_bag.find(bag_env).item.find(bag_name).nil?
+        @config['ridley'].data_bag.find(bag_env).item.create(id: bag_name)
       end
 
       @config[bag_env] ||= {}
 
       if !@config[bag_env].has_key?("#{ bag_name }_bag") || !@config[bag_env].has_key?("#{ bag_name }_bag_hash")
-        self.instance_eval "@config['#{ bag_env }']['#{ bag_name }_bag'] ||= @config['ridley'].data_bag.find('#{ bag_env }').item.find('#{ bag_name }')"
+        @config[bag_env]["#{ bag_name }_bag"] ||= @config['ridley'].data_bag.find(bag_env).item.find(bag_name)
 
         self.instance_eval "@config['#{ bag_env }']['#{ bag_name }_bag_hash'] ||= @config['#{ bag_env }']['#{ bag_name }_bag']#{ encrypted ? '.decrypt' : '' }.to_hash"
       end
@@ -46,7 +46,6 @@ class Cheftacular
       end
     end
 
-    #TODO special save for bag that will compile the data into a different bag for storage (the data will be stored as an audit log and zlib'd)
     def save_audit_bag bag_env="options"
       env = bag_env == 'options' ? @options['env'] : bag_env
 
@@ -55,6 +54,14 @@ class Cheftacular
 
     def save_authentication_bag bag_env="default"
       save_bag 'authentication', bag_env, @config['default']['authentication_bag'], @config['default']['authentication_bag_hash'], true
+    end
+
+    def save_cheftacular_bag bag_env="default"
+      save_bag 'cheftacular', bag_env, @config['default']['cheftacular_bag'], @config['default']['cheftacular_bag_hash']
+    end
+
+    def save_environment_config_bag bag_env='default'
+      save_bag 'environment_config', bag_env, @config['default']['environment_config_bag'], @config['default']['environment_config_bag_hash']
     end
 
     def save_chef_passwords_bag bag_env="options"

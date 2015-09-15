@@ -1,3 +1,41 @@
+## 2.7.0
+
+* New cheftacular.yml keys
+
+    * **also_keep_cheftacular_data_bag_up_to_date** (this creates a data bag that stores your cheftacular config as a hash and updates it like the chef-repo cheftacular.yml)
+
+    * **backup_config:global_backup_role_name** (matcher config that is used to find the primary backup server)
+
+    * **backup_config:global_backup_environ** (matcher config that is used to find the primary backup server)
+
+    * **backup_config:global_backup_path** (location of the database backups directory on the server)
+
+    * **backup_config:backup_dir_mode** (mode to write new backup directories with on `cft backups load`)
+
+    * **backup_config:backup_load_command** (command to run to run a backup, can also be a path and args to a script)
+
+    * **backup_config:db_primary_backup_path** (root directory of backups on database primaries)
+
+    * **thebusinessbook:\*** * (keys for thebusinessbook cookbook, **none of these are required for cheftacular itself**)
+
+* Deleted cheftacular.yml keys
+
+    * **backup_directory**
+
+    * **backup_server**
+
+    * **repositories:REPOSITORY_ROLE_NAME:backup_server**
+
+* Added functionality to the initializer to allow the **also_keep_cheftacular_data_bag_up_to_date** to work.
+
+    * This will create a new data bag called *cheftacular* under *default*, this bag will be updated with the cheftacular keys roughly once a day.
+
+* Added new functionality to `cft backups`, now supports `activate|deactivate|load|run` please see documentation for more details.
+
+* Added new functionality to `cft tail`, now supports `--tail-grep PATTERN` to only send specific matching patterns to the terminal.
+
+* Added new autocompiling bag: `default:environment_config` that stores the bags currently available in all chef environments.
+
 ## 2.6.0
 
 * Created [initial setup documentation](https://github.com/SocialCentivPublic/cheftacular/blob/master/doc/initial_setup.md)

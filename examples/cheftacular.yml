@@ -12,9 +12,7 @@ strict_version_checks:  false                    # when true, the gem will check
 auditing:               true                     # when true, the gem will collect and send auditing data about all commands that are passed to the gem. This data is stored in a chef data bag
 base_file_path:         /var/www/vhosts          # The base file path the repos are stored on for each server
 default_swap_location:  /mnt/1GB.swap            # default location of the swapfile build file on all systems (used for cft restart_swap)
-backup_directory:       /mnt/my/backup/directory # This is only used for the backup stateless command, can be left blank if other backup plans are being used
 backup_filesystem:      backup_gem               # valid entries are backup_gem | raw
-backup_server:          first_production_slave   # tells the backup command what server to fetch the backup data from. The string first_production_slave is parsed into a TLD / local ip
 chef_version:           12                       # Major Version of the Chef Server (currently supports 11|12)
 data_bag_key_file:      data_bag_key             # name of the data bag key file in the ~/.chef folder for workstations
 server_pass_length:     20
@@ -28,16 +26,24 @@ git_based_deploys:      true
 route_dns_changes_via:  rackspace                # tells cheftacular to send dns changes to this provider instead of the preferred_cloud_option
 node_name_separator:    '.'                      # On rackspace, can be anything except a space, on most other hosting sites, it must be a valid url character
 pre_install_packages:   ''                       # space delimited list of packages to install during a  node's initial setup process
+global_backup_server:   
+  global_backup_role_name: ''                # server that is useful for fetching backups from for cft backups
+  global_backup_environ:   ''
+  global_backup_path:      &global_backup_path '/path/to/backup'
+  backup_dir_mode:         '775'
+  backup_load_command:     '' #this command should run the ENTIRE backup
+  db_primary_backup_path:  &db_primary_backup_path '/mnt/postgresbackups/backups/main_backup'
 
 #chef-repo
 keep_chef_repo_cheftacular_yml_up_to_date: false
-location_of_chef_repo_cheftacular_yml:     /files/default #this should be the location of the cheftacular.yml file in your wrapper cookbooks(s). NOTE: The file should be in the same place in all cases
-replace_keys_in_chef_repo: #keys that should be changed when the cheftacular.yml is created in the chef-repo (its a good idea to turn off strict version checks)
+also_keep_cheftacular_data_bag_up_to_date: false # this creates a data bag that stores your cheftacular config as a hash and updates it like the chef-repo cheftacular.yml, the above config must be set for this to be set
+location_of_chef_repo_cheftacular_yml:     /files/default # this should be the location of the cheftacular.yml file in your wrapper cookbooks(s). NOTE: The file should be in the same place in all cases
+replace_keys_in_chef_repo:                       # keys that should be changed when the cheftacular.yml is created in the chef-repo (its a good idea to turn off strict version checks)
   strict_version_checks: false
 
 slack:
-  default_channel: '#default' # Useful if the default channel on the webhook is NOT where you want to send notifications to (like failed deploys)
-  webhook:                    # the full https webhook slack gives you for a webhook integration goes here
+  default_channel: '#default'                    # Useful if the default channel on the webhook is NOT where you want to send notifications to (like failed deploys)
+  webhook:                                       # the full https webhook slack gives you for a webhook integration goes here
 
 #RVM
 install_rvm_on_boot:    false                    # true|false If true, this will cause RVM to be installed for the deploy_user on boot, this makes managing RVM via cookbook impossible.
@@ -83,7 +89,6 @@ repositories:
     #custom_database_name:                       # this key only needs to exist if your database is named differently from REPONAME_ENV
     restore_backup_file_name:  PostgreSQL-mymainrailsrepository.sql # the file that the backup is usually stored in for the backup directory
     not_a_migration_message:                     # If you have some text that will always show up after migrations, put it here so the system doesnt think it needs to run deploys after a migration again
-    #backup_server:             first_production_slave #this key only needs to be set if the backup server (for this database) is different than the global setting backup_server
     has_split_branches:        false             # if you have branches like split-a and split-c, you can use this to access them when defined in the run_list_environments hash 
     specific_chef_passwords:                       # Special keys that you want auto-generated for their repo by for the ENV chef_passwords bag, the value for them is their length
       pg_root_pass:         20
@@ -153,7 +158,8 @@ haproxy_config:
   default_port: 22002
 
 location_aliases:
-  backups:      /my/backup/location
+  backups:      *db_primary_backup_path
+  backupmaster: *global_backup_path
   varlog:       /var/log
   sensu:        /etc/sensu
   api_root:     /my/api/root/location

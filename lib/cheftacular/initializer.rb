@@ -178,6 +178,11 @@ class Cheftacular
           @options['get_log_lines'] = num
         end
 
+        # cft tail options
+        opts.on('--tail-grep PATTERN', "On cft tail pass this argument to only pull a specific pattern from logs of a file") do |pattern|
+          @options['tail_grep'] = pattern
+        end
+
         #cft run
         opts.on('--all', "On cft run COMMAND you can pass --all to run the command on multiple nodes") do 
           @options['run_on_all'] = true
@@ -329,6 +334,10 @@ class Cheftacular
       puts("Loading additional data bag data from chef server for environment \"#{ env }\" for bags: #{ bags_to_load.join(', ') }") if !in_initializer && !@options['quiet']
 
       @config['ChefDataBag'].init_bag('default', 'authentication') if bags_to_load.empty? || bags_to_load.include?('authentication')
+
+      @config['ChefDataBag'].init_bag('default', 'cheftacular', false) if bags_to_load.empty? || bags_to_load.include?('cheftacular')
+
+      @config['ChefDataBag'].init_bag('default', 'environment_config', false) if bags_to_load.empty? || bags_to_load.include?('environment_config')
 
       @config['helper'].completion_rate?(38, 'initializer') if in_initializer
 
@@ -519,6 +528,8 @@ class Cheftacular
             puts "Wrapper cookbook (#{ wrapper_cookbook }) does not have a current cheftacular.yml file in #{ @config['cheftacular']['location_of_chef_repo_cheftacular_yml'] }\"! Overwriting..."
 
             @config['filesystem'].write_chef_repo_cheftacular_yml_file wrapper_cookbook_cheftacular_loc
+
+            initialize_cheftacular_data_bag_contents if @config['cheftacular']['also_keep_cheftacular_data_bag_up_to_date']
           end
 
           puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") }'s cheftacular.yml."
