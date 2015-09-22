@@ -15,11 +15,7 @@ class Cheftacular
 
       @options['command'] = ARGV[0] unless @options['command']
 
-      unless @config['helper'].is_stateless_command?(@options['command'])
-        parse_repository(@options['repository'])
-
-        parse_role(@options['role'])
-      end
+      parse_repository(@options['repository'])
 
       parse_node_name(@options['node_name']) if @options['node_name']
 

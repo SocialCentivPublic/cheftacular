@@ -7,7 +7,7 @@ deploy_user:            deploy                   # User on the remote systems th
 cheftacular_chef_user:  mychefuser               # Chef user on the chef user. You must have a CHEFUSERNAME.pem file in your .chef directory to authenticate
 chef_server_url:        https://chef.example.com/organizations/your_organization # can be any address that has a valid chef server behind it (for chef 11). For Chef 12 the string must include the full path
 ssl_verify:             false                    # Only matters if using a CA authority for your chef cert
-wrapper_cookbooks:      MyCookbook               # comma delim string of wrapper cookbooks to do clean_cookbooks on
+wrapper_cookbooks:      &uppercase_business_name MyBusiness # comma delim string of wrapper cookbooks to do clean_cookbooks on
 strict_version_checks:  false                    # when true, the gem will check rubygems once per day to see if theres a new version and prevent execution until this new version is bundled
 auditing:               true                     # when true, the gem will collect and send auditing data about all commands that are passed to the gem. This data is stored in a chef data bag
 base_file_path:         /var/www/vhosts          # The base file path the repos are stored on for each server
@@ -93,13 +93,49 @@ repositories:
     specific_chef_passwords:                       # Special keys that you want auto-generated for their repo by for the ENV chef_passwords bag, the value for them is their length
       pg_root_pass:         20
       pg_app_pass:          20
+    short_database_name:         api #used for backup_gem
+    test_database_setup_command: 'rake db:test:ready'
+    sensu_monitoring_role:       apiscentiv_sensu_web_ENVIRONMENT
+    custom_nginx_configs:        &custom_nginx_configs
+      - 'client_max_body_size 15M'
+      - 'client_body_in_single_buffer on'
+      - 'client_body_buffer_size 128K'
+    application_services:
+      clockwork_scheduler:
+        rewrite_underscore_to_dash: true #this key existing triggers the effect, it must not exist to not have the effect
+        run_on_role:                clockwork
+        command:                    'clockwork app/task_schedule.rb'
+      delayed_job_misc: 
+        rewrite_underscore_to_dash: true
+        run_on_role:                djworker
+        deactivate_on_role:         djworker_deactivate
+        application_log_cleanup:    true
+        delayedjob_log_cleanup:     true
+        syslog_cleanup:             true
+        command:                    'rake jobs:work'
+        queues:
+          default:
+            - miscellaneous
+          production:
+            - my_special_job_queue
+    application_crons: 
+      data_collecting_cron:   
+        minute:  '0,15,30,45'
+        hour:    '*'
+        command: 'reports:generate'
+        type:    'rake'
+      cleanup_app_log:
+        minute:  '0'
+        hour:    '0'
+        command: "tail -5000 CURRENT_PATH/log/CURRENT_ENVIRONMENT.log > CURRENT_PATH/log/CURRENT_ENVIRONMENT.log" #CURRENT_PATH and CURRENT_ENVIRONMENT are substituted in the cookbook
+        type:    'raw'
 
   myfrontendrepo:
     repo_name:                       my-frontend-repository
     database:                        none
     stack:                           nodejs #remember, this is the stack the server is using on the server side to SERVE requests, not the code its running to render things on the client side
     route_wildcard_requests_for_tld: true   #this triggers special behaviors for server creation (cloud_bootstrap). If a server is a load balancer for this repo, server creation will route wildcard requests to it
-
+    custom_nginx_configs:            *custom_nginx_configs
   all:                                             # This key should always exist
     repo_name: all
     database:  none                              # We dont want to run migrations on an all deploy
@@ -173,3 +209,141 @@ role_toggling:
   deactivated_role_suffix: '_deactivate' #for the cft role_toggle command, the suffix for your deactivated roles
   strict_roles:            true           #for the cft role_toggle command, if roles should be able to be set for a node that did not have the role (at all) before
   skip_confirm:            false          # skips confirming for role toggle command
+
+thebusinessbook:
+  organization_name:         *uppercase_business_name
+  base_application_location: '/var/www/vhosts'
+  db_primary_db_app_roles:   mybackendrepo
+  bundler_version:           1.10.6
+  deploys:
+    rollback_on_error:       true        #allow for debugging of code placed in directory if false.
+  override_delayed_job_queues_on_split_environments: true
+  default_volume_config: #this will only create volumes on clouds that support creating volumes
+    database:
+      default_size:     100
+      default_type:     SSD
+    database_backup:
+      default_size:     100
+      default_type:     SATA
+    backup_server:
+      default_size:     1000
+      default_type:     SATA
+  graphite:
+    grafana_auth_user: &lowercase_business_name mybusiness
+    storage_schemas:
+      cohorts_15_min_for_900_days:
+        names:
+          - reports
+        pattern:    "^mybackendrepo.production.SCHEMA_NAME.*"
+        retentions: "15m:900d"
+      default_1min_for_60day:
+        pattern:    ".*"
+        retentions: "60:60d"
+    secret_key:     '' # pwgen -s 32 1
+    time_zone:      'America/Chicago'
+  graylog2:
+    password_secret:    '' # pwgen -s 96 1
+    root_password_sha2: '' # echo -n yourpassword | shasum -a 256
+  haproxy:
+    admin_username: *uppercase_business_name
+    admin_password: ''
+    ssl:
+      cookbook_containing_ssl_certs: *uppercase_business_name
+      ssl_file_name:                 ENVIRONMENT.pem          #this file should be stored in the files/default directory of the cookbook
+    role_to_node_name_routing:
+      haproxy_route_to_split_a: myfrontendrepolbp
+  swap:
+    check_file_name: 2gb_swap_genfile.sh
+    path:            /mnt/2GB.swap
+    bs:              2048
+    count:           1048576
+    swappiness:      60
+  attribute_toggles: #for these to trigger, the setting must already be TRUE
+    CHEF_ENVIRONMENT_backups_activated:
+      set_to: false
+      when:
+        not_include_role: db_prepare_backups_setup
+    receive_backups:
+      set_to: false
+      when:
+        not_include_role: db_fetch_and_restore_backups
+  sensu_build:
+    chef_daemon_delay: 1200 #time between chef-client runs on the build server in *seconds*
+    repository_role_names:
+      mybackendrepo:
+        branches_to_test:
+          - master
+          - staging
+  sensu:
+    custom_checks:
+      check_workers:
+        check_file_folder: *lowercase_business_name
+        check_file_name:   check-workers.rb
+        cookbooks:         *uppercase_business_name
+    reinstall_sensu_gems:           false
+    uchiwa_http_basic_username:     *lowercase_business_name
+    environments_to_monitor:
+      - staging
+      - production
+    haproxy_monitoring_roles:
+      - haproxy
+    additional_sensu_server_checks:
+      additional_checks:
+        cookbook:                   *uppercase_business_name
+        filename_without_extension: additional_sensu_server_checks
+      additional_metrics:
+        cookbook:                   *uppercase_business_name
+        filename_without_extension: additional_sensu_server_metrics
+    slack_handlers: #valid modes are: general-infrastructure|critical|deployment|continuous-integration|slow-queries
+      slack:
+        token:     &slack_token YOUR_SLACK_TOKEN # should look like "TXXXXXXXX/XXXXXXXX/XZXZXZXZXZXZXZXZXZXZXZXZ"
+        team_name: *lowercase_business_name
+        channel:   YOUR_INFRA_SLACK_CHANNEL
+        modes:      
+          - general-infrastructure
+      slack_critical:
+        token:     *slack_token
+        team_name: *lowercase_business_name
+        channel:   '#YOUR_CRITICAL_INFRA_SLACK_CHANNEL'
+        modes:      
+          - critical
+      slack_deployment:
+        token:     *slack_token
+        team_name: *lowercase_business_name
+        channel:   YOUR_DEPLOYMENT_CHECKING_CHANNEL
+        modes:
+          - deployment
+      slack_dev:
+        token:     *slack_token
+        team_name: *lowercase_business_name
+        channel:   YOUR_SLACK_CI_CHANNEL
+        modes:
+          - continuous-integration
+      slack_backend_slow_queries:
+        token:     *slack_token
+        team_name: *lowercase_business_name
+        channel:   YOUR_SLOW_QUERIES_CHANNEL
+        modes:
+          - slow-queries
+    crons: 
+      refresh_production:   
+        minute:  '45'
+        hour:    '10'
+        command: '/opt/sensu/embedded/bin/cft deploy -R mybackendrepo -p'
+      refresh_backupmaster:
+        minute:  '0'
+        hour:    '5'
+        command: '/opt/sensu/embedded/bin/cft deploy -r backup -p'
+  iptables:
+    additional_iptables_recipes:
+      additional_iptables_rules:
+        cookbook:                   *uppercase_business_name
+        filename_without_extension: additional_iptables_rules
+    role_maps:
+      web_servers:     web
+      sensu_server:    sensu_server
+      sensu_clients:   sensu_client
+      haproxy:         haproxy
+      graylog2_server: graylog2_server
+      graphite_server: graphite_server
+      database:        db
