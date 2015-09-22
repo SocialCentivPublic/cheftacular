@@ -26,7 +26,7 @@ git_based_deploys:      true
 route_dns_changes_via:  rackspace                # tells cheftacular to send dns changes to this provider instead of the preferred_cloud_option
 node_name_separator:    '.'                      # On rackspace, can be anything except a space, on most other hosting sites, it must be a valid url character
 pre_install_packages:   ''                       # space delimited list of packages to install during a  node's initial setup process
-global_backup_server:   
+backup_config:   
   global_backup_role_name: ''                # server that is useful for fetching backups from for cft backups
   global_backup_environ:   ''
   global_backup_path:      &global_backup_path '/path/to/backup'
@@ -36,9 +36,9 @@ global_backup_server:
 
 #chef-repo
 keep_chef_repo_cheftacular_yml_up_to_date: false
-also_keep_cheftacular_data_bag_up_to_date: false # this creates a data bag that stores your cheftacular config as a hash and updates it like the chef-repo cheftacular.yml, the above config must be set for this to be set
 location_of_chef_repo_cheftacular_yml:     /files/default # this should be the location of the cheftacular.yml file in your wrapper cookbooks(s). NOTE: The file should be in the same place in all cases
-replace_keys_in_chef_repo:                       # keys that should be changed when the cheftacular.yml is created in the chef-repo (its a good idea to turn off strict version checks)
+sync_application_cheftacular_yml:          true # this lets users in application directories overwrite chef-repo cheftacular yml keys with their own keys, useful for thebusinessbook additions
+replace_keys_in_chef_repo:                      # keys that should be changed when the cheftacular.yml is created in the chef-repo (its a good idea to turn off strict version checks)
   strict_version_checks: false
 
 slack:

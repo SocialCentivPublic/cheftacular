@@ -16,9 +16,9 @@ class Cheftacular
       @config[bag_env] ||= {}
 
       if !@config[bag_env].has_key?("#{ bag_name }_bag") || !@config[bag_env].has_key?("#{ bag_name }_bag_hash")
-        @config[bag_env]["#{ bag_name }_bag"] ||= @config['ridley'].data_bag.find(bag_env).item.find(bag_name)
+        @config[bag_env]["#{ bag_name }_bag"] = @config['ridley'].data_bag.find(bag_env).item.find(bag_name)
 
-        self.instance_eval "@config['#{ bag_env }']['#{ bag_name }_bag_hash'] ||= @config['#{ bag_env }']['#{ bag_name }_bag']#{ encrypted ? '.decrypt' : '' }.to_hash"
+        self.instance_eval "@config['#{ bag_env }']['#{ bag_name }_bag_hash'] = @config['#{ bag_env }']['#{ bag_name }_bag']#{ encrypted ? '.decrypt' : '' }.to_hash"
       end
     end
 
@@ -94,13 +94,46 @@ class Cheftacular
       save_bag 'node_roles', bag_env, @config[env]['node_roles_bag'], @config[env]['node_roles_bag_hash']
     end
 
+    def reset_addresses_bag bag_env="options"
+      env = bag_env == 'options' ? @options['env'] : bag_env
+
+      reset_bag 'addresses', env
+    end
+
+    def reset_audit_bag bag_env='options'
+      env = bag_env == 'options' ? @options['env'] : bag_env
+
+      reset_bag 'audit', env
+    end
+
+    def reset_cheftacular_bag bag_env="default"
+      reset_bag 'cheftacular', bag_env
+    end
+
+    def reset_environment_config_bag bag_env='default'
+      reset_bag 'environment_config', bag_env
+    end
+
+    def reset_node_roles_bag bag_env="options"
+      env = bag_env == 'options' ? @options['env'] : bag_env
+
+      reset_bag 'node_roles', env
+    end
+
     private
+    def reset_bag bag_name, bag_env, encrypted=false
+      raise "Cannot reset bag #{ bag_name } in #{ bag_env } as it does not exist!" if @config['ridley'].data_bag.find(bag_env).item.find(bag_name).nil?
+
+      @config['ridley'].data_bag.find(bag_env).item.delete(bag_name)
+
+      init_bag bag_env, bag_name, encrypted
+    end
+
     def save_bag bag_name, bag_env, bag, bag_hash, encrypted=false
       return true if @config['helper'].running_on_chef_node?
 
-      new_bag_hash =  bag_hash.deep_dup
-
-      item = bag.reload
+      new_bag_hash = bag_hash.deep_dup
+      item         = bag.reload
 
       load_hash = encrypted ? item.decrypt.to_hash.deep_merge(new_bag_hash) : item.attributes.deep_merge(new_bag_hash)
 

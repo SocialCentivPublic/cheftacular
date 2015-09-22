@@ -2,8 +2,6 @@
 
 * New cheftacular.yml keys
 
-    * **also_keep_cheftacular_data_bag_up_to_date** (this creates a data bag that stores your cheftacular config as a hash and updates it like the chef-repo cheftacular.yml)
-
     * **backup_config:global_backup_role_name** (matcher config that is used to find the primary backup server)
 
     * **backup_config:global_backup_environ** (matcher config that is used to find the primary backup server)
@@ -26,15 +24,21 @@
 
     * **repositories:REPOSITORY_ROLE_NAME:backup_server**
 
-* Added functionality to the initializer to allow the **also_keep_cheftacular_data_bag_up_to_date** to work.
-
-    * This will create a new data bag called *cheftacular* under *default*, this bag will be updated with the cheftacular keys roughly once a day.
-
 * Added new functionality to `cft backups`, now supports `activate|deactivate|load|run` please see documentation for more details.
 
 * Added new functionality to `cft tail`, now supports `--tail-grep PATTERN` to only send specific matching patterns to the terminal.
 
 * Added new autocompiling bag: `default:environment_config` that stores the bags currently available in all chef environments.
+
+* Added new command `cft cheftacular_config display|sync` that allows you to see compiled cheftacular.ymls and sync your own repository's one
+
+    * This will create a new data bag called *cheftacular* under *default*, this bag will be updated with the cheftacular keys roughly once a day (sync is run automatically)
+
+    * The precedence order will be application cheftacular change triggers a slack notification and a forced check against devops clients, devops clients *should* then update their local cheftacular.yml with the new keys as the chef-repo is the central repository for all the cheftacular.yml keys
+
+* Added new command `cft clear_caches` that will wipe out all local caches for them to be repopulated on the next cheftacular run.
+
+* Added new command `cft reset_bag BAG_NAME` that will destroy and recreate a bag with empty data. Only works on certain bags to prevent unintended behavior.
 
 ## 2.6.0
 
@@ -56,7 +60,7 @@
 
     * Please check the [cheftacular.yml](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/cheftacular.yml) example file for documentation on new keys
 
-* Added new command `cft chef_server [restart|processes|memory]` that will allow a devops mode repo to interact directly with the chef server.
+* Added new command `cft chef_server restart|processes|memory` that will allow a devops mode repo to interact directly with the chef server.
 
 * Added new command `cft initialize_cheftacular_yml` that will initialize a cheftacular.yml file or create a cheftacular.example.yml file if one already exists.
 

@@ -4,11 +4,15 @@ class Cheftacular
     def initialize options, config
       @options, @config  = options, config
 
+      initialize_queues
+
       initialize_yaml_configuration
 
       initialize_default_cheftacular_options
 
       initialize_locations
+
+      initialize_data_bag_cheftacular_hash if !@config['helper'].is_initialization_command?(ARGV[0]) && !@config['helper'].running_on_chef_node?
 
       initialize_monkeypatches unless @config['helper'].running_on_chef_node?
 
@@ -236,13 +240,41 @@ class Cheftacular
       end.parse!
     end
 
+    def initialize_queues
+      @config['slack_queue'] ||= []
+    end
+
     def initialize_yaml_configuration
       @config['cheftacular'] = @config['helper'].get_cheftacular_yml_as_hash
     end
 
+    def initialize_data_bag_cheftacular_hash
+      initialize_ridley
+
+      @config['ChefDataBag'] ||= Cheftacular::ChefDataBag.new(@options, @config)
+
+      @config['ChefDataBag'].init_bag('default', 'cheftacular', false)
+
+      diff_hash = @config['cheftacular'].deep_diff(@config['default']['cheftacular_bag_hash'], true)
+
+      if @config['helper'].running_in_mode?('devops') && !diff_hash.empty?
+        puts "Difference detected between local cheftacular.yml and data bag cheftacular.yml! Displaying..."
+
+        ap diff_hash
+      elsif @config['helper'].running_in_mode?('application') && @config['default']['cheftacular_bag_hash']['slack']['webhook'] && !diff_hash.empty?
+        @config['slack_queue'] << diff_hash.awesome_inspect({plain: true, indent: 2}).prepend('```').insert(-1, '```')
+      end
+
+      @config['cheftacular'] = if @config['default']['cheftacular_bag_hash']['sync_application_cheftacular_yml']
+                                 @config['default']['cheftacular_bag_hash'].deep_merge(@config['cheftacular'])
+                               else
+                                 @config['cheftacular'].deep_merge(@config['default']['cheftacular_bag_hash'].except('default_repository', 'mode'))
+                               end
+    end
+
     def initialize_default_cheftacular_options
       @options['env']        = @config['cheftacular']['default_environment'] if @config['cheftacular'].has_key?('default_environment')
-      @options['repository'] = @config['cheftacular']['default_repository'] if @config['cheftacular'].has_key?('default_repository')
+      @options['repository'] = @config['cheftacular']['default_repository']  if @config['cheftacular'].has_key?('default_repository')
     end
 
     def initialize_monkeypatches
@@ -292,7 +324,7 @@ class Cheftacular
       locs['chef']                  = File.expand_path("~/.chef")                          unless locs['chef']
       locs['cookbooks']             = File.expand_path("#{ locs['chef-repo'] }/cookbooks")
       locs['berks']                 = File.expand_path('~/.berkshelf/cookbooks')
-      locs['wrapper-cookbooks']     = @config['cheftacular']['wrapper_cookbooks']
+      locs['wrapper-cookbooks']     = @config['cheftacular']['wrapper_cookbooks']          unless @config['helper'].running_in_mode?('application')
       locs['ssh']                   = File.expand_path('~/.ssh')
       locs['chef-log']              = File.expand_path("#{ locs['root']}/log")             unless locs['chef-log']
       locs['app-tmp']               = File.expand_path("#{ locs['app-root']}/tmp")
@@ -335,7 +367,7 @@ class Cheftacular
 
       @config['ChefDataBag'].init_bag('default', 'authentication') if bags_to_load.empty? || bags_to_load.include?('authentication')
 
-      @config['ChefDataBag'].init_bag('default', 'cheftacular', false) if bags_to_load.empty? || bags_to_load.include?('cheftacular')
+      @config['ChefDataBag'].init_bag('default', 'cheftacular', false) if bags_to_load.include?('cheftacular')
 
       @config['ChefDataBag'].init_bag('default', 'environment_config', false) if bags_to_load.empty? || bags_to_load.include?('environment_config')
 
@@ -446,6 +478,7 @@ class Cheftacular
       @config['error']                          = Cheftacular::Error.new(@options, @config)
       @config['dummy_sshkit']                   = SSHKit::Backend::Netssh.new(SSHKit::Host.new('127.0.0.1'))
       @config['DNS']                            = Cheftacular::DNS.new(@options, @config)
+      @config['queue_master']                   = Cheftacular::QueueMaster.new(@options, @config)
       @config['cloud_provider']                 = Cheftacular::CloudProvider.new(@options, @config)
     end
 
@@ -528,8 +561,6 @@ class Cheftacular
             puts "Wrapper cookbook (#{ wrapper_cookbook }) does not have a current cheftacular.yml file in #{ @config['cheftacular']['location_of_chef_repo_cheftacular_yml'] }\"! Overwriting..."
 
             @config['filesystem'].write_chef_repo_cheftacular_yml_file wrapper_cookbook_cheftacular_loc
-
-            initialize_cheftacular_data_bag_contents if @config['cheftacular']['also_keep_cheftacular_data_bag_up_to_date']
           end
 
           puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") }'s cheftacular.yml."

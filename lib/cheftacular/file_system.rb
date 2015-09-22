@@ -80,8 +80,12 @@ class Cheftacular
         case mode
         when 'old'
           FileUtils.rm("#{ base_dir }/#{ entry }") if File.file?("#{ base_dir }/#{ entry }") && !entry.include?(Time.now.strftime("%Y%m%d"))
-        when 'current'
+        when 'current-nodes'
           check_current_day_entry = true
+        when 'all'
+          FileUtils.rm("#{ base_dir }/#{ entry }") if File.file?("#{ base_dir }/#{ entry }")
+
+          FileUtils.rm_rf("#{ base_dir }/#{ entry }") if File.exists?("#{ base_dir }/#{ entry }") && File.directory?("#{ base_dir }/#{ entry }")
         when 'current-audit-only'
           FileUtils.rm("#{ base_dir }/#{ entry }") if File.file?("#{ base_dir }/#{ entry }") && entry.include?(Time.now.strftime("%Y%m%d"))
         end
@@ -110,8 +114,16 @@ class Cheftacular
       current_file_path "chef_repo_cheftacular_cache"
     end
 
+    def current_local_cheftacular_file_cache_path
+      current_file_path "local_cheftacular_cache"
+    end
+
     def write_chef_repo_cheftacular_cache_file hash
       File.open( current_chef_repo_cheftacular_file_cache_path, "w") { |f| f.write(hash) }
+    end
+
+    def write_local_cheftacular_cache_file hash_string
+      File.open( current_local_cheftacular_file_cache_path, 'w') { |f| f.write(hash_string) }
     end
 
     def write_chef_repo_cheftacular_yml_file file_location

@@ -39,9 +39,11 @@ class Cheftacular
     if @config['helper'].is_initialization_command?(ARGV[0])
       @options['command'] = ARGV[0] #this is normally set by parse_context but that is not run for initialization commands
     else
+      @config['stateless_action'].cheftacular_config('sync') unless @config['helper'].running_on_chef_node?
+
       @config['stateless_action'].initialize_data_bag_contents(@options['env']) #ensure basic structure are always maintained before each run
 
-      @config['parser'].parse_application_context if @config['cheftacular']['mode'] == 'application'
+      @config['parser'].parse_application_context if @config['helper'].running_in_mode?('application')
 
       @config['parser'].parse_context
 
@@ -50,13 +52,15 @@ class Cheftacular
       @config['auditor'].audit_run if @config['cheftacular']['auditing']
     end
 
-    @config['stateless_action'].send('check_cheftacular_yml_keys')
+    @config['stateless_action'].check_cheftacular_yml_keys unless @config['helper'].is_initialization_command?(ARGV[0])
 
     @config['action'].send(@options['command']) if @config['helper'].is_command?(@options['command'])
 
     @config['stateless_action'].send(@options['command']) if @config['helper'].is_stateless_command?(@options['command'])
 
     @config['stateless_action'].send('help') if @config['helper'].is_not_command_or_stateless_command?(@options['command'])
+
+    @config['queue_master'].work_off_slack_queue unless @config['helper'].is_initialization_command?(@options['command'])
 
     @config['helper'].output_run_stats
 

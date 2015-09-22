@@ -263,6 +263,28 @@ class Cheftacular
   end
 end
 
+class Hash
+  def deep_diff(b, remove_nil_on_compare=false)
+    a = self
+
+    (a.keys | b.keys).inject({}) do |diff, k|
+      if a[k] != b[k]
+        if a[k].respond_to?(:deep_diff) && b[k].respond_to?(:deep_diff)
+          diff[k] = a[k].deep_diff(b[k])
+        else
+          if remove_nil_on_compare
+            diff[k] = [a[k], b[k]] if (a[k] != nil || b[k] != nil) && a[k] != nil
+          else
+            diff[k] = [a[k], b[k]]
+          end
+        end
+      end
+
+      diff
+    end
+  end
+end
+
 class String
   def scrub_pretty_text
     self.gsub("",'').gsub(/\[0m|\[1m|\[32m|\[35m|\[36m/,'')

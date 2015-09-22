@@ -14,10 +14,10 @@ class Cheftacular
       base_message = "Your cheftacular.yml is missing the key KEY, its default value is being set to DEFAULT for this run."
 
       #############################2.7.0################################################
-      unless @config['cheftacular'].has_key?('also_keep_cheftacular_data_bag_up_to_date')
-        puts base_message.gsub('KEY', 'also_keep_cheftacular_data_bag_up_to_date').gsub('DEFAULT', 'false')
 
-        @config['cheftacular']['also_keep_cheftacular_data_bag_up_to_date'] = false
+      unless @config['cheftacular'].has_key?('backup_config')
+        #backup_config:global_backup_role_name
+        base_message.gsub('KEY', 'backup_config').gsub('DEFAULT', 'nil')
 
         warn_on_missing = true
       end
