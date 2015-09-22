@@ -130,8 +130,8 @@ class Cheftacular
       File.open( file_location, "w") { |f| f.write(@config['helper'].compile_chef_repo_cheftacular_yml_as_hash.to_yaml) }
     end
 
-    def write_config_cheftacular_yml_file filename='cheftacular.yml'
-      File.open( File.join(@config['locs']['chef-repo'], "config", filename), "w") { |f| f.write(File.read(File.join(@config['locs']['examples'], "cheftacular.yml"))) }
+    def write_config_cheftacular_yml_file to_be_created_filename='cheftacular.yml', example_filename='cheftacular.yml'
+      File.open( File.join(@config['locs']['chef-repo'], "config", to_be_created_filename), "w") { |f| f.write(File.read(File.join(@config['locs']['examples'], example_filename))) }
     end
 
     private

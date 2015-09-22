@@ -39,7 +39,7 @@ class Cheftacular
 
       return true if File.exist?(@config['filesystem'].current_local_cheftacular_file_cache_path) && File.read(@config['filesystem'].current_local_cheftacular_file_cache_path) == parsed_cheftacular
 
-      @config['default']['cheftacular_bag_hash'] = @config['cheftacular'].deep_dup #the values have already been merged
+      @config['default']['cheftacular_bag_hash'] = @config['cheftacular'].deep_dup.except('default_repository', 'mode') #the values have already been merged
 
       @config['ChefDataBag'].save_cheftacular_bag
 

@@ -1,5 +1,9 @@
 ## 2.7.0
 
+* Created [a businessbook cheftacular.yml](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/thebusinessbook.cheftacular.yml)
+
+    * This config file serves as an example of how to utilize thebusinessbook cookbook with this gem.
+
 * New cheftacular.yml keys
 
     * **backup_config:global_backup_role_name** (matcher config that is used to find the primary backup server)
@@ -14,7 +18,7 @@
 
     * **backup_config:db_primary_backup_path** (root directory of backups on database primaries)
 
-    * **thebusinessbook:\*** * (keys for thebusinessbook cookbook, **none of these are required for cheftacular itself**)
+    * **thebusinessbook:ALL_NESTED_KEYS** * (keys for thebusinessbook cookbook, **none of these are required for cheftacular itself**)
 
 * Deleted cheftacular.yml keys
 
@@ -28,6 +32,8 @@
 
 * Added new functionality to `cft tail`, now supports `--tail-grep PATTERN` to only send specific matching patterns to the terminal.
 
+* Added functionality to `cft initialize_cheftacular_yml [thebusinessbook]`, it now can take an arg "thebusinessbook" to generate a businessbook cheftacular.yml
+
 * Added new autocompiling bag: `default:environment_config` that stores the bags currently available in all chef environments.
 
 * Added new command `cft cheftacular_config display|sync` that allows you to see compiled cheftacular.ymls and sync your own repository's one
@@ -38,7 +44,7 @@
 
 * Added new command `cft clear_caches` that will wipe out all local caches for them to be repopulated on the next cheftacular run.
 
-* Added new command `cft reset_bag BAG_NAME` that will destroy and recreate a bag with empty data. Only works on certain bags to prevent unintended behavior.
+* Added new command `cft reset_bag BAG_NAME` that will destroy and recreate a bag with empty data. Only works on addresses, audit, cheftacular, environment_config, and node_roles bags to prevent unintended behavior and/or loss of critical data if backups for bag contents are not in place.
 
 ## 2.6.0
 
