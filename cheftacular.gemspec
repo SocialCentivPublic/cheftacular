@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency "hashie", ">= 2.0" #hashie 3.0+ breaks varia_model
   s.add_dependency "chef", ">= 11.12"
   s.add_dependency "ridley"
-  #s.add_dependency "berkshelf"
+  s.add_dependency "berkshelf"
   s.add_dependency "highline"
   s.add_dependency "ffi-yajl"
   s.add_dependency "awesome_print"
