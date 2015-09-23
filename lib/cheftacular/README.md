@@ -90,7 +90,7 @@
 
     1. `display` will show the current overall configuration for cheftacular.
 
-    2. `sync` will sync your local cheftacular yaml keys ONTO the server's keys. This happens automatically whenever a difference is detected between the local keys and the remote keys but can be run manually. Will send a slack notification if slack is configured (the slack notification contains the diffed keys).
+    2. `sync` will sync your local cheftacular yaml keys ONTO the server's keys. This happens automatically whenever a difference is detected between the local keys and the remote keys but can be run manually. Will send a slack notification if slack is configured (the slack notification contains the diffed keys). The sync only occurs if there are CHANGES to the file.
 
 6. `cft clear_caches` this command allows you to clear all of your local caches.
 
@@ -196,7 +196,7 @@
 
     1. This command uses your *role_toggling:deactivated_role_suffix* attribute set in your cheftacular.yml to toggle the role, it checks to see if the toggled name exists then sets the node's run_list to include the toggled role
 
-    2. EX: `cft role_toggle apisc01 worker activate` will find the node apisc01 and attempt to toggle the worker role to on. If the node does NOT have the worker_deactivate role, then it will add it if *role_toggling:strict_roles* is set to **false**
+    2. EX: `cft role_toggle api01 worker activate` will find the node api01 and attempt to toggle the worker role to on. If the node does NOT have the worker_deactivate role, then it will add it if *role_toggling:strict_roles* is set to **false**
 
         1. If *role_toggling:strict_roles* is set to true, then cheftacular would raise an error saying this role is unsettable on the node. On the other hand, if the node already has the worker_deactivaterole, then this command will succeed even if *strict_roles* is set.
 
@@ -218,13 +218,13 @@
 
     1. In the case of server creation, this command takes a great deal of time to execute. It will output what stage it is currently on to the terminal but <b>you must not kill this command while it is executing</b>.A failed build may require the server to be destroyed / examined by a DevOps engineer.
 
-28. `cft tail` will tail the logs (return continuous output) of the first node if finds that has an application matching the repository running on it. Currently only supports rails stacks
+28. `cft tail [PATTERN_TO_MATCH]` will tail the logs (return continuous output) of the first node if finds that has an application matching the repository running on it. Currently only supports rails stacks
 
     1. pass `-n NODE_NAME` to grab the output of a node other than the first.
 
     2. Workers and job servers change the output of this command heavily. Worker and job servers should tail their log to the master log (/var/log/syslog) where <b>all</b> of the major processes on the server output to. While the vast majority of this syslog will be relevant to application developers, some will not (usually firewall blocks and the like).
 
-    3. pass `--tail-grep PATTERN_TO_GREP` to tail a specific log pattern.
+    3. if the `PATTERN_TO_MATCH` argument exists, the tail will only return entries that have that pattern rather than everything written to the file.
 
 
 ## Commands that can ONLY be run in the devops context
@@ -269,7 +269,7 @@
 
     1. `display` will show the current overall configuration for cheftacular.
 
-    2. `sync` will sync your local cheftacular yaml keys ONTO the server's keys. This happens automatically whenever a difference is detected between the local keys and the remote keys but can be run manually. Will send a slack notification if slack is configured (the slack notification contains the diffed keys).
+    2. `sync` will sync your local cheftacular yaml keys ONTO the server's keys. This happens automatically whenever a difference is detected between the local keys and the remote keys but can be run manually. Will send a slack notification if slack is configured (the slack notification contains the diffed keys). The sync only occurs if there are CHANGES to the file.
 
 10. `cft clean_cookbooks [force] [remove_cookbooks]` allows you to update the internal chef-repo's cookbooks easily. By default this script will force you to decide what to do with each cookbook individually (shows version numbers and whether to overwrite it to cookbooks or not).
 
@@ -469,7 +469,9 @@
 
 27. `cft help COMMAND|MODE` this command returns the documentation for a specific command if COMMAND matches the name of a command. Alternatively, it can be passed `action|arguments|application|current|devops|stateless_action` to fetch the commands for a specific mode.Misspellings of commands will display near hits.
 
-28. `cft initialize_cheftacular_yml` will create a cheftacular.yml file in your config folder (and create theconfig folder if it does not exist). If you already have a cheftacular.yml file in the config folder, it will create a cheftacular.example.yml file that will contain the new changes / keys in the latest cheftacular version.
+28. `cft initialize_cheftacular_yml [thebusinessbook]` will create a cheftacular.yml file in your config folder (and create theconfig folder if it does not exist). If you already have a cheftacular.yml file in the config folder, it will create a cheftacular.example.yml file that will contain the new changes / keys in the latest cheftacular version.
+
+    1. if `thebusinessbook` is passed, the generated cheftacular.yml file will include the additional thebusinessbook keys.
 
 29. `cft initialize_data_bag_contents ENVIRONMENT_NAME` will ensure the data bags always have the correct structure before each run. This command is run every time the gem is started and if called directly, will exit after completion.
 
@@ -497,7 +499,7 @@
 
     1. This command uses your *role_toggling:deactivated_role_suffix* attribute set in your cheftacular.yml to toggle the role, it checks to see if the toggled name exists then sets the node's run_list to include the toggled role
 
-    2. EX: `cft role_toggle apisc01 worker activate` will find the node apisc01 and attempt to toggle the worker role to on. If the node does NOT have the worker_deactivate role, then it will add it if *role_toggling:strict_roles* is set to **false**
+    2. EX: `cft role_toggle api01 worker activate` will find the node api01 and attempt to toggle the worker role to on. If the node does NOT have the worker_deactivate role, then it will add it if *role_toggling:strict_roles* is set to **false**
 
         1. If *role_toggling:strict_roles* is set to true, then cheftacular would raise an error saying this role is unsettable on the node. On the other hand, if the node already has the worker_deactivaterole, then this command will succeed even if *strict_roles* is set.
 
