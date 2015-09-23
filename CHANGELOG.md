@@ -4,6 +4,14 @@
 
     * This config file serves as an example of how to utilize thebusinessbook cookbook with this gem.
 
+* Implemented loose syncing between application cheftacular.ymls and DevOps cheftacular.ymls
+
+    * The chef server stores the ENTIRE state of the current "cheftacular.yml", due to this, configurations seen in `cft cheftacular_config display` is what the server will utilize.
+
+    * Because of this, users may now have "incomplete" cheftacular.ymls in repo directories, an example of this can be seen [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/application.cheftacular.yml)
+
+        * It is not necessary to include the **repositories** top level key but it does allow for application developers to modify the chef environment if the [thebusinessbook](https://github.com/SocialCentivPublic/thebusinessbook) cookbook is being used and the key **sync_application_cheftacular_yml** is set to true.
+
 * New cheftacular.yml keys
 
     * **backup_config:global_backup_role_name** (matcher config that is used to find the primary backup server)
