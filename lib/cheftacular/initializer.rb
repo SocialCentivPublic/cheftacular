@@ -182,11 +182,6 @@ class Cheftacular
           @options['get_log_lines'] = num
         end
 
-        # cft tail options
-        opts.on('--tail-grep PATTERN', "On cft tail pass this argument to only pull a specific pattern from logs of a file") do |pattern|
-          @options['tail_grep'] = pattern
-        end
-
         #cft run
         opts.on('--all', "On cft run COMMAND you can pass --all to run the command on multiple nodes") do 
           @options['run_on_all'] = true
@@ -255,7 +250,11 @@ class Cheftacular
 
       @config['ChefDataBag'].init_bag('default', 'cheftacular', false)
 
-      diff_hash = @config['cheftacular'].deep_diff(@config['default']['cheftacular_bag_hash'], true)
+      diff_hash = @config['cheftacular'].deep_diff(@config['default']['cheftacular_bag_hash'], true).except('mode').compact
+
+      diff_hash.each_pair do |key, value|
+        diff_hash.delete(key) if value.empty? || value.nil?
+      end
 
       if @config['helper'].running_in_mode?('devops') && !diff_hash.empty?
         puts "Difference detected between local cheftacular.yml and data bag cheftacular.yml! Displaying..."

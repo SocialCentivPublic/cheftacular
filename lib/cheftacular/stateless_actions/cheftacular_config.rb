@@ -11,7 +11,7 @@ class Cheftacular
 
           "    2. `sync` will sync your local cheftacular yaml keys ONTO the server's keys. This happens automatically whenever a " +
           "difference is detected between the local keys and the remote keys but can be run manually. Will send a slack notification " +
-          "if slack is configured (the slack notification contains the diffed keys)."
+          "if slack is configured (the slack notification contains the diffed keys). The sync only occurs if there are CHANGES to the file."
         ]
       ]
 
@@ -37,7 +37,7 @@ class Cheftacular
     def cheftacular_config_sync
       parsed_cheftacular = Digest::SHA2.hexdigest(@config['helper'].get_cheftacular_yml_as_hash.to_s)
 
-      return true if File.exist?(@config['filesystem'].current_local_cheftacular_file_cache_path) && File.read(@config['filesystem'].current_local_cheftacular_file_cache_path) == parsed_cheftacular
+      return true if File.exist?(@config['filesystem'].local_cheftacular_file_cache_path) && File.read(@config['filesystem'].local_cheftacular_file_cache_path) == parsed_cheftacular
 
       @config['default']['cheftacular_bag_hash'] = @config['cheftacular'].deep_dup.except('default_repository', 'mode') #the values have already been merged
 

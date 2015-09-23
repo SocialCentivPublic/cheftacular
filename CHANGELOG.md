@@ -30,7 +30,7 @@
 
 * Added new functionality to `cft backups`, now supports `activate|deactivate|load|run` please see documentation for more details.
 
-* Added new functionality to `cft tail`, now supports `--tail-grep PATTERN` to only send specific matching patterns to the terminal.
+* Added new functionality to `cft tail [PATTERN_TO_MATCH]`, now supports the PATTERN_TO_MATCH argument to only send specific matching patterns to the terminal.
 
 * Added functionality to `cft initialize_cheftacular_yml [thebusinessbook]`, it now can take an arg "thebusinessbook" to generate a businessbook cheftacular.yml
 
@@ -40,11 +40,13 @@
 
     * This will create a new data bag called *cheftacular* under *default*, this bag will be updated with the cheftacular keys roughly once a day (sync is run automatically)
 
-    * The precedence order will be application cheftacular change triggers a slack notification and a forced check against devops clients, devops clients *should* then update their local cheftacular.yml with the new keys as the chef-repo is the central repository for all the cheftacular.yml keys
+    * The precedence order will be application cheftacular change triggers a slack notification and a forced check against devops clients, devops clients *should* then update their local cheftacular.yml with the new keys as the chef-repo is the central repository for all the cheftacular.yml keys.
+
+    * NOTE! Clients will **NOT** overwrite changed cheftacular.yml keys with their old keys! The keys must be manually updated in the cheftacular.yml file to the new values if slack / devops clients constantly get notifications about new keys!
 
 * Added new command `cft clear_caches` that will wipe out all local caches for them to be repopulated on the next cheftacular run.
 
-* Added new command `cft reset_bag BAG_NAME` that will destroy and recreate a bag with empty data. Only works on addresses, audit, cheftacular, environment_config, and node_roles bags to prevent unintended behavior and/or loss of critical data if backups for bag contents are not in place.
+* Added new command `cft reset_bag BAG_NAME` that will destroy and recreate a bag with empty data. Only works on addresses, audit, cheftacular, environment_config, and node_roles bags to prevent unintended behavior and/or loss of critical data if backups for bag contents are not in place. Only works on DevOps clients.
 
 ## 2.6.0
 

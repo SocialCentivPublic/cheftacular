@@ -264,24 +264,31 @@ class Cheftacular
 end
 
 class Hash
-  def deep_diff(b, remove_nil_on_compare=false)
-    a = self
+  def deep_diff(compare_hash, remove_if_nil_on_original=false)
+    original_hash = self
 
-    (a.keys | b.keys).inject({}) do |diff, k|
-      if a[k] != b[k]
-        if a[k].respond_to?(:deep_diff) && b[k].respond_to?(:deep_diff)
-          diff[k] = a[k].deep_diff(b[k])
+    (original_hash.keys | compare_hash.keys).inject({}) do |diff_hash, key|
+      if original_hash[key] != compare_hash[key]
+        if original_hash[key].respond_to?(:deep_diff) && compare_hash[key].respond_to?(:deep_diff)
+          diff_hash[key] = original_hash[key].deep_diff(compare_hash[key], remove_if_nil_on_original)
         else
-          if remove_nil_on_compare
-            diff[k] = [a[k], b[k]] if (a[k] != nil || b[k] != nil) && a[k] != nil
+          if remove_if_nil_on_original
+            diff_hash[key]  = []
+            diff_hash[key] << original_hash[key] if original_hash.has_key?(key)
+            diff_hash[key] << compare_hash[key]  if original_hash.has_key?(key)
+            diff_hash.delete(key)                if diff_hash[key].empty?
           else
-            diff[k] = [a[k], b[k]]
+            diff_hash[key] = [original_hash[key], compare_hash[key]]
           end
         end
       end
 
-      diff
+      diff_hash
     end
+  end
+
+  def compact
+    self.select { |_, value| !value.nil? }
   end
 end
 

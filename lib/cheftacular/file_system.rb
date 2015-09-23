@@ -76,6 +76,7 @@ class Cheftacular
 
       Dir.entries(base_dir).each do |entry|
         next if is_junk_filename?(entry)
+        next if File.file?("#{ base_dir }/#{ entry }") && entry == 'local_cheftacular_cache' && mode != 'all'
 
         case mode
         when 'old'
@@ -114,8 +115,8 @@ class Cheftacular
       current_file_path "chef_repo_cheftacular_cache"
     end
 
-    def current_local_cheftacular_file_cache_path
-      current_file_path "local_cheftacular_cache"
+    def local_cheftacular_file_cache_path
+      current_file_path "local_cheftacular_cache", false
     end
 
     def write_chef_repo_cheftacular_cache_file hash
@@ -123,7 +124,7 @@ class Cheftacular
     end
 
     def write_local_cheftacular_cache_file hash_string
-      File.open( current_local_cheftacular_file_cache_path, 'w') { |f| f.write(hash_string) }
+      File.open( local_cheftacular_file_cache_path, 'w') { |f| f.write(hash_string) }
     end
 
     def write_chef_repo_cheftacular_yml_file file_location
@@ -135,8 +136,8 @@ class Cheftacular
     end
 
     private
-    def current_file_path file_name
-      File.join( @config['locs']['app-root'], 'tmp', @config['helper'].declassify, "#{ Time.now.strftime("%Y%m%d") }-#{ file_name }")
+    def current_file_path file_name, use_timestamp=true
+      File.join( @config['locs']['app-root'], 'tmp', @config['helper'].declassify, ( use_timestamp ? "#{ Time.now.strftime("%Y%m%d") }-#{ file_name }" : file_name ))
     end
   end
 end
