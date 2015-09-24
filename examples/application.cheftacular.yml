@@ -1,0 +1,59 @@
+
+mode:                   application              # valid modes are devops, application, and server. Server mode is very similar to devops and only useful if you want your servers to be able to run cheftacular commands
+default_repository:     my-main-rails-repository # If the mode is set to devops, load this repository as the default one (can be overridden with the -R REPOSITORY_NAME flag)
+default_environment:    staging                  # the default environment all commands are run in without an env setting flag
+ruby_version:           ruby-2.1.2               # Default ruby version to run commands against, only matters explicitly if your repo does not have a .ruby-version file
+cheftacular_chef_user:  mychefuser               # Chef user on the chef user. You must have a CHEFUSERNAME.pem file in your .chef directory to authenticate
+chef_server_url:        https://chef.example.com/organizations/your_organization # can be any address that has a valid chef server behind it (for chef 11). For Chef 12 the string must include the full path
+data_bag_key_file:      data_bag_key             # name of the data bag key file in the ~/.chef folder for workstations
+
+repositories:
+  mybackendrepo:                                   # this row is reserved for nicknames, preferably nicknames that eliminate any hyphens in the repo_name
+    repo_name:                 my-main-rails-repository
+    database:                  postgresql        # Valid values are currently only postgresql or mysql
+    application_database_user: databaseguy       # Name of the database user on the remote server (useful if each app has its own database user)
+    stack:                     ruby_on_rails     # Currently supported: ruby_on_rails|wordpress|nodejs
+    db_primary_host_role:      db_primary
+    #custom_database_name:                       # this key only needs to exist if your database is named differently from REPONAME_ENV
+    restore_backup_file_name:  PostgreSQL-mymainrailsrepository.sql # the file that the backup is usually stored in for the backup directory
+    not_a_migration_message:                     # If you have some text that will always show up after migrations, put it here so the system doesnt think it needs to run deploys after a migration again
+    has_split_branches:        false             # if you have branches like split-a and split-c, you can use this to access them when defined in the run_list_environments hash 
+    specific_chef_passwords:                       # Special keys that you want auto-generated for their repo by for the ENV chef_passwords bag, the value for them is their length
+      pg_root_pass:         20
+      pg_app_pass:          20
+    short_database_name:         api #used for backup_gem
+    test_database_setup_command: 'rake db:test:ready'
+    sensu_monitoring_role:       apiscentiv_sensu_web_ENVIRONMENT
+    custom_nginx_configs:        &custom_nginx_configs
+      - 'client_max_body_size 15M'
+      - 'client_body_in_single_buffer on'
+      - 'client_body_buffer_size 128K'
+    application_services:
+      clockwork_scheduler:
+        rewrite_underscore_to_dash: true #this key existing triggers the effect, it must not exist to not have the effect
+        run_on_role:                clockwork
+        command:                    'clockwork app/task_schedule.rb'
+      delayed_job_misc: 
+        rewrite_underscore_to_dash: true
+        run_on_role:                djworker
+        deactivate_on_role:         djworker_deactivate
+        application_log_cleanup:    true
+        delayedjob_log_cleanup:     true
+        syslog_cleanup:             true
+        command:                    'rake jobs:work'
+        queues:
+          default:
+            - miscellaneous
+          production:
+            - my_special_job_queue
+    application_crons: 
+      data_collecting_cron:   
+        minute:  '0,15,30,45'
+        hour:    '*'
+        command: 'reports:generate'
+        type:    'rake'
+      cleanup_app_log:
+        minute:  '0'
+        hour:    '0'
+        command: "tail -5000 CURRENT_PATH/log/CURRENT_ENVIRONMENT.log > CURRENT_PATH/log/CURRENT_ENVIRONMENT.log" #CURRENT_PATH and CURRENT_ENVIRONMENT are substituted in the cookbook
+        type:    'raw'

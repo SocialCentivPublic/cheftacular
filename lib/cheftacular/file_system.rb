@@ -14,6 +14,10 @@ class Cheftacular
       end
     end
 
+    def write_environment_config_cache
+      File.open( current_environment_config_cache_file_path, "w") { |f| f.write("set for #{ Time.now.strftime("%Y%m%d") }") }
+    end
+
     def check_nodes_file_cache nodes=[]
       Dir.entries(current_nodes_file_cache_path).each do |location|
         next if is_junk_filename?(location)
@@ -30,6 +34,10 @@ class Cheftacular
 
     def current_audit_file_path
       current_file_path 'audit-check.txt'
+    end
+
+    def current_environment_config_cache_file_path
+      current_file_path 'environment_config-check.txt'
     end
 
     def is_junk_filename? filename
@@ -68,12 +76,17 @@ class Cheftacular
 
       Dir.entries(base_dir).each do |entry|
         next if is_junk_filename?(entry)
+        next if File.file?("#{ base_dir }/#{ entry }") && entry == 'local_cheftacular_cache' && mode != 'all'
 
         case mode
         when 'old'
           FileUtils.rm("#{ base_dir }/#{ entry }") if File.file?("#{ base_dir }/#{ entry }") && !entry.include?(Time.now.strftime("%Y%m%d"))
-        when 'current'
+        when 'current-nodes'
           check_current_day_entry = true
+        when 'all'
+          FileUtils.rm("#{ base_dir }/#{ entry }") if File.file?("#{ base_dir }/#{ entry }")
+
+          FileUtils.rm_rf("#{ base_dir }/#{ entry }") if File.exists?("#{ base_dir }/#{ entry }") && File.directory?("#{ base_dir }/#{ entry }")
         when 'current-audit-only'
           FileUtils.rm("#{ base_dir }/#{ entry }") if File.file?("#{ base_dir }/#{ entry }") && entry.include?(Time.now.strftime("%Y%m%d"))
         end
@@ -102,21 +115,29 @@ class Cheftacular
       current_file_path "chef_repo_cheftacular_cache"
     end
 
+    def local_cheftacular_file_cache_path
+      current_file_path "local_cheftacular_cache", false
+    end
+
     def write_chef_repo_cheftacular_cache_file hash
       File.open( current_chef_repo_cheftacular_file_cache_path, "w") { |f| f.write(hash) }
+    end
+
+    def write_local_cheftacular_cache_file hash_string
+      File.open( local_cheftacular_file_cache_path, 'w') { |f| f.write(hash_string) }
     end
 
     def write_chef_repo_cheftacular_yml_file file_location
       File.open( file_location, "w") { |f| f.write(@config['helper'].compile_chef_repo_cheftacular_yml_as_hash.to_yaml) }
     end
 
-    def write_config_cheftacular_yml_file filename='cheftacular.yml'
-      File.open( File.join(@config['locs']['chef-repo'], "config", filename), "w") { |f| f.write(File.read(File.join(@config['locs']['examples'], "cheftacular.yml"))) }
+    def write_config_cheftacular_yml_file to_be_created_filename='cheftacular.yml', example_filename='cheftacular.yml'
+      File.open( File.join(@config['locs']['chef-repo'], "config", to_be_created_filename), "w") { |f| f.write(File.read(File.join(@config['locs']['examples'], example_filename))) }
     end
 
     private
-    def current_file_path file_name
-      File.join( @config['locs']['app-root'], 'tmp', @config['helper'].declassify, "#{ Time.now.strftime("%Y%m%d") }-#{ file_name }")
+    def current_file_path file_name, use_timestamp=true
+      File.join( @config['locs']['app-root'], 'tmp', @config['helper'].declassify, ( use_timestamp ? "#{ Time.now.strftime("%Y%m%d") }-#{ file_name }" : file_name ))
     end
   end
 end

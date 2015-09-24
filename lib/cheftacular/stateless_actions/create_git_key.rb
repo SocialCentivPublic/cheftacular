@@ -19,7 +19,8 @@ class Cheftacular
 
   class StatelessAction
     def create_git_key oauth_key=""
-
+      raise "This action can only be performed if the mode is set to devops" unless @config['helper'].running_in_mode?('devops')
+      
       case ARGV[1]
       when nil      then raise "Too few arguments, please enter the filename of the id_rsa file you want to use"
       when 'id_rsa' then raise "Sorry, you can't use your default id_rsa"

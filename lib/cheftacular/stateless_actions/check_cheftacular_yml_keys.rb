@@ -13,6 +13,15 @@ class Cheftacular
     def check_cheftacular_yml_keys out=[], exit_on_missing=false, warn_on_missing=false
       base_message = "Your cheftacular.yml is missing the key KEY, its default value is being set to DEFAULT for this run."
 
+      #############################2.7.0################################################
+
+      unless @config['cheftacular'].has_key?('backup_config')
+        #backup_config:global_backup_role_name
+        base_message.gsub('KEY', 'backup_config').gsub('DEFAULT', 'nil')
+
+        warn_on_missing = true
+      end
+
       #############################2.6.0################################################
       unless @config['cheftacular'].has_key?('route_dns_changes_via')
         puts base_message.gsub('KEY', 'route_dns_changes_via').gsub('DEFAULT', @options['preferred_cloud'])

@@ -27,9 +27,7 @@ class Cheftacular
 
       old_tld = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld']
 
-      if target_tld == 'self'
-        target_tld = old_tld
-      end
+      target_tld = old_tld if target_tld == 'self'
 
       nodes.each do |n|
 
