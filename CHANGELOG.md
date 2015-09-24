@@ -1,6 +1,10 @@
+## 2.7.1
+
+* Fixed issue with `cft help COMMAND` not working on application clients due to having an incomplete cheftacular.yml (and being unable to check the server)
+
 ## 2.7.0
 
-* Created [a TheCheftacularCookbook cheftacular.yml](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/TheCheftacularCookbook.cheftacular.yml)
+* Created [a TheCheftacularCookbook cheftacular.yml](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/thecheftacularcookbook.cheftacular.yml)
 
     * This config file serves as an example of how to utilize TheCheftacularCookbook cookbook with this gem.
 
@@ -10,7 +14,7 @@
 
     * Because of this, users may now have "incomplete" cheftacular.ymls in repo directories, an example of this can be seen [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/application.cheftacular.yml)
 
-        * It is not necessary to include the **repositories** top level key but it does allow for application developers to modify the chef environment if the [TheCheftacularCookbook](https://github.com/SocialCentivPublic/TheCheftacularCookbook) cookbook is being used and the key **sync_application_cheftacular_yml** is set to true.
+        * It is not necessary to include the **repository's** top level key but it does allow for application developers to modify the chef environment if the [TheCheftacularCookbook](https://github.com/SocialCentivPublic/TheCheftacularCookbook) cookbook is being used and the key **sync_application_cheftacular_yml** is set to true.
 
 * New cheftacular.yml keys
 
@@ -55,6 +59,8 @@
 * Added new command `cft clear_caches` that will wipe out all local caches for them to be repopulated on the next cheftacular run.
 
 * Added new command `cft reset_bag BAG_NAME` that will destroy and recreate a bag with empty data. Only works on addresses, audit, cheftacular, environment_config, and node_roles bags to prevent unintended behavior and/or loss of critical data if backups for bag contents are not in place. Only works on DevOps clients.
+
+* Fixed regression with `-Z REVISION` flag not setting correctly and causing an error when used.
 
 ## 2.6.0
 
