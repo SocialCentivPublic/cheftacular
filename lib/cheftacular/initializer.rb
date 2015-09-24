@@ -250,7 +250,7 @@ class Cheftacular
 
       @config['ChefDataBag'].init_bag('default', 'cheftacular', false)
 
-      diff_hash = @config['cheftacular'].deep_diff(@config['default']['cheftacular_bag_hash'], true).except('mode').compact
+      diff_hash = @config['cheftacular'].deep_diff(@config['default']['cheftacular_bag_hash'], true).except('mode', 'default_repository').compact
 
       diff_hash.each_pair do |key, value|
         diff_hash.delete(key) if value.empty? || value.nil?
