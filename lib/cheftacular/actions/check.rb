@@ -9,7 +9,9 @@ class Cheftacular
   end
 
   class Action
-    def check commit_hash={}
+    def check commit_hash={}, have_revisions=false
+      @config['filesystem'].cleanup_file_caches('current-nodes')
+      
       nodes = @config['getter'].get_true_node_objects
 
       #this must always precede on () calls so they have the instance variables they need
@@ -20,12 +22,22 @@ class Cheftacular
 
         puts("Beginning commit check run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']
 
-        commit_hash[n.name] = start_commit_check( n.name, n.public_ipaddress, options, locs, cheftacular)
+        commit_hash[n.name]           = start_commit_check( n.name, n.public_ipaddress, options, locs, cheftacular)
+        commit_hash[n.name]['branch'] = n.normal_attributes[options['repository']]['repo_branch'] if n.normal_attributes.has_key?(options['repository'])
+        have_revisions                = true if commit_hash[n.name].has_key?('branch')
       end
 
-      puts "\n#{ 'name'.ljust(21) }#{ 'deployed_on'.ljust(22) } #{ 'commit'.ljust(40) }"
+      puts "\n#{ 'name'.ljust(21) }#{ 'deployed_on'.ljust(22) } #{ 'commit'.ljust(40) } #{'revision'.ljust(30) if have_revisions }"
       nodes.each do |n|
-        puts("#{ n.name.ljust(21, '_') }#{ commit_hash[n.name]['time'].ljust(22) } #{ commit_hash[n.name]['name'].ljust(40) }") unless commit_hash[n.name]['name'].blank?
+        unless commit_hash[n.name]['name'].blank?
+          out  = []
+          out << n.name.ljust(20, '_')
+          out << commit_hash[n.name]['time'].ljust(21)
+          out << commit_hash[n.name]['name'].ljust(39)
+          out << commit_hash[n.name]['branch'].ljust(30) if commit_hash[n.name].has_key?('branch')
+
+          puts out.join(' ')
+        end
       end
     end
   end
