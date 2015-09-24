@@ -469,9 +469,11 @@
 
 27. `cft help COMMAND|MODE` this command returns the documentation for a specific command if COMMAND matches the name of a command. Alternatively, it can be passed `action|arguments|application|current|devops|stateless_action` to fetch the commands for a specific mode.Misspellings of commands will display near hits.
 
-28. `cft initialize_cheftacular_yml [TheCheftacularCookbook]` will create a cheftacular.yml file in your config folder (and create theconfig folder if it does not exist). If you already have a cheftacular.yml file in the config folder, it will create a cheftacular.example.yml file that will contain the new changes / keys in the latest cheftacular version.
+28. `cft initialize_cheftacular_yml [application|TheCheftacularCookbook]` will create a cheftacular.yml file in your config folder (and create the config folder if it does not exist). If you already have a cheftacular.yml file in the config folder, it will create a cheftacular.example.yml file that will contain the new changes / keys in the latest cheftacular version.
 
-    1. if `TheCheftacularCookbook` is passed, the generated cheftacular.yml file will include the additional TheCheftacularCookbook keys.
+    1. If `TheCheftacularCookbook` is passed, the generated cheftacular.yml file will include the additional TheCheftacularCookbook keys.
+
+    2. If `application` is passed, the generated cheftacular.yml file will look like one you could use in an application directory.
 
 29. `cft initialize_data_bag_contents ENVIRONMENT_NAME` will ensure the data bags always have the correct structure before each run. This command is run every time the gem is started and if called directly, will exit after completion.
 

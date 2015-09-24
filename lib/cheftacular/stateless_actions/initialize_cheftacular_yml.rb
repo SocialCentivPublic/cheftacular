@@ -8,7 +8,7 @@ class Cheftacular
         "cheftacular version.",
 
         [
-          "    1. If `TheCheftacularCookbook` is passed, the generated cheftacular.yml file will include the additional TheCheftacularCookbook keys."
+          "    1. If `TheCheftacularCookbook` is passed, the generated cheftacular.yml file will include the additional TheCheftacularCookbook keys.",
 
           "    2. If `application` is passed, the generated cheftacular.yml file will look like one you could use in an application directory."
         ]
