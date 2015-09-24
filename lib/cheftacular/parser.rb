@@ -15,11 +15,7 @@ class Cheftacular
 
       @options['command'] = ARGV[0] unless @options['command']
 
-      unless @config['helper'].is_stateless_command?(@options['command'])
-        parse_repository(@options['repository'])
-
-        parse_role(@options['role'])
-      end
+      parse_repository(@options['repository'])
 
       parse_node_name(@options['node_name']) if @options['node_name']
 
@@ -45,7 +41,7 @@ class Cheftacular
         @options['command'] = ARGV[0] unless @config['helper'].is_not_command_or_stateless_command?(ARGV[0])
       end
 
-      return if !@options['codebase'].nil? && !@options['role'].nil? && !@options['command'].nil?
+      return if !@options['repository'].nil? && !@options['role'].nil? && !@options['command'].nil?
       return if !@options['command'].nil? && @config['helper'].is_stateless_command?(ARGV[0])
     end
 
@@ -107,10 +103,10 @@ class Cheftacular
       raise "Cannot set or unset target_revision without a role" unless @options['role']
 
       if @options['target_revision']
-        @config[@options['env']]['config_bag_hash'][@options['sub_env']]['app_revisions'][@config['getter'].get_codebase_from_role_name(@options['role'])] = @options['target_revision']
+        @config[@options['env']]['config_bag_hash'][@options['sub_env']]['app_revisions'][@config['getter'].get_repository_from_role_name(@options['role'])] = @options['target_revision']
 
       elsif @options['unset_revision']
-        @config[@options['env']]['config_bag_hash'][@options['sub_env']]['app_revisions'][@config['getter'].get_codebase_from_role_name(@options['role'])] = "<use_default>"
+        @config[@options['env']]['config_bag_hash'][@options['sub_env']]['app_revisions'][@config['getter'].get_repository_from_role_name(@options['role'])] = "<use_default>"
 
       end
 

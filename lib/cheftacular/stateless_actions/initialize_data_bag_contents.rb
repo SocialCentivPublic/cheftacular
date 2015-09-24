@@ -30,6 +30,8 @@ class Cheftacular
 
       #@config['ChefDataBag'].initialize_node_roles_bag_contents env
 
+      @config['initializer'].initialize_environment_config_bag_contents if @config['helper'].running_in_mode?('devops')
+
       exit if @options['command'] == __method__
     end
   end
@@ -200,6 +202,47 @@ class Cheftacular
       end
 
       @config['ChefDataBag'].save_audit_bag(env) if save_on_finish
+    end
+
+    def initialize_cheftacular_data_bag_contents
+      @config['default']['cheftacular_bag_hash'] = @config['cheftacular']
+      
+      @config['ChefDataBag'].save_cheftacular_bag
+    end
+
+    def initialize_environment_config_bag_contents
+      return true if File.exist?(@config['filesystem'].current_environment_config_cache_file_path)
+
+      hash = @config['default']['environment_config_bag_hash']
+
+      current_env_bag_names = []
+
+      @config[@options['env']].keys.each do |bag_name|
+        next if bag_name.include?('_bag_hash')
+
+        current_env_bag_names << bag_name.gsub('_bag','')
+      end
+
+      @config['chef_environments'].each do |env|
+        next if @config['ridley'].data_bag.find(env).nil?
+
+        hash[env] ||= {}
+        bags        = []
+
+        current_env_bag_names.each do |bag_name|
+          next if @config['ridley'].data_bag.find(env).item.find(bag_name).nil?
+
+          bags << bag_name
+        end
+
+        hash[env]['bags'] = bags
+      end
+
+      @config['ChefDataBag'].save_environment_config_bag
+
+      puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") }'s environment_config bag cache."
+
+      @config['filesystem'].write_environment_config_cache
     end
   end
 end

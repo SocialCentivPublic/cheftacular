@@ -33,7 +33,7 @@ class Cheftacular
           @config['initializer'].initialize_addresses_bag_contents env
 
           @config[env]['addresses_bag_hash']['addresses'].each do |serv_hash|
-            arr << serv_hash['dn'].split('.').first
+            arr << serv_hash['dn']
             arr << serv_hash['public']
           end
         end

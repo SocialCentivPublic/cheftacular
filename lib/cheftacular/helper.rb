@@ -263,6 +263,35 @@ class Cheftacular
   end
 end
 
+class Hash
+  def deep_diff(compare_hash, remove_if_nil_on_original=false)
+    original_hash = self
+
+    (original_hash.keys | compare_hash.keys).inject({}) do |diff_hash, key|
+      if original_hash[key] != compare_hash[key]
+        if original_hash[key].respond_to?(:deep_diff) && compare_hash[key].respond_to?(:deep_diff)
+          diff_hash[key] = original_hash[key].deep_diff(compare_hash[key], remove_if_nil_on_original)
+        else
+          if remove_if_nil_on_original
+            diff_hash[key]  = []
+            diff_hash[key] << original_hash[key] if original_hash.has_key?(key)
+            diff_hash[key] << compare_hash[key]  if original_hash.has_key?(key)
+            diff_hash.delete(key)                if diff_hash[key].empty?
+          else
+            diff_hash[key] = [original_hash[key], compare_hash[key]]
+          end
+        end
+      end
+
+      diff_hash
+    end
+  end
+
+  def compact
+    self.select { |_, value| !value.nil? }
+  end
+end
+
 class String
   def scrub_pretty_text
     self.gsub("",'').gsub(/\[0m|\[1m|\[32m|\[35m|\[36m/,'')

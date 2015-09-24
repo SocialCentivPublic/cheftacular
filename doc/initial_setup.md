@@ -120,28 +120,38 @@ This is a guide from the ground up, setting up a Chef 12 server on digital ocean
 
     1. Run `cft add_ssh_key_to_bag "YOUR_SSH_PUB_KEY"`. You can also use this oppurtunity to add any other SSH keys other users have. 
 
-    1. Run `cft help cloud_bootstrap` and `cft help cloud` and have a look over the help dialogs.
+    2. Run `cft help cloud_bootstrap` and `cft help cloud` and have a look over the help dialogs.
 
-    2. Double check your cheftacular.yml to make sure that your *preferred_cloud* key is set to your desired cloud. You will also need to make sure you have VALID api credentials entered into the *cloud_authentication* hash.
+    3. Double check your cheftacular.yml to make sure that your *preferred_cloud* key is set to your desired cloud. You will also need to make sure you have VALID api credentials entered into the *cloud_authentication* hash.
 
-    2. Run `cft cloud flavors list`, this will return a list of all *valid* flavor names, find your desired default flavor and enter it's **name** attribute into your cheftacular.yml's *default_flavor_name* key. Also take note of the flavor **name** you would like to use for whatever your first node will be.
+    4. Run `cft cloud flavors list`, this will return a list of all *valid* flavor names, find your desired default flavor and enter it's **name** attribute into your cheftacular.yml's *default_flavor_name* key. Also take note of the flavor **name** you would like to use for whatever your first node will be.
 
         1. A flavor is a "type" of server, for some providers, it is usually a combination of the server's hard drive space and RAM resources though other factors like network IO and bandwidth can be determined here as well.
 
-    3. Run `cft cloud images list`, Image names vary between providers so be sure to find the exact name of the image you want to use as your default. Enter this **name** attribute into your cheftacular.yml
+    5. Run `cft cloud images list`, Image names vary between providers so be sure to find the exact name of the image you want to use as your default. Enter this **name** attribute into your cheftacular.yml
 
         1. Based off what you chose for your name attribute, enter `centos|coreos|debian|fedora|redhat|ubuntu|vyatta` for your *preferred_cloud_os* in your cheftacular.yml. **NOTE! Only Ubuntu is currently fully supported for bootstrapping**.
 
         1. An image is a way to describe an operating system of a server, it can be based off a default (like various linux distributions like Debian, Ubuntu, CentOS, etc) or it can be based off of a user-generated image. Most cloud providers allow users to generate their own images based off a server the cloud provider is hosting.
 
-    4. Run `cft cloud regions list` and find the region you would like to create servers in, add this **name** value to your cheftacular.yml under *preferred_cloud_region*
+    5. Run `cft cloud regions list` and find the region you would like to create servers in, add this **name** value to your cheftacular.yml under *preferred_cloud_region*
 
         1. Rackspace does not currently support API calls for regions, you can find the list of regions [here](http://www.rackspace.com/knowledge_center/article/about-regions)
 
-    5. Run `cft cloud_bootstrap YOUR_NODE_NAME YOUR_FLAVOR_NAME`
+    6. Run `cft cloud_bootstrap YOUR_NODE_NAME YOUR_FLAVOR_NAME`
 
         1. This will (if everything works correctly) create a node and attach it to your staging environment. It will also use the role and node definitions you set to attempt to match role data to the server automatically. If the process fails, please raise an issue on Github.
 
-    6. With a node in place, you can deploy to it to begin testing your cookbooks and recipes with `cft deploy -r ROLE_NAME_THE_NODE_HAS`
+    7. With a node in place, you can deploy to it to begin testing your cookbooks and recipes with `cft deploy -r ROLE_NAME_THE_NODE_HAS`
 
         1. For the full list of flags for `cft deploy` please check `cft arguments` and `cft help deploy`
+
+## Integrating [TheCheftacularCookbook](https://github.com/SocialCentivPublic/TheCheftacularCookbook) Cookbook (optional)
+
+    1. TheCheftacularCookbook cookbook is designed to work closely with your cheftacular.yml to help you automatically set up your environment. While primarily built for rails, nodejs, and wordpress apps, development is still ongoing and more stack support can be added in the future.
+
+    2. If you plan to use TheCheftacularCookbook, create your TheCheftacularCookbook cheftacular.yml with `cft initialize_cheftacular_yml TheCheftacularCookbook` in your chef-repo and `cft initialize_cheftacular_yml application` in your application directories.
+
+    3. Examine the TheCheftacularCookbook [README](https://github.com/SocialCentivPublic/TheCheftacularCookbook)
+
+    4. Once you have created your businessness logic wrapper cookbook as stated in the above README, a deploy will get you going and begin the testing.
