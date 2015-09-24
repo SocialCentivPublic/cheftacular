@@ -20,7 +20,7 @@ class Cheftacular
 
       initialize_sub_environment
 
-      initialize_cloud_options
+      initialize_cloud_options unless @config['helper'].is_initialization_command?(ARGV[0])
 
       initialize_documentation_hash
 
@@ -32,9 +32,8 @@ class Cheftacular
 
       initialize_directories
 
-      initialize_cloud_checks
-
       unless @config['helper'].is_initialization_command?(ARGV[0])
+        initialize_cloud_checks
 
         @config['helper'].completion_rate? 0, 'initializer'
 
