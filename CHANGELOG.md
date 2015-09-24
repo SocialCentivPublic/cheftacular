@@ -1,8 +1,8 @@
 ## 2.7.0
 
-* Created [a businessbook cheftacular.yml](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/thebusinessbook.cheftacular.yml)
+* Created [a TheCheftacularCookbook cheftacular.yml](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/TheCheftacularCookbook.cheftacular.yml)
 
-    * This config file serves as an example of how to utilize thebusinessbook cookbook with this gem.
+    * This config file serves as an example of how to utilize TheCheftacularCookbook cookbook with this gem.
 
 * Implemented loose syncing between application cheftacular.ymls and DevOps cheftacular.ymls
 
@@ -10,7 +10,7 @@
 
     * Because of this, users may now have "incomplete" cheftacular.ymls in repo directories, an example of this can be seen [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/examples/application.cheftacular.yml)
 
-        * It is not necessary to include the **repositories** top level key but it does allow for application developers to modify the chef environment if the [thebusinessbook](https://github.com/SocialCentivPublic/thebusinessbook) cookbook is being used and the key **sync_application_cheftacular_yml** is set to true.
+        * It is not necessary to include the **repositories** top level key but it does allow for application developers to modify the chef environment if the [TheCheftacularCookbook](https://github.com/SocialCentivPublic/TheCheftacularCookbook) cookbook is being used and the key **sync_application_cheftacular_yml** is set to true.
 
 * New cheftacular.yml keys
 
@@ -26,7 +26,7 @@
 
     * **backup_config:db_primary_backup_path** (root directory of backups on database primaries)
 
-    * **thebusinessbook:ALL_NESTED_KEYS** * (keys for thebusinessbook cookbook, **none of these are required for cheftacular itself**)
+    * **TheCheftacularCookbook:ALL_NESTED_KEYS** * (keys for TheCheftacularCookbook cookbook, **none of these are required for cheftacular itself**)
 
 * Deleted cheftacular.yml keys
 
@@ -40,7 +40,7 @@
 
 * Added new functionality to `cft tail [PATTERN_TO_MATCH]`, now supports the PATTERN_TO_MATCH argument to only send specific matching patterns to the terminal.
 
-* Added functionality to `cft initialize_cheftacular_yml [thebusinessbook]`, it now can take an arg "thebusinessbook" to generate a businessbook cheftacular.yml
+* Added functionality to `cft initialize_cheftacular_yml [application|TheCheftacularCookbook]` to allow for slightly customized generated cheftacular.ymls
 
 * Added new autocompiling bag: `default:environment_config` that stores the bags currently available in all chef environments.
 

@@ -2,12 +2,15 @@ class Cheftacular
   class StatelessActionDocumentation
     def initialize_cheftacular_yml
       @config['documentation']['stateless_action'] <<  [
-        "`cft initialize_cheftacular_yml [thebusinessbook]` will create a cheftacular.yml file in your config folder (and create the" +
-        "config folder if it does not exist). If you already have a cheftacular.yml file in the config folder, it will " +
-        "create a cheftacular.example.yml file that will contain the new changes / keys in the latest cheftacular version.",
+        "`cft initialize_cheftacular_yml [application|TheCheftacularCookbook]` will create a cheftacular.yml " +
+        "file in your config folder (and create the config folder if it does not exist). If you already have a cheftacular.yml file " +
+        "in the config folder, it will create a cheftacular.example.yml file that will contain the new changes / keys in the latest " +
+        "cheftacular version.",
 
         [
-          "    1. if `thebusinessbook` is passed, the generated cheftacular.yml file will include the additional thebusinessbook keys."
+          "    1. If `TheCheftacularCookbook` is passed, the generated cheftacular.yml file will include the additional TheCheftacularCookbook keys."
+
+          "    2. If `application` is passed, the generated cheftacular.yml file will look like one you could use in an application directory."
         ]
       ]
     end
@@ -21,7 +24,8 @@ class Cheftacular
 
   class StatelessAction
     def initialize_cheftacular_yml example_file_to_load='cheftacular.yml'
-      example_file_to_load = 'thebusinessbook.cheftacular.yml' if ARGV[1] == 'thebusinessbook'
+      example_file_to_load = 'thecheftacularcookbook.cheftacular.yml' if ARGV[1] == 'TheCheftacularCookbook'
+      example_file_to_load = 'application.cheftacular.yml'            if ARGV[1] == 'application'
 
       FileUtils.mkdir_p(File.join(@config['locs']['chef-repo'], "config"))
 

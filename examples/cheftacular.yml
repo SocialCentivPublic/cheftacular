@@ -37,7 +37,7 @@ backup_config:
 #chef-repo
 keep_chef_repo_cheftacular_yml_up_to_date: false
 location_of_chef_repo_cheftacular_yml:     /files/default # this should be the location of the cheftacular.yml file in your wrapper cookbooks(s). NOTE: The file should be in the same place in all cases
-sync_application_cheftacular_yml:          true # this lets users in application directories overwrite chef-repo cheftacular yml keys with their own keys, useful for thebusinessbook additions
+sync_application_cheftacular_yml:          true # this lets users in application directories overwrite chef-repo cheftacular yml keys with their own keys, useful for TheCheftacularCookbook additions
 replace_keys_in_chef_repo:                      # keys that should be changed when the cheftacular.yml is created in the chef-repo (its a good idea to turn off strict version checks)
   strict_version_checks: false
 

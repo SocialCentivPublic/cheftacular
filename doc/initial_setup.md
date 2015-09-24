@@ -146,12 +146,12 @@ This is a guide from the ground up, setting up a Chef 12 server on digital ocean
 
         1. For the full list of flags for `cft deploy` please check `cft arguments` and `cft help deploy`
 
-## Integrating [thebusinessbook](https://github.com/SocialCentivPublic/thebusinessbook) Cookbook (optional)
+## Integrating [TheCheftacularCookbook](https://github.com/SocialCentivPublic/TheCheftacularCookbook) Cookbook (optional)
 
-    1. TheBusinessBook cookbook is designed to work closely with your cheftacular.yml to help you automatically set up your environment. While primarily built for rails, nodejs, and wordpress apps, development is still ongoing and more stack support can be added in the future.
+    1. TheCheftacularCookbook cookbook is designed to work closely with your cheftacular.yml to help you automatically set up your environment. While primarily built for rails, nodejs, and wordpress apps, development is still ongoing and more stack support can be added in the future.
 
-    2. If you plan to use TheBusinessBook, create your thebusinessbook cheftacular.yml with `cft initialize_cheftacular_yml thebusinessbook` in your chef-repo and `cft initialize_cheftacular_yml application.thebusinessbook` in your application directories.
+    2. If you plan to use TheCheftacularCookbook, create your TheCheftacularCookbook cheftacular.yml with `cft initialize_cheftacular_yml TheCheftacularCookbook` in your chef-repo and `cft initialize_cheftacular_yml application` in your application directories.
 
-    3. Examine the TheBusinessBook [README](https://github.com/SocialCentivPublic/thebusinessbook)
+    3. Examine the TheCheftacularCookbook [README](https://github.com/SocialCentivPublic/TheCheftacularCookbook)
 
     4. Once you have created your businessness logic wrapper cookbook as stated in the above README, a deploy will get you going and begin the testing.
