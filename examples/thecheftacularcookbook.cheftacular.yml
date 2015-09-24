@@ -218,6 +218,12 @@ TheCheftacularCookbook:
   deploys:
     rollback_on_error:       true        #allow for debugging of code placed in directory if false.
   override_delayed_job_queues_on_split_environments: true
+  chef_environment_to_app_repo_branch_mappings: #THESE BRANCHES MUST EXIST ON THE REPO(S)
+    devstaging:  devstaging
+    staging:     staging
+    production:  master
+    test:        devstaging
+    datastaging: master
   default_volume_config: #this will only create volumes on clouds that support creating volumes
     database:
       default_size:     100
