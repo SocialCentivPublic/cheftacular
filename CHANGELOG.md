@@ -1,3 +1,7 @@
+## 2.7.2
+
+* `cft check` now displays revisions for users utilizing TheCheftacularCookbooks
+
 ## 2.7.1
 
 * Fixed issue with `cft help COMMAND` not working on application clients due to having an incomplete cheftacular.yml (and being unable to check the server)
