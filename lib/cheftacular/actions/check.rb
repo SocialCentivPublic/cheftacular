@@ -3,13 +3,18 @@ class Cheftacular
     def check
       @config['documentation']['action'] <<  [
         "`cft check` Checks the commits for all servers for a repository (for an environment) and returns them in a simple chart. " +
-        "Also shows when these commits were deployed to the server."
+        "Also shows when these commits were deployed to the server.",
+
+        [
+          "    1. If the node has special repository based keys from TheCheftacularCookbook, this command will also display information " +
+          "about the branch and organization currently deployed to the node(s)."
+        ]
       ]
     end
   end
 
   class Action
-    def check commit_hash={}, have_revisions=false
+    def check commit_hash={}, have_revisions=false, have_changed_orgs=false
       @config['filesystem'].cleanup_file_caches('current-nodes')
       
       nodes = @config['getter'].get_true_node_objects
@@ -22,19 +27,27 @@ class Cheftacular
 
         puts("Beginning commit check run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']
 
-        commit_hash[n.name]           = start_commit_check( n.name, n.public_ipaddress, options, locs, cheftacular)
-        commit_hash[n.name]['branch'] = n.normal_attributes[options['repository']]['repo_branch'] if n.normal_attributes.has_key?(options['repository'])
-        have_revisions                = true if commit_hash[n.name].has_key?('branch')
+        commit_hash[n.name]                      = start_commit_check( n.name, n.public_ipaddress, options, locs, cheftacular)
+
+        if n.normal_attributes.has_key?(options['repository'])
+          commit_hash[n.name]['branch']       = n.normal_attributes[options['repository']]['repo_branch'] if n.normal_attributes[options['repository']].has_key?('repo_branch')
+          commit_hash[n.name]['organization'] = n.normal_attributes[options['repository']]['repo_group']  if n.normal_attributes[options['repository']].has_key?('repo_group')
+        end
+
+        have_revisions    = true if commit_hash[n.name].has_key?('branch')
+        have_changed_orgs = true if commit_hash[n.name].has_key?('organization')
       end
 
-      puts "\n#{ 'name'.ljust(21) }#{ 'deployed_on'.ljust(22) } #{ 'commit'.ljust(40) } #{'revision'.ljust(30) if have_revisions }"
+      puts "\n#{ 'name'.ljust(21) }#{ 'deployed_on'.ljust(22) } #{ 'commit'.ljust(40) } #{'revision'.ljust(30) if have_revisions } #{'organization'.ljust(30) if have_changed_orgs }"
       nodes.each do |n|
         unless commit_hash[n.name]['name'].blank?
           out  = []
           out << n.name.ljust(20, '_')
           out << commit_hash[n.name]['time'].ljust(21)
           out << commit_hash[n.name]['name'].ljust(39)
-          out << commit_hash[n.name]['branch'].ljust(30) if commit_hash[n.name].has_key?('branch')
+          out << commit_hash[n.name]['branch'].ljust(29)       if commit_hash[n.name].has_key?('branch')
+          out << commit_hash[n.name]['organization'].ljust(30) if commit_hash[n.name].has_key?('organization') 
+          out << commit_hash[n.name]
 
           puts out.join(' ')
         end

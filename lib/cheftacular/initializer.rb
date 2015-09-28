@@ -151,12 +151,16 @@ class Cheftacular
           @options['negative_role'] = name
         end
 
-        opts.on('-z', '--unset-revision', 'Tells the chef-server that we want to return to using the default revision for a repository') do
-          @options['unset_revision'] = true
+        opts.on('-z', '--unset-github-deploy-args', 'Tells the chef-server that we want to return to using the default revision and organization for a repository') do
+          @options['unset_github_deploy_args'] = true
         end
 
         opts.on('-Z REVISION', '--revision REVISION', "Tells the chef-server what branch / revision it should deploy for a repository") do |revision|
           @options['target_revision'] = revision
+        end
+
+        opts.on('-O ORGANIZATION', '--deploy-org ORGANIZATION', "Tells the chef-server to use a certain organization on deploys (git user must have access)") do |org|
+          @options['deploy_organization'] = org
         end
 
         # client-list

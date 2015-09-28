@@ -168,6 +168,14 @@ class Cheftacular
           save_on_finish = true
         end
 
+        @config['getter'].get_repo_names_for_repositories.each_key do |repo_name|
+          unless hash[env]['app_revisions'].has_key?(repo_name)
+            hash[env]['app_revisions'][repo_name] = {}
+
+            save_on_finish = true
+          end 
+        end
+
         unless hash[env].has_key?('cloudflare_activated_domains')
           hash[env]['cloudflare_activated_domains'] = []
 
