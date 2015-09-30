@@ -10,11 +10,11 @@ class Cheftacular
           "it checks to see if the toggled name exists then sets the node's run_list to include the toggled role",
 
           "    2. EX: `cft role_toggle api01 worker activate` will find the node api01 and attempt to toggle the worker role to on. " +
-          "If the node does NOT have the worker#{ @config['cheftacular']['role_toggling']['deactivated_role_suffix'] } role, then it will " +
+          "If the node does NOT have the worker[DEACTIVATED_ROLE_SUFFIX] role, then it will " +
           "add it if *role_toggling:strict_roles* is set to **false**",
 
           "        1. If *role_toggling:strict_roles* is set to true, then cheftacular would raise an error saying this role is unsettable " +
-          "on the node. On the other hand, if the node already has the worker#{ @config['cheftacular']['role_toggling']['deactivated_role_suffix'] }" +
+          "on the node. On the other hand, if the node already has the worker[DEACTIVATED_ROLE_SUFFIX]" +
           "role, then this command will succeed even if *strict_roles* is set.",
 
           "    3. In case it isn't obvious, this command ONLY supports deactivation suffix roles like worker_deactivate or worker_off, with their" +
