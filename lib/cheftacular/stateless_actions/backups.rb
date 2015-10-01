@@ -54,7 +54,7 @@ class Cheftacular
       @options['env']  = backup_env
 
       puts "Deploying to backup master to force refresh of the ssh keys..." 
-      #@config['action'].deploy
+      @config['action'].deploy
 
       @options['role'] = old_role
       @options['env']  = old_env
@@ -65,6 +65,8 @@ class Cheftacular
         { unless: "role[#{ @config['cheftacular']['backup_config']['global_backup_role_name'] }]" },
         { if: { not_env: backup_env } }
       ]
+
+      nodes = @config['getter'].get_true_node_objects
 
       backup_master          = @config['parser'].exclude_nodes( nodes, args_config, true)
       backup_master_local_ip = @config['getter'].get_address_hash(backup_master.first.name)['priv']

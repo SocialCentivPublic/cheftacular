@@ -7,7 +7,7 @@ module SSHKit
 
         puts "Running #{ command } for #{ name } (#{ ip_address }) (Run with with --debug to generate a log as well)"
 
-        target_loc = "/var/www/vhosts/#{ options['repository'] }/current"
+        target_loc = "#{ cheftacular['base_file_path'] }/#{ options['repository'] }/current"
 
         if test( target_loc )
           puts "#{ name } (#{ ip_address }) cannot run #{ command } as there is no directory at #{ target_loc }!"

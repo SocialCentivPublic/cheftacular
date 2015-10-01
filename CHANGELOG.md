@@ -8,6 +8,8 @@
 
 * `cft check` now displays organizations for users utilizing TheCheftacularCookbook
 
+* Minor fix to server bootstrapping to not fail when using `cft environment boot` to boot nodes with basic descriptors (just their node name)
+
 ## 2.7.2
 
 * `cft check` now displays revisions for users utilizing TheCheftacularCookbook
