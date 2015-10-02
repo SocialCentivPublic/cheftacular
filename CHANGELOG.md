@@ -10,6 +10,8 @@
 
 * Minor fix to server bootstrapping to not fail when using `cft environment boot` to boot nodes with basic descriptors (just their node name)
 
+* Major fixes to `cft backups load` and `cft backups run` is now `cft backups restore`.
+
 ## 2.7.2
 
 * `cft check` now displays revisions for users utilizing TheCheftacularCookbook

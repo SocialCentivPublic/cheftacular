@@ -134,8 +134,8 @@ class Cheftacular
     end
 
     def should_route_wildcard_requests? node_name, env, descriptor, should_route_requests=false
-      repository_hash    = descriptor.blank? ? {} : @config['parser'].parse_repository_hash_from_string(descriptor)
-      repository_hash || = {}
+      repository_hash   = descriptor.blank? ? {} : @config['parser'].parse_repository_hash_from_string(descriptor)
+      repository_hash ||= {}
 
       if repository_hash.empty?
         puts "Blank repository hash parsed for #{ node_name } in #{ env } with descriptor #{ descriptor }. Setting should route wildcard requests for server to false."

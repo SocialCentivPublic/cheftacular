@@ -420,6 +420,7 @@ class Cheftacular
 
       #TODO Reevaluate for non-rvm setups
       @config['bundle_command'] = "/home/#{ @config['cheftacular']['deploy_user'] }/.rvm/gems/#{ @config['ruby_string'].chomp }@global/bin/bundle"
+      @config['ruby_command']   = "/home/#{ @config['cheftacular']['deploy_user'] }/.rvm/rubies/#{ @config['ruby_string'].chomp }/bin/ruby"
     end
 
     def initialize_passwords env, refresh_bag=false

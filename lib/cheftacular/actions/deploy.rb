@@ -9,9 +9,9 @@ class Cheftacular
           "    1.  The `-Z REVISION` flag can be used with TheCheftacularCookbook to set a revision your app will run. ",
 
           "    2.  The `-O ORGANIZATION` flag can be used with TheCheftacularCookbook to set an *organization* your app can try " +
-          "deploying from, your git user needs access to these forks / organization(s)."
+          "deploying from, your git user needs access to these forks / organization(s).",
 
-          "    3.  The `-z|--unset-github-deploy-args` option will clear your current `-Z` and `-O` flags."
+          "    3.  The `-z|--unset-github-deploy-args` option will clear your current `-Z` and `-O` flags.",
 
           "    4.  This command will also run migrations on both an role's normal servers and its split servers if certain " +
           "conditions are met (such as the role having a database, etc).",

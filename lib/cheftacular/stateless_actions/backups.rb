@@ -3,7 +3,7 @@ class Cheftacular
   class StatelessActionDocumentation
     def backups
       @config['documentation']['stateless_action'] <<  [
-        "`cft backups [activate|deactivate|load|run]` this command " +
+        "`cft backups [activate|deactivate|load|restore]` this command " +
         "sets the fetch_backups and restore_backups flags in your config data bag for an environment. " +
         "These can be used to give application developers a way to trigger / untrigger restores in an environment",
       
@@ -15,7 +15,7 @@ class Cheftacular
           "    3. `load` will fetch the latest backup from the production primary **if it doesn't already exist on " +
           "the server** and run the _backup loading command_ to load this backup into the env.",
 
-          "    4. `run` will simply just run the _backup loading command_ to load the latest backup onto the server."
+          "    4. `restore` will simply just run the _backup loading command_ to load the latest backup onto the server."
         ]
       ]
 
@@ -27,7 +27,7 @@ class Cheftacular
     def backups command=''
       command = ARGV[1] if command.blank?
 
-      raise "Unsupported command (#{ command }) for cft backups" unless command =~ /activate|deactivate|load|run/
+      raise "Unsupported command (#{ command }) for cft backups" unless command =~ /activate|deactivate|load|restore/
 
       self.send("backups_#{ command }")
     end
@@ -54,29 +54,27 @@ class Cheftacular
       @options['env']  = backup_env
 
       puts "Deploying to backup master to force refresh of the ssh keys..." 
-      @config['action'].deploy
+      #@config['action'].deploy
 
       @options['role'] = old_role
       @options['env']  = old_env
 
-      target_db_primary = @config['getter'].get_db_primary_node
+      target_db_primary, nodes = @config['getter'].get_db_primary_node_and_nodes
 
       args_config = [
         { unless: "role[#{ @config['cheftacular']['backup_config']['global_backup_role_name'] }]" },
         { if: { not_env: backup_env } }
       ]
 
-      nodes = @config['getter'].get_true_node_objects
-
       backup_master          = @config['parser'].exclude_nodes( nodes, args_config, true)
-      backup_master_local_ip = @config['getter'].get_address_hash(backup_master.first.name)['priv']
+      backup_master_local_ip = @config['getter'].get_address_hash(backup_master.first.name, true)[backup_master.first.name]['priv']
 
       options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
 
       on ( backup_master.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
         n = get_node_from_address(nodes, host.hostname)
 
-        puts("Beginning latest db_fetch_and_check for #{ n.name } (#{ n.public_ipaddress }) for env #{ options['env'] }") unless options['quiet']
+        puts("Beginning latest db_fetch_and_check for #{ n.name } (#{ n.public_ipaddress }) for env #{ backup_env }") unless options['quiet']
 
         status_hash['latest_backup'] = start_db_check_and_fetch( n.name, n.public_ipaddress, options, locs, cheftacular, passwords)
       end
@@ -91,22 +89,24 @@ class Cheftacular
         start_db_backup_fetch( n.name, n.public_ipaddress, options, locs, cheftacular, passwords, backup_master_local_ip, status_hash['latest_backup'])
       end
 
-      backups_run(nodes)
+      backups_restore
     end
 
-    def backups_run
-      target_db_primary      = @config['getter'].get_db_primary_node
-      applications_as_string = @config['getter'].get_repo_names_for_repositories.keys.join(',')
-      env_pg_pass            = @config[@options['env']]['chef_passwords_bag_hash']['pg_pass']
+    def backups_restore
+      target_db_primary, nodes = @config['getter'].get_db_primary_node_and_nodes
+      applications_as_string   = @config['getter'].get_repo_names_for_repositories.keys.join(',')
+      env_pg_pass              = @config[@options['env']]['chef_passwords_bag_hash']['pg_pass']
 
       options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
+
+      ruby_command = @config['ruby_command']
 
       on ( target_db_primary.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
         n = get_node_from_address(nodes, host.hostname)
 
         puts("Beginning db_backup_run for #{ n.name } (#{ n.public_ipaddress }) for env #{ options['env'] }") unless options['quiet']
 
-        start_db_backup_run( n.name, n.public_ipaddress, options, locs, cheftacular, passwords, applications_as_string, env_pg_pass )
+        start_db_backup_restore( n.name, n.public_ipaddress, options, locs, cheftacular, passwords, applications_as_string, env_pg_pass, ruby_command )
       end
     end
 
@@ -156,46 +156,59 @@ module SSHKit
                      end
 
         return_hash['file_check'] = true
-        return_hash['file_path']  = [target_dir].flatten.last
+        return_hash['filename']   = [target_dir].flatten.last
         return_hash['file_dir']   = case cheftacular['backup_filesystem']
                                     when 'backup_gem' then target_dir.first
                                     when 'raw'        then base_dir
                                     end
 
+        return_hash['backup_master_path'] = case cheftacular['backup_filesystem']
+                                            when 'backup_gem' then File.join(base_dir, return_hash['file_dir'], return_hash['filename'])
+                                            when 'raw'        then File.join(base_dir, return_hash['filename'])
+                                            end
+
         return_hash
       end
 
       def start_db_backup_fetch name, ip_address, options, locs, cheftacular, passwords, backup_master_local_ip, backup_hash, out=[]
-        if sudo_test( passwords[ip_address], backup_path ) #true if dir exists
-          puts "#{ name } (#{ ip_address }) already has the backup at #{ backup_path }, skipping #{ __method__ }..."
+        full_backup_dir  = File.join(cheftacular['backup_config']['db_primary_backup_path'], backup_hash['file_dir'])
+        full_backup_path = File.join(full_backup_dir, backup_hash['filename'])
+
+        if sudo_test( passwords[ip_address], full_backup_path ) #true if dir exists
+          puts "#{ name } (#{ ip_address }) already has the backup at #{ full_backup_path }, skipping #{ __method__ }..."
 
           return true
         end
 
-        sudo_execute( passwords[ip_address], :mkdir, '-p', backup_hash['file_dir'] )
+        sudo_execute( passwords[ip_address], :mkdir, '-p', full_backup_dir )
 
-        sudo_execute( passwords[ip_address], :chown, "#{ cheftacular['deploy_user'] }:#{ cheftacular['deploy_user'] }", backup_hash['file_dir'] )
+        sudo_execute( passwords[ip_address], :chown, "#{ cheftacular['deploy_user'] }:#{ cheftacular['deploy_user'] }", full_backup_dir )
 
-        sudo_execute( passwords[ip_address], :chmod, cheftacular['backup_config']['backup_dir_mode'], backup_hash['file_dir'] )
+        sudo_execute( passwords[ip_address], :chmod, cheftacular['backup_config']['backup_dir_mode'], full_backup_dir )
 
-        execute( :scp, "#{ cheftacular['deploy_user'] }@#{ backup_master_local_ip }:#{ backup_hash['file_path'] }", backup_hash['file_dir'] )
+        execute( :scp, '-oStrictHostKeyChecking=no', "#{ cheftacular['deploy_user'] }@#{ backup_master_local_ip }:#{ backup_hash['backup_master_path'] }", full_backup_path )
 
-        puts "Finished transferring #{ backup_hash['file_path'] } to #{ name }(#{ ip_address })..."
+        puts "Finished transferring #{ full_backup_path } to #{ name }(#{ ip_address })..."
       end
 
-      def start_db_backup_run name, ip_address, options, locs, cheftacular, passwords, applications_as_string, env_pg_pass
+      def start_db_backup_restore name, ip_address, options, locs, cheftacular, passwords, applications_as_string, env_pg_pass, ruby_command, out=''
+        log_loc, timestamp = set_log_loc_and_timestamp(locs)
+
         puts "Beginning backup run on #{ name } (#{ ip_address }), this command may take a while to complete..."
+
         case cheftacular['backup_filesystem']
         when 'backup_gem'
-          #'ruby /root/backup_management.rb /mnt/postgresbackups/backups ENVIRONMENT APPLICATIONS PG_PASS > /root/restore.log 2>&1'
           command = cheftacular['backup_config']['backup_load_command']
           command = command.gsub('ENVIRONMENT', options['env']).gsub('APPLICATIONS', applications_as_string).gsub('PG_PASS', env_pg_pass)
+          command = command.gsub('RUBY_COMMAND', ruby_command )
 
-          sudo_execute( passwords[ip_address], command )
+          out << sudo_capture( passwords[ip_address], command )
         when 'raw'
         end
 
-        puts "Finished executing backup command on #{ name } (#{ ip_address })"
+        ::File.open("#{ log_loc }/#{ name }-backup-restore-#{ timestamp }.txt", "w") { |f| f.write(out.scrub_pretty_text) } unless options['no_logs']
+
+        puts "Finished executing backup command on #{ name } (#{ ip_address }). Wrote logs to #{ log_loc }/#{ name }-backup-restore-#{ timestamp }.txt"
       end
 
       def backup_gem_dir_sort password, cheftacular, base_dir
@@ -222,7 +235,7 @@ module SSHKit
 
         target_file = sudo_capture( password, :ls, File.join(base_dir, target_dir) ).split(' ').last
 
-        [ File.join(base_dir, target_dir), File.join( target_dir, target_file )]
+        [ target_dir, target_file ]
       end
     end
   end

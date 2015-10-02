@@ -120,11 +120,11 @@ class Cheftacular
       ret_hash
     end
 
-    def get_db_primary_node
+    def get_db_primary_node_and_nodes
       nodes          = get_true_node_objects true
       target_db_role = get_current_repo_config['db_primary_host_role']
       
-      @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ target_db_role }]" }, { if: { not_env: @options['env'] } }], true)
+      [@config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ target_db_role }]" }, { if: { not_env: @options['env'] } }], true), nodes]
     end
 
     def get_split_branch_hash ret={}
@@ -135,13 +135,23 @@ class Cheftacular
       ret
     end
 
-    def get_address_hash node_name, ret={}
+    def get_address_hash node_name, load_out_of_env_addresses=false, ret={}
+      break_on_found = false
+
       @config['chef_environments'].each do |env|
-        next unless @config.has_key?(env) #in case the env hashes are not loaded
+        next if !load_out_of_env_addresses && !@config.has_key?(env) #in case the env hashes are not loaded
+        @config['initializer'].initialize_data_bags_for_environment(env, false, ['addresses']) if @options['env'] != env
 
         @config[env]['addresses_bag_hash']['addresses'].each do |serv_hash|
-          ret[serv_hash['name']] = { "dn" => serv_hash['dn'], "priv" => serv_hash['address'], "pub" => serv_hash['public'] } if serv_hash['name'] == node_name
+          if serv_hash['name'] == node_name
+            ret[serv_hash['name']] = { "dn" => serv_hash['dn'], "priv" => serv_hash['address'], "pub" => serv_hash['public'] }
+            break_on_found = true
+
+            break
+          end
         end
+
+        break if break_on_found
       end
 
       ret
