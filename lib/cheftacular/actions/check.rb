@@ -38,7 +38,7 @@ class Cheftacular
         have_changed_orgs = true if commit_hash[n.name].has_key?('organization')
       end
 
-      puts "\n#{ 'name'.ljust(21) }#{ 'deployed_on'.ljust(22) } #{ 'commit'.ljust(40) } #{'revision'.ljust(30) if have_revisions } #{'organization'.ljust(30) if have_changed_orgs }"
+      puts "\n#{ 'name'.ljust(21) }#{ 'deployed_on'.ljust(22) } #{ 'commit'.ljust(40) } #{'revision'.ljust(29) if have_revisions } #{'organization'.ljust(30) if have_changed_orgs }"
       nodes.each do |n|
         unless commit_hash[n.name]['name'].blank?
           out  = []
@@ -47,7 +47,6 @@ class Cheftacular
           out << commit_hash[n.name]['name'].ljust(39)
           out << commit_hash[n.name]['branch'].ljust(29)       if commit_hash[n.name].has_key?('branch')
           out << commit_hash[n.name]['organization'].ljust(30) if commit_hash[n.name].has_key?('organization') 
-          out << commit_hash[n.name]
 
           puts out.join(' ')
         end
