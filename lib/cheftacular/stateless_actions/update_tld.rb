@@ -54,8 +54,6 @@ class Cheftacular
 
       @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld'] = target_tld
 
-      puts "BAG TLD::#{ @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld'] }"
-
       @config['ChefDataBag'].save_config_bag
       @config['ChefDataBag'].save_addresses_bag
     end

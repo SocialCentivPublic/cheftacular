@@ -62,7 +62,7 @@ class Cheftacular
           @config['ChefDataBag'].save_addresses_bag
         end
       end
-
+      
       puts("Done. Please verify that the output of the next line(s) match your expectations (running client-list)") if @options['verbose']
       
       puts(`client-list`) if @options['verbose']

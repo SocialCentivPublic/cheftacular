@@ -21,7 +21,7 @@ class Cheftacular
 
       parse_address(@options['address']) if @options['address']
 
-      parse_and_set_revision if @options['target_revision'] || @options['unset_revision']
+      parse_and_set_deploy_args if @options['target_revision'] || @options['deploy_organization'] || @options['unset_github_deploy_args']
     end
 
     #try and get the most accurate name of the repo
@@ -99,15 +99,18 @@ class Cheftacular
       end
     end
 
-    def parse_and_set_revision
+    def parse_and_set_deploy_args
       raise "Cannot set or unset target_revision without a role" unless @options['role']
 
-      if @options['target_revision']
-        @config[@options['env']]['config_bag_hash'][@options['sub_env']]['app_revisions'][@config['getter'].get_repository_from_role_name(@options['role'])] = @options['target_revision']
+      repo_state_hash   = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['app_revisions'][@config['getter'].get_repository_from_role_name(@options['role'])]
+      repo_state_hash ||= {}
 
-      elsif @options['unset_revision']
-        @config[@options['env']]['config_bag_hash'][@options['sub_env']]['app_revisions'][@config['getter'].get_repository_from_role_name(@options['role'])] = "<use_default>"
+      repo_state_hash['revision']            = @options['target_revision']     if @options['target_revision']
+      repo_state_hash['deploy_organization'] = @options['deploy_organization'] if @options['deploy_organization']
 
+      if @options['unset_github_deploy_args']
+        repo_state_hash['revision']            = nil
+        repo_state_hash['deploy_organization'] = nil
       end
 
       @config['ChefDataBag'].save_config_bag 
