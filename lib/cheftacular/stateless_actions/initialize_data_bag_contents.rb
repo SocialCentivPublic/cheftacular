@@ -171,7 +171,7 @@ class Cheftacular
         @config['getter'].get_repo_names_for_repositories.each_key do |repo_name|
           #upgrades pre 2.7.2 to 2.8.0+ for config bag formats TODO DELETE ME (remove after 3.0.0)
           if hash[env]['app_revisions'].has_key?(repo_name) && hash[env]['app_revisions'][repo_name].class.to_s == 'String'
-            hash[env]['app_revisions'][repo_name]['revision'] = hash[env]['app_revisions'][repo_name]
+            hash[env]['app_revisions'][repo_name] = { "revision" => hash[env]['app_revisions'][repo_name] }
           end
 
           unless hash[env]['app_revisions'].has_key?(repo_name)
