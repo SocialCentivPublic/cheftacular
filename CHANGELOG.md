@@ -1,6 +1,20 @@
+## 2.8.0
+
+* Added `-O | --deploy-org ORGANIZATION` flag, to be used with `cft deploy`. Please see the documentation for more details
+
+* Changed the functionality of `-z|--unset-github-deploy-args` to deactivate both `-O` and `-Z` flags
+
+* Slightly modified the layout of revisions stored in the config data bag.
+
+* `cft check` now displays organizations for users utilizing TheCheftacularCookbook
+
+* Minor fix to server bootstrapping to not fail when using `cft environment boot` to boot nodes with basic descriptors (just their node name)
+
+* Major fixes to `cft backups load` and `cft backups run` is now `cft backups restore`.
+
 ## 2.7.2
 
-* `cft check` now displays revisions for users utilizing TheCheftacularCookbooks
+* `cft check` now displays revisions for users utilizing TheCheftacularCookbook
 
 ## 2.7.1
 

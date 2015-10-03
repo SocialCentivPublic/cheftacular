@@ -50,6 +50,7 @@ class Cheftacular
       when 'boot'
         initial_servers.each_pair do |name, config_hash|
           next if nodes.map { |n| n.name }.include?(name)
+          config_hash ||= {}
 
           @options['node_name']   = name
           @options['flavor_name'] = config_hash.has_key?('flavor') ? config_hash['flavor'] : @config['cheftacular']['default_flavor_name']

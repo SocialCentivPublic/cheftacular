@@ -2,6 +2,10 @@
 class Cheftacular
   class StatelessActionDocumentation
     def role_toggle
+      #set these config vars as they may not be loaded on an initialization run in a application repo
+      @config['cheftacular']['role_toggling'] ||= {}
+      @config['cheftacular']['role_toggling']['deactivated_role_suffix'] ||= '_deactivate'
+      
       @config['documentation']['stateless_action'] <<  [
         "`cft role_toggle NODE_NAME ROLE_NAME activate|deactivate` This command will allow you to **toggle** roles on nodes without using `cft upload_nodes`",
 

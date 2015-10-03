@@ -6,13 +6,17 @@ class Cheftacular
         "Logs of the run itself will be sent to the local log directory in the application (or chef-repo) where the run was conducted.",
         
         [
-          "    1.  This command also restarts services on the server and updates the code. Changes behavior slightly with the `-z|-Z` args " +
-          "but only if your cookbooks support switching revisions based on tags / branch names.",
+          "    1.  The `-Z REVISION` flag can be used with TheCheftacularCookbook to set a revision your app will run. ",
 
-          "    2.  This command will also run migrations on both an role's normal servers and its split servers if certain " +
+          "    2.  The `-O ORGANIZATION` flag can be used with TheCheftacularCookbook to set an *organization* your app can try " +
+          "deploying from, your git user needs access to these forks / organization(s).",
+
+          "    3.  The `-z|--unset-github-deploy-args` option will clear your current `-Z` and `-O` flags.",
+
+          "    4.  This command will also run migrations on both an role's normal servers and its split servers if certain " +
           "conditions are met (such as the role having a database, etc).",
 
-          "    3. The `-v|--verbose` option will cause failed deploys to output to the terminal window and to their normal log file. Useful for debugging."
+          "    5. The `-v|--verbose` option will cause failed deploys to output to the terminal window and to their normal log file. Useful for debugging."
         ]
       ]
     end
