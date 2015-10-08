@@ -87,7 +87,6 @@ repositories:
     stack:                     ruby_on_rails     # Currently supported: ruby_on_rails|wordpress|nodejs
     db_primary_host_role:      db_primary
     #custom_database_name:                       # this key only needs to exist if your database is named differently from REPONAME_ENV
-    restore_backup_file_name:  PostgreSQL-mymainrailsrepository.sql # the file that the backup is usually stored in for the backup directory
     not_a_migration_message:                     # If you have some text that will always show up after migrations, put it here so the system doesnt think it needs to run deploys after a migration again
     has_split_branches:        false             # if you have branches like split-a and split-c, you can use this to access them when defined in the run_list_environments hash 
     specific_chef_passwords:                       # Special keys that you want auto-generated for their repo by for the ENV chef_passwords bag, the value for them is their length

@@ -55,7 +55,7 @@ class Cheftacular
     end
 
     def get_tail_grep_string pattern_to_match=''
-      "| grep -i -E #{ pattern_to_match }" unless pattern_to_match.blank?
+      "| grep -i -E \"#{ pattern_to_match }\"" unless pattern_to_match.blank?
     end
   end
 end
