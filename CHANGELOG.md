@@ -1,3 +1,7 @@
+## 2.8.1
+
+* Fixing issue with Cloudflare always creating new records with cloudflare turned on when the domain name does not match exactly.
+
 ## 2.8.0
 
 * Added `-O | --deploy-org ORGANIZATION` flag, to be used with `cft deploy`. Please see the documentation for more details
