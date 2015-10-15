@@ -2,11 +2,14 @@
 class Cheftacular
   class StatelessActionDocumentation
     def list_toggleable_roles
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft list_toggleable_roles NODE_NAME` This command will allow you to see all toggleable roles for a node"
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Lists toggleable roles for a node'
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 

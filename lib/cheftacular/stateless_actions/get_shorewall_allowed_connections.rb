@@ -1,7 +1,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def get_shorewall_allowed_connections
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft get_shorewall_allowed_connections [PATH_TO_LOCAL_FILE] -n NODE_NAME` command will query a single server and return all of its ACCEPT connections " +
         "from shorewall in it's syslog and return the results in a CSV format. Useful for tracking IP activity.",
 

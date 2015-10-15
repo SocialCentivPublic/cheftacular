@@ -2,9 +2,12 @@
 class Cheftacular
   class StatelessActionDocumentation
     def upload_roles
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft upload_roles` This command will resync the chef server's roles with the data in the chef-repo/roles."
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Updates all roles based on data in your roles dir'
     end
   end
 

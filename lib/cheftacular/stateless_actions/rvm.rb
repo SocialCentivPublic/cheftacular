@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def rvm
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft rvm [COMMAND] [ADDITIONAL_COMMANDS]*` will run rvm commands on the remote servers. " +
         "Output from this command for each server will go into your rvm directory under the log directory. " +
         "Please refer to [the rvm help page](https://rvm.io/rvm) for more information on rvm commands.",
@@ -31,6 +32,8 @@ class Cheftacular
           "It will also check and attempt to upgrade pre 1.25 installations of RVM to 1.26+ (which requires a GPG key)."
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Useful wrapper command for various rvm commands'
     end
   end
 

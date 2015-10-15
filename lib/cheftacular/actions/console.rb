@@ -1,9 +1,15 @@
 class Cheftacular
   class ActionDocumentation
     def console
-      @config['documentation']['action'] <<  [
-        "`cft console` will create a pry session on the first node found for a codebase."
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
+        "`cft console` will create a console session on the first node found for a repository.",
+        [
+          "    1. Attempts to setup a console for the unique stack, stacks currently supported for console is only Rails."
+        ]
       ]
+
+      @config['documentation']['action'][__method__]['short_description'] = 'Create a remote console for the current repository'
     end
   end
 

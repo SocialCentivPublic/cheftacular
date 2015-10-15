@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def backups
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft backups [activate|deactivate|load|restore]` this command " +
         "sets the fetch_backups and restore_backups flags in your config data bag for an environment. " +
         "These can be used to give application developers a way to trigger / untrigger restores in an environment",
@@ -19,7 +20,9 @@ class Cheftacular
         ]
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Runs various backup commands on your current environment'
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 

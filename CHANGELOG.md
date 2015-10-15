@@ -1,6 +1,16 @@
+## 2.9.0
+
+* Updated all documentation to use the new structure, added short descriptions for commands that will be seen when only `cft` is entered.
+
+* Removed `client-list` command. The only way to see the client list data is to use `cft client_list`.
+
 ## 2.8.1
 
 * Fixing issue with Cloudflare always creating new records with cloudflare turned on when the domain name does not match exactly.
+
+* `cft` itself will now return a list of commands
+
+* `cft log` and other stateful commands will now check `-e|--except-role NAME_OF_ROLE`
 
 ## 2.8.0
 

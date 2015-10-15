@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def cloud
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft cloud <FIRST_LEVEL_ARG> [<SECOND_LEVEL_ARG>[:<SECOND_LEVEL_ARG_QUERY>]*] ` this command handles talking to various cloud APIs. " +
         "If no args are passed nothing will happen.",
 
@@ -114,6 +115,8 @@ class Cheftacular
           "exists on DigitalOcean under a different name, this specific command will fail with a generic error. Please check your keys."
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Retrieves useful information about cloud services being used'
     end
   end
 

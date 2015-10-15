@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def cheftacular_config
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft cheftacular_config [display|sync|overwrite]` this command " +
         "Allows you to interact with your complete cheftacular configuration, the union of all repository's cheftacular.ymls. ",
 
@@ -15,7 +16,9 @@ class Cheftacular
         ]
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Allows you to see the overall cheftacular config or force a sync'
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 

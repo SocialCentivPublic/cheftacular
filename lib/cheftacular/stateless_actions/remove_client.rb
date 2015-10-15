@@ -2,16 +2,21 @@
 class Cheftacular
   class StatelessActionDocumentation
     def remove_client
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft remove_client NODE_NAME [destroy]` removes a client (and its node data) from the chef-server. " +
         "It also removes its dns records from the cloud service (if possible). " +
         "This should not be done lightly as you will have to wipe the server and trigger another chef-client " +
         "run to get it to register again. Alternatively, you can run `cft reinitialize IP_ADDRESS NODE_NAME as well.",
 
         [
-          "    1. `destroy` deletes the server as well as removing it from the chef environment."
+          "    1. `destroy` deletes the server as well as removing it from the chef environment.",
+
+          "    2. This command is aliased to `cft remove_node`"
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Removes a node from the chef server'
     end
   end
 
@@ -67,5 +72,7 @@ class Cheftacular
       
       puts(`client-list`) if @options['verbose']
     end
+
+    alias_method :remove_node, :remove_client
   end
 end

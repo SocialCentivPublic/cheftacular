@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def get_haproxy_log
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft get_haproxy_log` this command will generate a haproxy html file for the load balancer(s) associated with a repository in the log directory. " +
         "Opening this log file in the browser will show the status of that haproxy at the time of the log. ",
 
@@ -11,7 +12,9 @@ class Cheftacular
         ]
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Attempts to fetch haproxy load balancer logs from the remote server(s)'
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 

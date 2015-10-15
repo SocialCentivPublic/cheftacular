@@ -1,15 +1,16 @@
 class Cheftacular
   class ActionDocumentation
     def check
-      @config['documentation']['action'] <<  [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description']  = [
         "`cft check` Checks the commits for all servers for a repository (for an environment) and returns them in a simple chart. " +
         "Also shows when these commits were deployed to the server.",
-
         [
           "    1. If the node has special repository based keys from TheCheftacularCookbook, this command will also display information " +
           "about the branch and organization currently deployed to the node(s)."
         ]
       ]
+      @config['documentation']['action'][__method__]['short_description'] = "Checks the branches currently deployed to an env for your repo"
     end
   end
 

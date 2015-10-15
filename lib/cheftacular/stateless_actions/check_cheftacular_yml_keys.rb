@@ -2,10 +2,13 @@
 class Cheftacular
   class StatelessActionDocumentation
     def check_cheftacular_yml_keys
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft check_cheftacular_yml_keys` allows you to check to see if your cheftacular yml keys are valid to the current version of cheftacular. " +
         "It will also set your missing keys to their likely default and let you know to update the cheftacular.yml file."
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = "Makes sure your cheftacular.yml has up-to-date keys for #{ Cheftacular::VERSION }"
     end
   end
 

@@ -2,10 +2,18 @@
 class Cheftacular
   class StatelessActionDocumentation
     def full_bootstrap
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft full_bootstrap ADDRESS ROOT_PASS NODE_NAME` This command performs both " +
-        "#{ @config['cheftacular']['preferred_cloud_os'] }_bootstrap and chef_bootstrap."
+        "#{ @config['cheftacular']['preferred_cloud_os'] }_bootstrap and chef_bootstrap.",
+
+        [
+          "    1. This command is run by `cft cloud_bootstrap` and should not be run on its own unless the " +
+          "target server is already created and not initialized."
+        ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Attempts to setup a server that has already been created'
     end
   end
 

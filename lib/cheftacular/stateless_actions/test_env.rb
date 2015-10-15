@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def test_env
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft test_env [TARGET_ENV] boot|destroy` will create (or destroy) the test nodes for a particular environment " +
         "(defaults to staging, prod split-envs can be set with `-p`). Please read below for how TARGET_ENV works",
 
@@ -17,6 +18,8 @@ class Cheftacular
           "This is set in the environment's config data bag under the tld key"
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Allows you to boot split environments'
     end
   end
 

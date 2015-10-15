@@ -1,10 +1,13 @@
 class Cheftacular
   class StatelessActionDocumentation
     def initialize_data_bag_contents
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft initialize_data_bag_contents ENVIRONMENT_NAME` will ensure the data bags always have the correct structure before each run. " +
         "This command is run every time the gem is started and if called directly, will exit after completion."
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Ensures the data bags always contain correct initialization information'
     end
   end
 

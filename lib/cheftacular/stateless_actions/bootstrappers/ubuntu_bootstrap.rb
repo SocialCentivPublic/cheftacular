@@ -1,11 +1,14 @@
 class Cheftacular
   class StatelessActionDocumentation
     def ubuntu_bootstrap
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft ubuntu_bootstrap ADDRESS ROOT_PASS` This command will bring a fresh server to a state " +
         "where chef-client can be run on it via `cft chef-bootstrap`. It should be noted that it is in "+
         "this step where a server's randomized deploy_user sudo password is generated."
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Updates an ubuntu server to have more secure defaults'
     end
   end
 
