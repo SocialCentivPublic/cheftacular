@@ -1,11 +1,14 @@
 class Cheftacular
   class StatelessActionDocumentation
     def disk_report
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft disk_report` will fetch useful statistics from every server for every environment and output it into your log directory."
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Retrives basic info about the filesystem for your nodes'
     end
   end
 

@@ -1,9 +1,10 @@
 class Cheftacular
   class ActionDocumentation
     def log
-      @config['documentation']['action'] <<  [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
         "`cft log` this command will output the last 500 lines of logs " +
-        "from every server set for CODEBASE (can be given additional args to specify) to the log directory",
+        "from every server set for the repository (can be given additional args to specify) to the log directory",
 
         [
           "    1.  `--nginx` will fetch the nginx logs as well as the application logs",
@@ -17,6 +18,8 @@ class Cheftacular
           "    4. `--fetch-backup` If doing a pg_data log, this will fetch the latest logs from the pg_data log directory for each database."
         ]
       ]
+
+      @config['documentation']['action'][__method__]['short_description'] = 'Fetches logs from the remote servers'
     end
   end
 
@@ -26,6 +29,8 @@ class Cheftacular
 
       nodes = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @options['role'] }]" }] )
 
+      nodes = @config['parser'].exclude_nodes( nodes, [{ if: "role[#{ @options['negative_role'] }]" }]) if @options['negative_role']
+      
       #this must always precede on () calls so they have the instance variables they need
       options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
 

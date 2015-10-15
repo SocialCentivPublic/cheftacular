@@ -1,7 +1,7 @@
 class Cheftacular
   class StatelessActionDocumentation
     def arguments
-      @config['documentation']['arguments'] <<  [
+      @config['documentation']['arguments'] << [
         '## Arguments and flags for cheftacular',
 
         '### Environment flags',

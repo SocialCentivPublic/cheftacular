@@ -1,10 +1,17 @@
 class Cheftacular
   class ActionDocumentation
     def migrate
-      @config['documentation']['action'] <<  [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
         "`cft migrate` this command will grab the first alphabetical node for a repository " +
-        "and run a migration that will hit the database primary server."
+        "and run a migration that will hit the database primary server.",
+
+        [
+          "    1. Currently only supports rails stacks."
+        ]
       ]
+
+      @config['documentation']['action'][__method__]['short_description'] = 'Creates a database migration on the current environment'
     end
   end
 

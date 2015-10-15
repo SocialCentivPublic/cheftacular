@@ -1,7 +1,8 @@
 class Cheftacular
   class ActionDocumentation
     def run
-      @config['documentation']['action'] <<  [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
         "`cft run COMMAND [--all]` will trigger the command on the first server in the role. " + 
         "Can be used to run rake commands or anything else.",
 
@@ -18,6 +19,8 @@ class Cheftacular
           'arguments in quotes like `cft run "rake -T"`'
         ]
       ]
+
+      @config['documentation']['action'][__method__]['short_description'] = 'Runs a command on the current environment for the current repository'
     end
   end
 
@@ -32,6 +35,8 @@ class Cheftacular
 
       #must have rails stack to run migrations and not be a db, only want ONE node
       nodes = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @options['role'] }]" }], !@options['run_on_all'] )
+
+      nodes = @config['parser'].exclude_nodes( nodes, [{ if: "role[#{ @options['negative_role'] }]" }]) if @options['negative_role']
 
       #this must always precede on () calls so they have the instance variables they need
       options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars

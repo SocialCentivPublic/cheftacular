@@ -1,9 +1,18 @@
 class Cheftacular
   class StatelessActionDocumentation
     def compile_readme
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft compile_readme` compiles all documentation methods and creates a README.md file in the log folder of the application."
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Compiles and creates a readme based on all accessable commands'
+    end
+  end
+
+  class InitializationAction
+    def compile_readme
+      
     end
   end
 

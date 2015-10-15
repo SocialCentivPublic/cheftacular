@@ -1,7 +1,8 @@
 class Cheftacular
   class ActionDocumentation
     def tail
-      @config['documentation']['action'] <<  [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
         "`cft tail [PATTERN_TO_MATCH]` will tail the logs (return continuous output) of the first node if finds " + 
         "that has an application matching the repository running on it. Currently only supports rails stacks",
 
@@ -15,6 +16,8 @@ class Cheftacular
           "    3. if the `PATTERN_TO_MATCH` argument exists, the tail will only return entries that have that pattern rather than everything written to the file."
         ]
       ]
+
+      @config['documentation']['action'][__method__]['short_description'] = 'Tails the logs of the first node found for the current repository'
     end
   end
 
@@ -25,6 +28,8 @@ class Cheftacular
       nodes = @config['getter'].get_true_node_objects
 
       nodes = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @options['role'] }]" }], true )
+
+      nodes = @config['parser'].exclude_nodes( nodes, [{ if: "role[#{ @options['negative_role'] }]" }], true) if @options['negative_role']
 
       nodes.each do |n|
         puts("Beginning tail run for #{ n.name } (#{ n.public_ipaddress }) on role #{ @options['role'] }") unless @options['quiet']

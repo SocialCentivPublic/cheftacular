@@ -1,12 +1,15 @@
 class Cheftacular
   class StatelessActionDocumentation
     def update_tld
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft update_tld TLD` command will force a full dns update for a tld in the preferred cloud. " +
         "It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) " +
         "and update them if they are not. It will also create the local subdomain for the entry as well if it " +
         "does exist and point it to the correct private address."
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Forces a full refresh of your specified dns provider'
     end
   end
 

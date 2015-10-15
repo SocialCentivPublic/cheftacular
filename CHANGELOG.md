@@ -1,3 +1,9 @@
+## 2.9.0
+
+* Updated all documentation to use the new structure, added short descriptions for commands that will be seen when only `cft` is entered.
+
+* Removed `client-list` command. The only way to see the client list data is to use `cft client_list`.
+
 ## 2.8.1
 
 * Fixing issue with Cloudflare always creating new records with cloudflare turned on when the domain name does not match exactly.
@@ -5,6 +11,10 @@
 * Fixing issue with `cft tail PATTERN_TO_MATCH` not allowing you to send in strings like "this is a broken request". Specifically you can now search for strings with spaces in them if it is enclosed by quotes.
 
 * Added support for mongo databases to `cft db_console` which can now be aliased to `cft mongo`.
+
+* `cft` itself will now return a list of commands
+
+* `cft log` and other stateful commands will now check `-e|--except-role NAME_OF_ROLE`
 
 ## 2.8.0
 

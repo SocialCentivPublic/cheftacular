@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def clean_cookbooks
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft clean_cookbooks [force] [remove_cookbooks]` allows you to update the internal chef-repo's cookbooks easily. " +
         "By default this script will force you to decide what to do with each cookbook individually (shows version numbers and whether to overwrite it to cookbooks or not).",
 
@@ -12,6 +13,8 @@ class Cheftacular
           "    2. If you would like to remove all the cookbooks on the chef server, run `knife cookbook bulk delete '.*' -p -c ~/.chef/knife.rb`"
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Allows you to update all cookbooks via berkshelf'
     end
   end
 

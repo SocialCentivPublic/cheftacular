@@ -30,8 +30,8 @@ class Cheftacular
 
     def is_initialization_command? command=''
       command ||= ''
-            
-      @config['initialization_action'].public_methods(false).include?(command.to_sym)
+
+      @config['initialization_action'].public_methods(false).include?(command.to_sym) || command.blank?
     end
 
     def running_on_chef_node? ret = false
@@ -140,12 +140,13 @@ class Cheftacular
     def compile_documentation_lines mode, out=[]
       doc_arr = case mode
                 when 'action'           then @config['documentation']['action']
-                when 'application'      then @config['documentation']['action'] + @config['documentation']['application']
+                when 'application'      then @config['documentation']['application'].merge(@config['documentation']['action'])
                 when 'stateless_action' then @config['documentation']['stateless_action']
-                when 'devops'           then @config['documentation']['action'] + @config['documentation']['stateless_action']
+                when 'devops'           then @config['documentation']['stateless_action'].merge(@config['documentation']['action'])
                 end
 
-      count = 1
+      doc_arr = doc_arr.to_a.map { |doc| doc[1]['long_description'] }
+      count   = 1
 
       doc_arr.sort {|a, b| a[0] <=> b[0]}.flatten(1).each do |line|
         out << "#{ count }. #{ line }" if line.class.to_s == 'String'
@@ -156,6 +157,12 @@ class Cheftacular
       end
 
       out
+    end
+
+    def compile_short_context_descriptions documentation_hash, padding_length=25, out=[]
+      out << documentation_hash.to_a.map { |doc| "#{ doc[0].to_s.ljust(padding_length, '_') }_#{ doc[1]['short_description'] }" }
+
+      out.flatten.sort {|a, b| a[0] <=> b[0]}.join("\n\n")
     end
 
     #compares how close str1 is to str2

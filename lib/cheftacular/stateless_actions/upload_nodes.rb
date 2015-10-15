@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def upload_nodes
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft upload_nodes` This command will resync the chef server's nodes with the data in our chef-repo/node_roles. ",
 
         [
@@ -20,6 +21,8 @@ class Cheftacular
           "        1. Due to this, only users running this against their chef-repo need to worry about having a nodes_dir, the way it should be."
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Updates all nodes based on info in your nodes_dir'
     end
   end
 

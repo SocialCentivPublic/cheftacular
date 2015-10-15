@@ -1,7 +1,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def slack
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft slack \"MESSAGE\" [CHANNEL]` will attempt to post the message to the webhook set in your cheftacular.yml. " +
         "Slack posts to your default channel by default but if the CHANNEL argument is supplied the message will post there.",
 
@@ -12,6 +13,8 @@ class Cheftacular
           "    2. Remember, if you have auditing turned on in your cheftacular.yml, you can track who sends what to slack."
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Sends slack messages'
     end
   end
 

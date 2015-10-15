@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def client_list
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft client_list` Allows you check the basic information for all the servers setup via chef. " +
         "Shows the server's short name, its public ip address and roles (run_list) by default.",
 
@@ -17,7 +18,9 @@ class Cheftacular
         ]
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Retrieves useful information for all servers in all environments'
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 

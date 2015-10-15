@@ -1,7 +1,8 @@
 class Cheftacular
   class ActionDocumentation
     def db_console
-      @config['documentation']['action'] <<  [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
         "`cft db_console` " +
         "will create a database console session on the first node found for a database stack in the current environment.",
 
@@ -11,6 +12,8 @@ class Cheftacular
           "    2. This command is also aliased to mongo, typing `cft mongo` will drop you into a mongodb mongo session."
         ]
       ]
+
+      @config['documentation']['action'][__method__]['short_description'] = 'Creates a remote database console session for the current repository'
     end
   end
 

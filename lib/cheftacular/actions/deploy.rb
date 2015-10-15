@@ -1,7 +1,8 @@
 class Cheftacular
   class ActionDocumentation
     def deploy
-      @config['documentation']['action'] <<  [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
         "`cft deploy` will do a simple chef-client run on the servers for a role. " + 
         "Logs of the run itself will be sent to the local log directory in the application (or chef-repo) where the run was conducted.",
         
@@ -19,6 +20,8 @@ class Cheftacular
           "    5. The `-v|--verbose` option will cause failed deploys to output to the terminal window and to their normal log file. Useful for debugging."
         ]
       ]
+
+      @config['documentation']['action'][__method__]['short_description'] = "Deploys the current code in the repository (runs chef-client)"
     end
   end
 

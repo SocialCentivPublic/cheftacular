@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def update_chef_client
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "[NYI]`cft update_chef_client` attempts to update the chef-client of all nodes to the latest version. " +
         "Should be done with caution and with the chef_server's version in mind."
       ]

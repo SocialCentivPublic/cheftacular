@@ -299,10 +299,10 @@ class Cheftacular
     def initialize_documentation_hash
       @config['documentation'] ||= {}
       @config['documentation']['arguments']        ||= []
-      @config['documentation']['action']           ||= []
-      @config['documentation']['stateless_action'] ||= []
-      @config['documentation']['application']      ||= []
-      @config['documentation']['devops']           ||= []
+      @config['documentation']['action']           ||= {}
+      @config['documentation']['stateless_action'] ||= {}
+      @config['documentation']['application']      ||= {}
+      @config['documentation']['devops']           ||= {}
     end
 
     def initialize_locations

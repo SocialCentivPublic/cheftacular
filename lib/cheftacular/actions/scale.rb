@@ -3,7 +3,8 @@
 class Cheftacular
   class ActionDocumentation
     def scale
-      @config['documentation']['action'] <<  [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
         "`cft scale up|down [NUM_TO_SCALE]` will add (or remove) NUM_TO_SCALE servers from the server array. " +
         "This command will not let you scale down below 1 server.",
 
@@ -13,6 +14,8 @@ class Cheftacular
           "A failed build may require the server to be destroyed / examined by a DevOps engineer."
         ]
       ]
+
+      @config['documentation']['action'][__method__]['short_description'] = 'Scales an environment up or down (relies on roles)'
     end
   end
 
