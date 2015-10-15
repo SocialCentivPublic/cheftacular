@@ -2,6 +2,10 @@
 
 * Fixing issue with Cloudflare always creating new records with cloudflare turned on when the domain name does not match exactly.
 
+* Fixing issue with `cft tail PATTERN_TO_MATCH` not allowing you to send in strings like "this is a broken request". Specifically you can now search for strings with spaces in them if it is enclosed by quotes.
+
+* Added support for mongo databases to `cft db_console` which can now be aliased to `cft mongo`.
+
 ## 2.8.0
 
 * Added `-O | --deploy-org ORGANIZATION` flag, to be used with `cft deploy`. Please see the documentation for more details
