@@ -4,6 +4,10 @@
 
 * Removed `client-list` command. The only way to see the client list data is to use `cft client_list`.
 
+* Removed auto-syncing on the cheftacular.yml configs. Now an actual sync ONTO the server's cheftacular configs will only occur with `cft cheftacular_config sync`.
+
+    * Removed due to various issues regarding passive syncing on a version-controlled config file.
+
 ## 2.8.1
 
 * Fixing issue with Cloudflare always creating new records with cloudflare turned on when the domain name does not match exactly.

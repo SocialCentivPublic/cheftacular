@@ -253,25 +253,9 @@ class Cheftacular
 
       @config['ChefDataBag'].init_bag('default', 'cheftacular', false)
 
-      diff_hash = @config['cheftacular'].deep_diff(@config['default']['cheftacular_bag_hash'], true).except('mode', 'default_repository').compact
+      @config['initial_cheftacular_yml'] = @config['cheftacular'].deep_dup
 
-      diff_hash.each_pair do |key, value|
-        diff_hash.delete(key) if value.empty? || value.nil?
-      end
-
-      if @config['helper'].running_in_mode?('devops') && !diff_hash.empty?
-        puts "Difference detected between local cheftacular.yml and data bag cheftacular.yml! Displaying..."
-
-        ap diff_hash
-      elsif @config['helper'].running_in_mode?('application') && @config['default']['cheftacular_bag_hash']['slack']['webhook'] && !diff_hash.empty?
-        @config['slack_queue'] << diff_hash.awesome_inspect({plain: true, indent: 2}).prepend('```').insert(-1, '```')
-      end
-
-      @config['cheftacular'] = if @config['default']['cheftacular_bag_hash']['sync_application_cheftacular_yml']
-                                 @config['default']['cheftacular_bag_hash'].deep_merge(@config['cheftacular'])
-                               else
-                                 @config['cheftacular'].deep_merge(@config['default']['cheftacular_bag_hash'].except('default_repository', 'mode'))
-                               end
+      @config['cheftacular'] = @config['default']['cheftacular_bag_hash'].deep_merge(@config['cheftacular'])
     end
 
     def initialize_default_cheftacular_options

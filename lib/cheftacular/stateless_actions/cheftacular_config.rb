@@ -10,8 +10,9 @@ class Cheftacular
         [
           "    1. `display` will show the current overall configuration for cheftacular.",
 
-          "    2. `sync` will sync your local cheftacular yaml keys ONTO the server's keys. This happens automatically whenever a " +
-          "difference is detected between the local keys and the remote keys but can be run manually. Will send a slack notification " +
+          "    2. `diff` will show the difference between your current cheftacular.yml and the server's. Run automatically on a sync.",
+
+          "    3. `sync` will sync your local cheftacular yaml keys ONTO the server's keys. Will send a slack notification " +
           "if slack is configured (the slack notification contains the diffed keys). The sync only occurs if there are CHANGES to the file."
         ]
       ]
@@ -37,7 +38,25 @@ class Cheftacular
       ap(@config['cheftacular'], {indent: 2})
     end
 
+    def cheftacular_config_diff
+      diff_hash = @config['initial_cheftacular_yml'].deep_diff(@config['default']['cheftacular_bag_hash'], true).except('mode', 'default_repository').compact
+
+      diff_hash.each_pair do |key, value|
+        diff_hash.delete(key) if value.empty? || value.nil?
+      end
+
+      if @config['helper'].running_in_mode?('devops') && !diff_hash.empty?
+        puts "Difference detected between local cheftacular.yml and data bag cheftacular.yml! Displaying..."
+
+        ap diff_hash
+      elsif @config['helper'].running_in_mode?('application') && @config['default']['cheftacular_bag_hash']['slack']['webhook'] && !diff_hash.empty?
+        @config['slack_queue'] << diff_hash.awesome_inspect({plain: true, indent: 2}).prepend('```').insert(-1, '```')
+      end
+    end
+
     def cheftacular_config_sync
+      cheftacular_config_diff
+
       parsed_cheftacular = Digest::SHA2.hexdigest(@config['helper'].get_cheftacular_yml_as_hash.to_s)
 
       return true if File.exist?(@config['filesystem'].local_cheftacular_file_cache_path) && File.read(@config['filesystem'].local_cheftacular_file_cache_path) == parsed_cheftacular
