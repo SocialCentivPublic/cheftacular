@@ -116,6 +116,8 @@
 
     1. This command is aliased to psql, typing `cft psql` will drop you into a rails stack database psql session.
 
+    2. This command is also aliased to mongo, typing `cft mongo` will drop you into a mongodb mongo session.
+
 9. `cft deploy` will do a simple chef-client run on the servers for a role. Logs of the run itself will be sent to the local log directory in the application (or chef-repo) where the run was conducted.
 
     1.  The `-Z REVISION` flag can be used with TheCheftacularCookbook to set a revision your app will run. 

@@ -12,6 +12,10 @@
 
 * Fixing issue with Cloudflare always creating new records with cloudflare turned on when the domain name does not match exactly.
 
+* Fixing issue with `cft tail PATTERN_TO_MATCH` not allowing you to send in strings like "this is a broken request". Specifically you can now search for strings with spaces in them if it is enclosed by quotes.
+
+* Added support for mongo databases to `cft db_console` which can now be aliased to `cft mongo`.
+
 * `cft` itself will now return a list of commands
 
 * `cft log` and other stateful commands will now check `-e|--except-role NAME_OF_ROLE`

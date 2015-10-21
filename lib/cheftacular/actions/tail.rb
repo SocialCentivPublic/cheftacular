@@ -55,12 +55,12 @@ class Cheftacular
 
       #special servers should be listed first as most of them will have web role
       log_loc = "#{ @config['cheftacular']['base_file_path'] }/#{ @options['repository'] }/current/log/#{ true_env }.log"
-      
+
       `ssh -oStrictHostKeyChecking=no -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "#{ @config['helper'].sudo(ip_address) } tail -f #{ log_loc } #{ get_tail_grep_string(pattern_to_match) }" > /dev/tty`
     end
 
     def get_tail_grep_string pattern_to_match=''
-      "| grep -i -E #{ pattern_to_match }" unless pattern_to_match.blank?
+      "| grep -i -E \\\"#{ pattern_to_match }\\\"" unless pattern_to_match.blank?
     end
   end
 end

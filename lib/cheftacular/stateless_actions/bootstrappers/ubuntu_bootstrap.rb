@@ -88,6 +88,7 @@ class Cheftacular
 
       deploy_commands.each do |cmnd|
         puts("(#{ @options['address'] }) Running #{ cmnd.gsub("#{ new_deploy_pass }", "sudo password") }") unless @options['quiet'] || @options['in_scaling']
+        
         out << `ssh -t -oStrictHostKeyChecking=no #{ deploy_user }@#{ @options['address'] } "#{ cmnd }"`
 
         puts(out.last) unless @options['quiet'] || @options['in_scaling']
@@ -97,6 +98,7 @@ class Cheftacular
 
       final_commands.each do |cmnd|
         puts "(#{ @options['address'] }) Running #{ cmnd.gsub("#{ new_deploy_pass }", "sudo password") }"
+
         out << `ssh -t -oStrictHostKeyChecking=no #{ deploy_user }@#{ @options['address'] } "#{ cmnd }"`
 
         puts(out.last) unless @options['quiet'] || @options['in_scaling']
@@ -104,11 +106,9 @@ class Cheftacular
 
       puts("Finished ruby setup......stage 3 of 3 for server #{ @options['address'] }") if @options['in_scaling']
 
-      @config[@options['env']]['server_passwords_bag_hash']["#{ @options['address'] }-root-pass"] = @options['client_pass']
-
+      @config[@options['env']]['server_passwords_bag_hash']["#{ @options['address'] }-root-pass"]   = @options['client_pass']
       @config[@options['env']]['server_passwords_bag_hash']["#{ @options['address'] }-deploy-pass"] = new_deploy_pass
-
-      @config[@options['env']]['server_passwords_bag_hash']["#{ @options['address'] }-name"] = @options['node_name'] if @options['node_name']
+      @config[@options['env']]['server_passwords_bag_hash']["#{ @options['address'] }-name"]        = @options['node_name'] if @options['node_name']
 
       @config['ChefDataBag'].save_server_passwords_bag unless @options['in_scaling']
     end
