@@ -36,12 +36,14 @@ class Cheftacular
 
         puts("Beginning migration run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']
 
-        log_data, timestamp = start_task( n.name, n.public_ipaddress, n.run_list, "#{ bundle_command } exec rake db:migrate", options, locs, cheftacular)
+        log_data, timestamp, exit_status = start_task( n.name, n.public_ipaddress, n.run_list, "#{ bundle_command } exec rake db:migrate", options, locs, cheftacular)
 
-        logs_bag_hash["#{ n.name }-migrate"] = { text: log_data.scrub_pretty_text, timestamp: timestamp }
+        logs_bag_hash["#{ n.name }-#{ __method__ }"] = { "text" => log_data.scrub_pretty_text, "timestamp" => timestamp, "exit_status" => exit_status }
       end
 
       @config['ChefDataBag'].save_logs_bag
+
+      @config['helper'].send_log_bag_hash_slack_notification(log_bag_hash, __method__, 'Failing migration detected, please fix this and deploy again, exiting...')
 
       @options['run_migration_already'] = true
 

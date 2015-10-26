@@ -8,6 +8,8 @@
 
     * Removed due to various issues regarding passive syncing on a version-controlled config file.
 
+* Added much better error handling for `cft migrate` and `cft run`, these commands will now send slack notifications containing errors and log error output to the log bag.
+
 ## 2.8.1
 
 * Fixing issue with Cloudflare always creating new records with cloudflare turned on when the domain name does not match exactly.

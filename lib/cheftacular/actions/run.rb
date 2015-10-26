@@ -46,12 +46,14 @@ class Cheftacular
 
         puts("Beginning task run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']
 
-        log_data, timestamp = start_task( n.name, n.public_ipaddress, n.run_list, "#{ bundle_command } exec #{ command }", options, locs, cheftacular)
+        log_data, timestamp, exit_status = start_task( n.name, n.public_ipaddress, n.run_list, "#{ bundle_command } exec #{ command }", options, locs, cheftacular)
 
-        logs_bag_hash["#{ n.name }-run"] = { text: log_data.scrub_pretty_text, timestamp: timestamp }
+        logs_bag_hash["#{ n.name }-#{ __method__ }"] = { "text" => log_data.scrub_pretty_text, "timestamp" => timestamp, "exit_status" => exit_status }
       end
 
       @config['ChefDataBag'].save_logs_bag
+
+      @config['helper'].send_log_bag_hash_slack_notification(log_bag_hash, __method__, 'Failing command detected, exiting...')
     end
 
     def run_nodejs
