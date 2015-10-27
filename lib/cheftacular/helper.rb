@@ -268,7 +268,7 @@ class Cheftacular
       puts("Completed rvm.sh installation into /etc/profile.d/rvm.sh") unless @options['quiet']
     end
 
-    def send_log_bag_hash_slack_notification log_bag_hash, method, on_failing_exit_status_message=''
+    def send_log_bag_hash_slack_notification logs_bag_hash, method, on_failing_exit_status_message=''
       if @config['cheftacular']['slack']['webhook']
         logs_bag_hash.each_pair do |key, hash|
           next unless key.include?(method.to_s)
