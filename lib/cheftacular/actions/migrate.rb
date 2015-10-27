@@ -43,7 +43,7 @@ class Cheftacular
 
       @config['ChefDataBag'].save_logs_bag
 
-      @config['helper'].send_log_bag_hash_slack_notification(log_bag_hash, __method__, 'Failing migration detected, please fix this and deploy again, exiting...')
+      @config['helper'].send_log_bag_hash_slack_notification(logs_bag_hash, __method__, 'Failing migration detected, please fix this and deploy again, exiting...')
 
       @options['run_migration_already'] = true
 

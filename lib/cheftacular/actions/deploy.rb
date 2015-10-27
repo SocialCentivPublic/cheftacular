@@ -45,7 +45,7 @@ class Cheftacular
         logs_bag_hash["#{ n.name }-#{ __method__ }"] = { "text" => log_data.scrub_pretty_text, "timestamp" => timestamp, "exit_status" => exit_status }
       end
 
-      @config['helper'].send_log_bag_hash_slack_notification(log_bag_hash, __method__)
+      @config['helper'].send_log_bag_hash_slack_notification(logs_bag_hash, __method__)
       
       @config['ChefDataBag'].save_logs_bag unless @options['debug'] #We don't really need to store entire chef runs in the logs bag
 

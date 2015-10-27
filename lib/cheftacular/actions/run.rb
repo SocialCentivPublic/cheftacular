@@ -53,7 +53,7 @@ class Cheftacular
 
       @config['ChefDataBag'].save_logs_bag
 
-      @config['helper'].send_log_bag_hash_slack_notification(log_bag_hash, __method__, 'Failing command detected, exiting...')
+      @config['helper'].send_log_bag_hash_slack_notification(logs_bag_hash, __method__, 'Failing command detected, exiting...')
     end
 
     def run_nodejs
