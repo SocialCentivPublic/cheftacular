@@ -273,9 +273,11 @@ class Cheftacular
         logs_bag_hash.each_pair do |key, hash|
           next unless key.include?(method.to_s)
 
-          @config['stateless_action'].slack(hash['text'].prepend('```').insert(-1, '```')) if hash['exit_status'] && hash['exit_status'] == 1
+          if hash['exit_status'] && hash['exit_status'] == 1
+            @config['stateless_action'].slack(hash['text'].prepend('```').insert(-1, '```'))
 
-          @config['error'].exception_output(on_failing_exit_status_message) unless on_failing_exit_status_message.blank?
+            @config['error'].exception_output(on_failing_exit_status_message) if !on_failing_exit_status_message.blank?
+          end
         end
       end
     end
