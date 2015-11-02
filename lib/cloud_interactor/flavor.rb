@@ -18,10 +18,15 @@ class CloudInteractor
       @classes['helper'].generic_list_call IDENTITY, RESOURCE, output
     end
 
-    def read args, output=true
+    def read args, output=true, mode='name'
       list [], false
 
-      @classes['helper'].generic_read_parse args, IDENTITY, output
+      if @options['preferred_cloud'] =~ /digitalocean/
+        mode         = 'slug'
+        args['slug'] = args['name'] if args.class == Hash
+      end
+
+      @classes['helper'].generic_read_parse args, IDENTITY, output, mode
     end
   end
 end

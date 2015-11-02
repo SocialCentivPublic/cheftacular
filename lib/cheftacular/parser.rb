@@ -113,6 +113,8 @@ class Cheftacular
         repo_state_hash['deploy_organization'] = nil
       end
 
+      @config['helper'].slack_current_deploy_arguments if @config['cheftacular']['slack']['notify_on_deployment_args']
+
       @config['ChefDataBag'].save_config_bag 
     end
 

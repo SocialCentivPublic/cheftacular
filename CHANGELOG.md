@@ -10,6 +10,21 @@
 
 * Added much better error handling for `cft migrate` and `cft run`, these commands will now send slack notifications containing errors and log error output to the log bag.
 
+* **DigitalOcean v1 deprecation** NOTES
+
+    * Added dependency on fog version 1.35 (>=) due to DigitalOcean deprecating their v1 api
+
+    * DigitalOcean client_id key in cloud_providers is no longer needed
+
+    * Several minor tweaks to the CloudInteractor class to handle new api changes
+
+* Added new command `cft update_thecheftacularcookbook`, only useful if you need to do rapid iterating on this cookbook without wanting to berks every time
+
+* New cheftacular.yml keys
+
+    * **slack:notify_on_deployment_args** (send a slack notification if a repository is changing its deployment args)
+    * **sync_application_cheftacular_yml** (due to the removal of automatic syncing, this key is unnecessary)
+
 ## 2.8.1
 
 * Fixing issue with Cloudflare always creating new records with cloudflare turned on when the domain name does not match exactly.

@@ -12,7 +12,7 @@ class Cheftacular
         ]
       ]
 
-      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Gives help on the keys in your cheftacular.yml'
+      @config['documentation']['stateless_action'][__method__]['short_description'] = '[NYI]Gives help on the keys in your cheftacular.yml'
 
       @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
@@ -20,6 +20,7 @@ class Cheftacular
 
   class StatelessAction
     def cheftacular_yml_help command=''
+      raise "Not Yet Implemented"
 
     end
 

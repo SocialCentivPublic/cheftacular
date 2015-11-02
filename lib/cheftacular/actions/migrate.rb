@@ -58,7 +58,9 @@ class Cheftacular
     end
 
     def migrate_nodejs nodes=[]
-      raise "Not yet implemented"
+      puts "Method #{ __method__ } is not yet implemented"
+
+      exit
     end
 
     def migrate_all nodes=[]

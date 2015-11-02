@@ -135,6 +135,48 @@ class Cheftacular
       File.open( File.join(@config['locs']['chef-repo'], "config", to_be_created_filename), "w") { |f| f.write(File.read(File.join(@config['locs']['examples'], example_filename))) }
     end
 
+    def parse_latest_berkshelf_cookbook_versions berkshelf_cookbooks={}
+      Dir.foreach(@config['locs']['berks']) do |berkshelf_cookbook|
+        next if is_junk_filename?(berkshelf_cookbook)
+        skip = false
+
+        berkshelf_cookbooks.keys.each do |processed_berkshelf_cookbook|
+          if processed_berkshelf_cookbook.rpartition('-').first == berkshelf_cookbook.rpartition('-').first
+            cookbook_mtime  = File.mtime(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }"))
+            pcookbook_mtime = File.mtime(File.expand_path("#{ @config['locs']['berks'] }/#{ processed_berkshelf_cookbook }"))
+
+            skip = true if cookbook_mtime < pcookbook_mtime #get only the latest version, berkshelf pulls in multiple commits from git repos for SOME REASON
+          end
+        end
+
+        next if skip
+
+        berkshelf_cookbooks[berkshelf_cookbook] = if File.exists?(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }/metadata.rb"))
+                                                    File.read(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }/metadata.rb")).gsub('"',"'").gsub(/^version[\s]*('\d[.\d]+')/).peek[/('\d[.\d]+')/].gsub("'",'')
+                                                  else
+                                                    berkshelf_cookbook.split('-').last
+                                                  end
+      end
+
+      berkshelf_cookbooks
+    end
+
+    def parse_chef_repo_cookbook_versions chef_repo_cookbooks={}
+      Dir.foreach(@config['locs']['cookbooks']) do |chef_repo_cookbook|
+        next if is_junk_filename?(chef_repo_cookbook)
+          
+        new_name = chef_repo_cookbook.rpartition('-').first
+
+        chef_repo_cookbooks[chef_repo_cookbook] = if File.exists?(File.expand_path("#{ @config['locs']['cookbooks'] }/#{ chef_repo_cookbook }/metadata.rb"))
+                                                    File.read(File.expand_path("#{ @config['locs']['cookbooks'] }/#{ chef_repo_cookbook }/metadata.rb")).gsub('"',"'").gsub(/^version[\s]*('\d[.\d]+')/).peek[/('\d[.\d]+')/].gsub("'",'')
+                                                  else
+                                                    JSON.parse(File.read(File.expand_path("#{ @config['locs']['cookbooks'] }/#{ chef_repo_cookbook }/metadata.json"))).to_hash['version']
+                                                  end
+      end
+
+      chef_repo_cookbooks
+    end
+
     private
     def current_file_path file_name, use_timestamp=true
       File.join( @config['locs']['app-root'], 'tmp', @config['helper'].declassify, ( use_timestamp ? "#{ Time.now.strftime("%Y%m%d") }-#{ file_name }" : file_name ))

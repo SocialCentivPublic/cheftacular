@@ -38,43 +38,9 @@ class Cheftacular
         out = `berks install`
         puts "#{out}\nFinished... Beginning directory scanning and conflict resolution..."
 
-        berkshelf_cookbooks = {}
+        berkshelf_cookbooks = @config['filesystem'].parse_latest_berkshelf_cookbook_versions
 
-        Dir.foreach(@config['locs']['berks']) do |berkshelf_cookbook|
-          next if @config['filesystem'].is_junk_filename?(berkshelf_cookbook)
-          skip = false
-
-          berkshelf_cookbooks.keys.each do |processed_berkshelf_cookbook|
-            if processed_berkshelf_cookbook.rpartition('-').first == berkshelf_cookbook.rpartition('-').first
-              cookbook_mtime  = File.mtime(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }"))
-              pcookbook_mtime = File.mtime(File.expand_path("#{ @config['locs']['berks'] }/#{ processed_berkshelf_cookbook }"))
-
-              skip = true if cookbook_mtime < pcookbook_mtime #get only the latest version, berkshelf pulls in multiple commits from git repos for SOME REASON
-            end
-          end
-
-          next if skip
-
-          berkshelf_cookbooks[berkshelf_cookbook] = if File.exists?(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }/metadata.rb"))
-                                                      File.read(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }/metadata.rb")).gsub('"',"'").gsub(/^version[\s]*('\d[.\d]+')/).peek[/('\d[.\d]+')/].gsub("'",'')
-                                                    else
-                                                      berkshelf_cookbook.split('-').last
-                                                    end
-        end
-
-        chef_repo_cookbooks = {}
-
-        Dir.foreach(@config['locs']['cookbooks']) do |chef_repo_cookbook|
-          next if @config['filesystem'].is_junk_filename?(chef_repo_cookbook)
-            
-          new_name = chef_repo_cookbook.rpartition('-').first
-
-          chef_repo_cookbooks[chef_repo_cookbook] = if File.exists?(File.expand_path("#{ @config['locs']['cookbooks'] }/#{ chef_repo_cookbook }/metadata.rb"))
-                                                      File.read(File.expand_path("#{ @config['locs']['cookbooks'] }/#{ chef_repo_cookbook }/metadata.rb")).gsub('"',"'").gsub(/^version[\s]*('\d[.\d]+')/).peek[/('\d[.\d]+')/].gsub("'",'')
-                                                    else
-                                                      JSON.parse(File.read(File.expand_path("#{ @config['locs']['cookbooks'] }/#{ chef_repo_cookbook }/metadata.json"))).to_hash['version']
-                                                    end
-        end
+        chef_repo_cookbooks = @config['filesystem'].parse_chef_repo_cookbook_versions
 
         berkshelf_cookbooks.each_pair do |berkshelf_cookbook, version|
           new_name = berkshelf_cookbook.rpartition('-').first
