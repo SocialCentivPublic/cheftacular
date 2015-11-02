@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.email       = ['louis@socialcentiv.com', 'loualrid@gmail.com']
   s.summary     = 'Practically open source heroku'
   s.description = 'Ruby gem for managing a chef stack. Primarily targetted towards rails stacks and is designed to be easy to use like Heroku CLI'
-  s.executables = ['client-list', 'cft', 'cheftacular', 'cftclr']
+  s.executables = ['cft', 'cheftacular', 'cftclr']
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
