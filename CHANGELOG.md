@@ -23,6 +23,9 @@
 * New cheftacular.yml keys
 
     * **slack:notify_on_deployment_args** (send a slack notification if a repository is changing its deployment args)
+
+* Deleted cheftacular.yml keys
+
     * **sync_application_cheftacular_yml** (due to the removal of automatic syncing, this key is unnecessary)
 
 ## 2.8.1
