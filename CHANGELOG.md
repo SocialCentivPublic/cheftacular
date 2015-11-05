@@ -10,6 +10,10 @@
 
 * Added much better error handling for `cft migrate` and `cft run`, these commands will now send slack notifications containing errors and log error output to the log bag.
 
+* Fixed issue with several instances of not clearing caches correctly before run.
+
+* Added checks if the gem is installed in the global gemset and will notify if out of date with a special command to update (rather than the bundle update command).
+
 * **DigitalOcean v1 deprecation** NOTES
 
     * Added dependency on fog version 1.35 (>=) due to DigitalOcean deprecating their v1 api

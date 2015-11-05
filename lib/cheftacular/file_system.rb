@@ -89,6 +89,8 @@ class Cheftacular
           FileUtils.rm_rf("#{ base_dir }/#{ entry }") if File.exists?("#{ base_dir }/#{ entry }") && File.directory?("#{ base_dir }/#{ entry }")
         when 'current-audit-only'
           FileUtils.rm("#{ base_dir }/#{ entry }") if File.file?("#{ base_dir }/#{ entry }") && entry.include?(Time.now.strftime("%Y%m%d"))
+        else
+          puts "Warning, received unknown mode (#{ mode })! Please post your logs as an issue on github!"
         end
 
         if File.exists?("#{ base_dir }/#{ entry }") && File.directory?("#{ base_dir }/#{ entry }")

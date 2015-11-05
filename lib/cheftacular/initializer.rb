@@ -403,8 +403,10 @@ class Cheftacular
       @config['ruby_string'] = "ruby-" + @config['ruby_string'] unless @config['ruby_string'].include?('ruby-')
 
       #TODO Reevaluate for non-rvm setups
-      @config['bundle_command'] = "/home/#{ @config['cheftacular']['deploy_user'] }/.rvm/gems/#{ @config['ruby_string'].chomp }@global/bin/bundle"
-      @config['ruby_command']   = "/home/#{ @config['cheftacular']['deploy_user'] }/.rvm/rubies/#{ @config['ruby_string'].chomp }/bin/ruby"
+      @config['bundle_command']        = "/home/#{ @config['cheftacular']['deploy_user'] }/.rvm/gems/#{ @config['ruby_string'].chomp }@global/bin/bundle"
+      @config['ruby_command']          = "/home/#{ @config['cheftacular']['deploy_user'] }/.rvm/rubies/#{ @config['ruby_string'].chomp }/bin/ruby"
+      @config['internal_ruby_config']  = File.expand_path(__FILE__)[/(ruby\-[\d\.@\w]+)/]
+      #@config['internal_ruby_version'] = @config['internal_ruby_config'][/([\d\.]+)/] #reactivate when needed
     end
 
     def initialize_passwords env, refresh_bag=false
@@ -432,7 +434,11 @@ class Cheftacular
       if @config['helper'].is_higher_version? detected_version, current_version
         puts "\n Your Cheftacular is out of date. Currently #{ current_version } and remote version is #{ detected_version }.\n"
 
-        puts "Please update the gemfile to #{ detected_version }, bundle install and then restart this process.\n"
+        if @config['internal_ruby_config'].include?('@global')
+          puts "Please run rvm #{ @config['internal_ruby_config'] } do gem update cheftacular to update to the latest version"
+        else
+          puts "Please update the gemfile to #{ detected_version }, bundle install and then restart this process.\n"
+        end
 
         exit
       else
