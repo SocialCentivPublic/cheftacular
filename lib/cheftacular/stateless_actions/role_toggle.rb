@@ -48,7 +48,7 @@ class Cheftacular
 
       @config['initializer'].initialize_node_roles_bag_contents @options['env']
 
-      @config['filesystem'].cleanup_file_caches('current')
+      @config['filesystem'].cleanup_file_caches('current-nodes')
 
       nodes = @config['error'].is_valid_node_name_option?
 
@@ -137,7 +137,7 @@ class Cheftacular
 
         @config['ChefDataBag'].save_node_roles_bag @options['env']
 
-        @config['filesystem'].cleanup_file_caches('current')
+        @config['filesystem'].cleanup_file_caches('current-nodes')
 
         puts "Triggering deploy to set the new role..."
 
