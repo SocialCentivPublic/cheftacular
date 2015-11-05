@@ -24,10 +24,12 @@ class Cheftacular
         out = `berks install`
         puts "#{out}\nFinished fetching cookbooks, moving TheCheftacularCookbook into local chef repo"
 
-        cheftacular_cookbook = @config['filesystem'].parse_latest_berkshelf_cookbook_versions.select {|key| key.include?('TheCheftacularCookbook')}.keys.first
+        cheftacular_cookbook = @config['filesystem'].parse_latest_berkshelf_cookbook_versions.select {|key| key.include?('TheCheftacularCookbook')}['TheCheftacularCookbook']
+
+        puts "Moving TheCheftacularCookbook (#{ cheftacular_cookbook['version'] })[#{ cheftacular_cookbook['mtime'] }] to your chef-repo!"
 
         `rm -Rf #{ @config['locs']['cookbooks'] }/TheCheftacularCookbook` if File.exists?(File.expand_path("#{ @config['locs']['cookbooks'] }/TheCheftacularCookbook"))
-        `cp -Rf #{ @config['locs']['berks'] }/#{ cheftacular_cookbook } #{ @config['locs']['cookbooks'] }/TheCheftacularCookbook`
+        `cp -Rf #{ @config['locs']['berks'] }/#{ cheftacular_cookbook['location'] } #{ @config['locs']['cookbooks'] }/TheCheftacularCookbook`
 
         break
       end

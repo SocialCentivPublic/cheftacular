@@ -136,26 +136,24 @@ class Cheftacular
     end
 
     def parse_latest_berkshelf_cookbook_versions berkshelf_cookbooks={}
+
       Dir.foreach(@config['locs']['berks']) do |berkshelf_cookbook|
         next if is_junk_filename?(berkshelf_cookbook)
-        skip = false
+        use_current_cookbook = false
 
-        berkshelf_cookbooks.keys.each do |processed_berkshelf_cookbook|
-          if processed_berkshelf_cookbook.rpartition('-').first == berkshelf_cookbook.rpartition('-').first
-            cookbook_mtime  = File.mtime(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }"))
-            pcookbook_mtime = File.mtime(File.expand_path("#{ @config['locs']['berks'] }/#{ processed_berkshelf_cookbook }"))
+        true_cookbook_name = berkshelf_cookbook.rpartition('-').first
+        cookbook_version   = parse_version_from_berkshelf_cookbook(berkshelf_cookbook)
 
-            skip = true if cookbook_mtime < pcookbook_mtime #get only the latest version, berkshelf pulls in multiple commits from git repos for SOME REASON
-          end
+        #get only the latest version, berkshelf pulls in multiple commits from git repos for SOME REASON
+        use_current_cookbook = !berkshelf_cookbooks.has_key?(true_cookbook_name)
+        use_current_cookbook = @config['helper'].is_higher_version?(cookbook_version, berkshelf_cookbooks[true_cookbook_name]['version']) if berkshelf_cookbooks.has_key?(true_cookbook_name)
+
+        if use_current_cookbook
+          berkshelf_cookbooks[true_cookbook_name] ||= {}
+          berkshelf_cookbooks[true_cookbook_name]['version']  = cookbook_version
+          berkshelf_cookbooks[true_cookbook_name]['location'] = berkshelf_cookbook
+          berkshelf_cookbooks[true_cookbook_name]['mtime']    = File.mtime(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }"))
         end
-
-        next if skip
-
-        berkshelf_cookbooks[berkshelf_cookbook] = if File.exists?(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }/metadata.rb"))
-                                                    File.read(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }/metadata.rb")).gsub('"',"'").gsub(/^version[\s]*('\d[.\d]+')/).peek[/('\d[.\d]+')/].gsub("'",'')
-                                                  else
-                                                    berkshelf_cookbook.split('-').last
-                                                  end
       end
 
       berkshelf_cookbooks
@@ -175,6 +173,14 @@ class Cheftacular
       end
 
       chef_repo_cookbooks
+    end
+
+     def parse_version_from_berkshelf_cookbook berkshelf_cookbook
+      if File.exists?(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }/metadata.rb"))
+        File.read(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }/metadata.rb")).gsub('"',"'").gsub(/^version[\s]*('\d[.\d]+')/).peek[/('\d[.\d]+')/].gsub("'",'')
+      else
+        berkshelf_cookbook.split('-').last
+      end
     end
 
     private
