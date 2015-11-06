@@ -49,8 +49,7 @@ class Cheftacular
         end
       end
 
-      if inference_modes.include?('action') || inference_modes.include?('both') ||
-        ( inference_modes.include?('short_context_descriptions') && @config['helper'].running_in_mode?('devops') )
+      if inference_modes.include?('action') || inference_modes.include?('both') || inference_modes.include?('short_context_descriptions')
  
         @config['stateless_action_documentation'].public_methods(false).each do |method|
           @config['stateless_action_documentation'].send(method)
