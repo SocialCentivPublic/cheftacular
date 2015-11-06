@@ -1,3 +1,7 @@
+## 2.9.1
+
+* Fix issue with `cft` not returning all the available commands for a context.
+
 ## 2.9.0
 
 * Updated all documentation to use the new structure, added short descriptions for commands that will be seen when only `cft` is entered.
