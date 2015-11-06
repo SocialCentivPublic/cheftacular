@@ -43,7 +43,7 @@ replace_keys_in_chef_repo:                      # keys that should be changed wh
 
 slack:
   default_channel: '#default'     # Useful if the default channel on the webhook is NOT where you want to send notifications to (like failed deploys)
-  notify_on_deployment_args: true # notifies slack if -O or -Z are detected
+  notify_on_deployment_args: ''   # notifies slack if -O or -Z are detected and this channel name is not blank
   webhook:                        # the full https webhook slack gives you for a webhook integration goes here
 
 #RVM
