@@ -62,7 +62,11 @@ class CloudInteractor
 
       specific_fog_object = @classes['auth'].auth_service(resource).instance_eval(identity).get @main_obj["specific_#{ identity }"].last['id']
 
-      @main_obj["#{ identity }_destroy_request"] = specific_fog_object.destroy
+      if specific_fog_object.respond_to?(:delete)
+        @main_obj["#{ identity }_destroy_request"] = specific_fog_object.delete
+      else
+        @main_obj["#{ identity }_destroy_request"] = specific_fog_object.destroy
+      end
 
       puts "REMINDER! This destroy is not instant! It can take up to a few minutes for a #{ identity.singularize } to actually be fully destroyed!"
     end

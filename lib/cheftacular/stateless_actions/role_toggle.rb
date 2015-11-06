@@ -6,7 +6,8 @@ class Cheftacular
       @config['cheftacular']['role_toggling'] ||= {}
       @config['cheftacular']['role_toggling']['deactivated_role_suffix'] ||= '_deactivate'
       
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft role_toggle NODE_NAME ROLE_NAME activate|deactivate` This command will allow you to **toggle** roles on nodes without using `cft upload_nodes`",
 
         [
@@ -28,7 +29,9 @@ class Cheftacular
         ]
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Attempts to toggle the specified role on the specified node'
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 
@@ -45,7 +48,7 @@ class Cheftacular
 
       @config['initializer'].initialize_node_roles_bag_contents @options['env']
 
-      @config['filesystem'].cleanup_file_caches('current')
+      @config['filesystem'].cleanup_file_caches('current-nodes')
 
       nodes = @config['error'].is_valid_node_name_option?
 
@@ -134,7 +137,7 @@ class Cheftacular
 
         @config['ChefDataBag'].save_node_roles_bag @options['env']
 
-        @config['filesystem'].cleanup_file_caches('current')
+        @config['filesystem'].cleanup_file_caches('current-nodes')
 
         puts "Triggering deploy to set the new role..."
 

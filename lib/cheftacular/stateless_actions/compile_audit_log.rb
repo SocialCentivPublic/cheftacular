@@ -1,11 +1,14 @@
 class Cheftacular
   class StatelessActionDocumentation
     def compile_audit_log
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft compile_audit_log [clean]` compiles the audit logs in each environment's " +
         "audit data bag a audit-log-CURRENTDAY.md file in the log folder of the application. Bear in mind that the bag " +
         "can only hold 100K bytes and will need to have that data removed to store more than that."
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Compiles the audit logs for all environments'
     end
   end
 

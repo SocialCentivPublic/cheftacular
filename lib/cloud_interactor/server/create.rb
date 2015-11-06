@@ -27,9 +27,14 @@ class CloudInteractor
       }
 
       if @options['preferred_cloud'] == 'digitalocean'
-        final_create_args[:region_id]          = @main_obj['specific_regions'].first['id']
-        final_create_args[:ssh_key_ids]        = @main_obj['specific_ssh_keys'].first['id']
+        final_create_args[:region]             = @main_obj['specific_regions'].first['slug']
+        final_create_args[:ssh_keys]           = [@main_obj['specific_ssh_keys'].first['id']]
+        final_create_args[:size]               = @main_obj['specific_flavors'].first['slug']
+        final_create_args[:image]              = @main_obj['specific_images'].first['slug']
         final_create_args[:private_networking] = true
+
+        final_create_args.delete(:flavor_id)
+        final_create_args.delete(:image_id)
       end
 
       @main_obj["#{ IDENTITY }_create_request"] = JSON.parse(@classes['auth'].auth_service(RESOURCE).instance_eval(IDENTITY).create(final_create_args).to_json)

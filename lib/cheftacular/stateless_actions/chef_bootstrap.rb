@@ -2,10 +2,17 @@
 class Cheftacular
   class StatelessActionDocumentation
     def chef_bootstrap
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft chef_bootstrap ADDRESS NODE_NAME` allows you to register a node in the chef system, " + 
-        "remove any lingering data that may be associated with it and update the node's runlist if it has an entry in nodes_dir for its NODE_NAME."
+        "remove any lingering data that may be associated with it and update the node's runlist if it has an entry in nodes_dir for its NODE_NAME.",
+
+        [
+          "    1. This command is part of the `cft full_bootstrap` command"
+        ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Bootstraps basic chef properties on the target server'
     end
   end
 

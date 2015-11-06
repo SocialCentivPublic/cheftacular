@@ -253,25 +253,9 @@ class Cheftacular
 
       @config['ChefDataBag'].init_bag('default', 'cheftacular', false)
 
-      diff_hash = @config['cheftacular'].deep_diff(@config['default']['cheftacular_bag_hash'], true).except('mode', 'default_repository').compact
+      @config['initial_cheftacular_yml'] = @config['cheftacular'].deep_dup
 
-      diff_hash.each_pair do |key, value|
-        diff_hash.delete(key) if value.empty? || value.nil?
-      end
-
-      if @config['helper'].running_in_mode?('devops') && !diff_hash.empty?
-        puts "Difference detected between local cheftacular.yml and data bag cheftacular.yml! Displaying..."
-
-        ap diff_hash
-      elsif @config['helper'].running_in_mode?('application') && @config['default']['cheftacular_bag_hash']['slack']['webhook'] && !diff_hash.empty?
-        @config['slack_queue'] << diff_hash.awesome_inspect({plain: true, indent: 2}).prepend('```').insert(-1, '```')
-      end
-
-      @config['cheftacular'] = if @config['default']['cheftacular_bag_hash']['sync_application_cheftacular_yml']
-                                 @config['default']['cheftacular_bag_hash'].deep_merge(@config['cheftacular'])
-                               else
-                                 @config['cheftacular'].deep_merge(@config['default']['cheftacular_bag_hash'].except('default_repository', 'mode'))
-                               end
+      @config['cheftacular'] = @config['default']['cheftacular_bag_hash'].deep_merge(@config['cheftacular'])
     end
 
     def initialize_default_cheftacular_options
@@ -299,10 +283,10 @@ class Cheftacular
     def initialize_documentation_hash
       @config['documentation'] ||= {}
       @config['documentation']['arguments']        ||= []
-      @config['documentation']['action']           ||= []
-      @config['documentation']['stateless_action'] ||= []
-      @config['documentation']['application']      ||= []
-      @config['documentation']['devops']           ||= []
+      @config['documentation']['action']           ||= {}
+      @config['documentation']['stateless_action'] ||= {}
+      @config['documentation']['application']      ||= {}
+      @config['documentation']['devops']           ||= {}
     end
 
     def initialize_locations
@@ -419,8 +403,10 @@ class Cheftacular
       @config['ruby_string'] = "ruby-" + @config['ruby_string'] unless @config['ruby_string'].include?('ruby-')
 
       #TODO Reevaluate for non-rvm setups
-      @config['bundle_command'] = "/home/#{ @config['cheftacular']['deploy_user'] }/.rvm/gems/#{ @config['ruby_string'].chomp }@global/bin/bundle"
-      @config['ruby_command']   = "/home/#{ @config['cheftacular']['deploy_user'] }/.rvm/rubies/#{ @config['ruby_string'].chomp }/bin/ruby"
+      @config['bundle_command']        = "/home/#{ @config['cheftacular']['deploy_user'] }/.rvm/gems/#{ @config['ruby_string'].chomp }@global/bin/bundle"
+      @config['ruby_command']          = "/home/#{ @config['cheftacular']['deploy_user'] }/.rvm/rubies/#{ @config['ruby_string'].chomp }/bin/ruby"
+      @config['internal_ruby_config']  = File.expand_path(__FILE__)[/(ruby\-[\d\.@\w]+)/]
+      #@config['internal_ruby_version'] = @config['internal_ruby_config'][/([\d\.]+)/] #reactivate when needed
     end
 
     def initialize_passwords env, refresh_bag=false
@@ -448,7 +434,11 @@ class Cheftacular
       if @config['helper'].is_higher_version? detected_version, current_version
         puts "\n Your Cheftacular is out of date. Currently #{ current_version } and remote version is #{ detected_version }.\n"
 
-        puts "Please update the gemfile to #{ detected_version }, bundle install and then restart this process.\n"
+        if @config['internal_ruby_config'].include?('@global')
+          puts "Please run rvm #{ @config['internal_ruby_config'] } do gem update cheftacular to update to the latest version"
+        else
+          puts "Please update the gemfile to #{ detected_version }, bundle install and then restart this process.\n"
+        end
 
         exit
       else

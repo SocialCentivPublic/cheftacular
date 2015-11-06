@@ -1,7 +1,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def create_git_key
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft create_git_key ID_RSA_FILE [OAUTH_TOKEN]` This command will update the default/authentication data bag with new credentials. " +
         "The [ID_RSA_FILE](https://help.github.com/articles/generating-ssh-keys) needs to exist beforehand.",
 
@@ -14,6 +15,8 @@ class Cheftacular
           "    3. NOTE! The ID_RSA_FILE should be in your .chef folder in the root of your home directory!"
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Adds a git key to your authentication bag so your github repos can be accessed'
     end
   end
 

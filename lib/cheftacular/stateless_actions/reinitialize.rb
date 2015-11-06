@@ -2,10 +2,13 @@
 class Cheftacular
   class StatelessActionDocumentation
     def reinitialize
-      @config['documentation']['action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft reinitialize IP_ADDRESS NODE_NAME` will reconnect a server previously managed by chef to a new chef server. " +
         "The node name MUST MATCH THE NODE'S ORIGINAL NODE NAME for the roles to be setup correctly."
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Attempts to connect a node to a new chef server'
     end
   end
 

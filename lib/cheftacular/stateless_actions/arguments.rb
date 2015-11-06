@@ -1,7 +1,7 @@
 class Cheftacular
   class StatelessActionDocumentation
     def arguments
-      @config['documentation']['arguments'] <<  [
+      @config['documentation']['arguments'] << [
         '## Arguments and flags for cheftacular',
 
         '### Environment flags',
@@ -46,11 +46,16 @@ class Cheftacular
 
         '1.  `-e|--except-role ROLE_NAME` will *prevent* any server with this role from being *deployed to* for the deploy command. Other commands will ignore this argument.',
 
-        '2.  `-z|--unset-revision` will unset a custom revision specified in the arg below and make the codebase utilize the default.',
+        '2.  `-z|--unset-github-deploy-args` will unset a custom revision specified in the arg below and make the codebase utilize the default.',
 
         "3.  `-Z|--revision REVISION` will force the role you're deploying to to utilize the revision specified here. This can be a specific commit, a branch name or even a tag.",
 
-        '    1. Note: The system does not check if the revision exists, if you pass a non-existent revision no one will be able to deploy to that role until -Z with a correction revision or -z is passed.'
+        '    1. Note: The system does not check if the revision exists, if you pass a non-existent revision no one will be able to deploy to that role until -Z with a correction revision or -z is passed.',
+        
+        "4.  The `-O ORGANIZATION` flag can be used with TheCheftacularCookbook to set an *organization* your app can try " +
+        "deploying from, your git user needs access to these forks / organization(s).",
+
+        "    3.  The `-z|--unset-github-deploy-args` option will clear your current `-Z` and `-O` flags."
       ]
     end
   end

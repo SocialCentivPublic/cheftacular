@@ -2,16 +2,30 @@
 class Cheftacular
   class StatelessActionDocumentation
     def check_cheftacular_yml_keys
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft check_cheftacular_yml_keys` allows you to check to see if your cheftacular yml keys are valid to the current version of cheftacular. " +
         "It will also set your missing keys to their likely default and let you know to update the cheftacular.yml file."
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = "Makes sure your cheftacular.yml has up-to-date keys for #{ Cheftacular::VERSION }"
     end
   end
 
   class StatelessAction
     def check_cheftacular_yml_keys out=[], exit_on_missing=false, warn_on_missing=false
       base_message = "Your cheftacular.yml is missing the key KEY, its default value is being set to DEFAULT for this run."
+
+      #############################2.9.0################################################
+
+      unless @config['cheftacular']['slack'].has_key?('notify_on_deployment_args')
+        #backup_config:global_backup_role_name
+        base_message.gsub('KEY', 'notify_on_deployment_args').gsub('DEFAULT', 'false')
+
+        @config['cheftacular']['slack']['notify_on_deployment_args'] = false
+
+        warn_on_missing = true
+      end
 
       #############################2.7.0################################################
 

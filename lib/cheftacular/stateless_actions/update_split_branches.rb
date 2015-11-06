@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def update_split_branches
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft update_split_branches` will perform a series of git commands that will merge all the " +
         "split branches for your split_branch enabled repositories with what is currently on master and push them.",
 
@@ -18,6 +19,8 @@ class Cheftacular
           "with changes to your current working directory. You must commit these changes before running this command."
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = '(Local) attempts to reset and push all your split branches in your target repo'
     end
   end
 

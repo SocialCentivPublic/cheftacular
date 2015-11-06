@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def add_ssh_key_to_bag
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft add_ssh_key_to_bag \"<NEW SSH PUB KEY>\" [SPECIFIC_REPOSITORY]` this command will add the given ssh key to the default authentication data bag. " +
         "After this your server recipes should read the contents of the 'default' 'authentication' bag for the authorized_keys array.",
 
@@ -12,6 +13,8 @@ class Cheftacular
           "does not exist in the cheftacular.yml respositories hash. You can then use this data to give users selective ssh access to certain servers."
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Adds an ssh key to your authentication bag'
     end
   end
 

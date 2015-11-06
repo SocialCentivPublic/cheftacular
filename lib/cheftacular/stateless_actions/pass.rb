@@ -2,12 +2,15 @@
 class Cheftacular
   class StatelessActionDocumentation
     def pass
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft pass NODE_NAME` will drop the server's sudo password into your clipboard. " +
         "Useful for when you need to ssh into the server itself and try advanced linux commands"
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Retrieves the password for a node regardless of environment'
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 

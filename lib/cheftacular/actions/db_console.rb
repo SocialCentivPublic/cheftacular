@@ -1,14 +1,19 @@
 class Cheftacular
   class ActionDocumentation
     def db_console
-      @config['documentation']['action'] <<  [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
         "`cft db_console` " +
         "will create a database console session on the first node found for a database stack in the current environment.",
 
         [
-          "    1. This command is aliased to psql, typing `cft psql` will drop you into a rails stack database psql session."
+          "    1. This command is aliased to psql, typing `cft psql` will drop you into a rails stack database psql session.",
+
+          "    2. This command is also aliased to mongo, typing `cft mongo` will drop you into a mongodb mongo session."
         ]
       ]
+
+      @config['documentation']['action'][__method__]['short_description'] = 'Creates a remote database console session for the current repository'
     end
   end
 
@@ -34,6 +39,19 @@ class Cheftacular
       end
     end
 
+    def db_console_mongodb
+      nodes = @config['getter'].get_true_node_objects(true)
+
+      #must have mongo db, only want ONE node
+      mongoable_nodes = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @options['role'] }]" }, { if: { not_env: @options['env'] } }], true )
+
+      mongoable_nodes.each do |n|
+        puts("Beginning database console run for #{ n.name } (#{ n.public_ipaddress }) on role #{ @options['role'] }") unless @options['quiet']
+
+        start_console_mongodb(n.public_ipaddress)
+      end
+    end
+
     def db_console_mysql
       raise "Not yet implemented"
     end
@@ -49,7 +67,7 @@ class Cheftacular
     end
 
     alias_method :psql, :db_console_postgresql
-
+    alias_method :mongo, :db_console_mongodb
     private 
 
     def start_console_postgresql ip_address, database_host
@@ -63,7 +81,13 @@ class Cheftacular
                   end
 
       #the >/dev/tty after the ssh block redirects the full output to stdout, not /dev/null where it normally goes  
-      `ssh -oStrictHostKeyChecking=no -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "PGPASSWORD=#{ pg_pass } psql -U #{ db_user } -h #{ database_host }" -d #{ db_name } > /dev/tty`
+      `ssh -oStrictHostKeyChecking=no -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "PGPASSWORD=#{ pg_pass } psql -U #{ db_user } -h #{ database_host } -d #{ db_name }" > /dev/tty`
+    end
+
+    def start_console_mongodb ip_address
+      #the >/dev/tty after the ssh block redirects the full output to stdout, not /dev/null where it normally goes
+      #TODO refactor to more general solution (path / port)
+      `ssh -oStrictHostKeyChecking=no -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "mongo localhost:27017/mongodb" > /dev/tty`
     end
 
     def start_console_mysql

@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def environment
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft environment boot|destroy` will boot / destroy the current environment",
 
         [
@@ -15,7 +16,9 @@ class Cheftacular
         ]
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Boots (or destroys) an environment based on data stored in cheftacular.yml'
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 

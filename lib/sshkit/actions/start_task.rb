@@ -30,7 +30,15 @@ module SSHKit
           puts("Nothing to migrate for #{ options['role'] }...")
         end
 
-        [out, timestamp] #return out to send to logs_bag
+        [out, timestamp, 0] #return out to send to logs_bag
+      rescue SSHKit::Command::Failed => e
+        puts "@@@@@CRITICAL! #{ command } failed for #{ name } (#{ ip_address })! Please check your #{ log_loc }/failed-deploy for the logs!@@@@@"
+
+        puts(e.message)
+
+        ::File.open("#{ log_loc }/failed-deploy/#{ name }-task-#{ timestamp }.txt", "w") { |f| f.write(e.message.scrub_pretty_text) }
+
+        [e.message, timestamp, 1]
       end
     end
   end

@@ -1,3 +1,49 @@
+## 2.9.0
+
+* Updated all documentation to use the new structure, added short descriptions for commands that will be seen when only `cft` is entered.
+
+* Removed `client-list` command. The only way to see the client list data is to use `cft client_list`.
+
+* Removed auto-syncing on the cheftacular.yml configs. Now an actual sync ONTO the server's cheftacular configs will only occur with `cft cheftacular_config sync`.
+
+    * Removed due to various issues regarding passive syncing on a version-controlled config file.
+
+* Added much better error handling for `cft migrate` and `cft run`, these commands will now send slack notifications containing errors and log error output to the log bag.
+
+* Fixed issue with several instances of not clearing caches correctly before run.
+
+* Added checks if the gem is installed in the global gemset and will notify if out of date with a special command to update (rather than the bundle update command).
+
+* **DigitalOcean v1 deprecation** NOTES
+
+    * Added dependency on fog version 1.35 (>=) due to DigitalOcean deprecating their v1 api
+
+    * DigitalOcean client_id key in cloud_providers is no longer needed
+
+    * Several minor tweaks to the CloudInteractor class to handle new api changes
+
+* Added new command `cft update_thecheftacularcookbook`, only useful if you need to do rapid iterating on this cookbook without wanting to berks every time
+
+* New cheftacular.yml keys
+
+    * **slack:notify_on_deployment_args** (send a slack notification if a repository is changing its deployment args)
+
+* Deleted cheftacular.yml keys
+
+    * **sync_application_cheftacular_yml** (due to the removal of automatic syncing, this key is unnecessary)
+
+## 2.8.1
+
+* Fixing issue with Cloudflare always creating new records with cloudflare turned on when the domain name does not match exactly.
+
+* Fixing issue with `cft tail PATTERN_TO_MATCH` not allowing you to send in strings like "this is a broken request". Specifically you can now search for strings with spaces in them if it is enclosed by quotes.
+
+* Added support for mongo databases to `cft db_console` which can now be aliased to `cft mongo`.
+
+* `cft` itself will now return a list of commands
+
+* `cft log` and other stateful commands will now check `-e|--except-role NAME_OF_ROLE`
+
 ## 2.8.0
 
 * Added `-O | --deploy-org ORGANIZATION` flag, to be used with `cft deploy`. Please see the documentation for more details

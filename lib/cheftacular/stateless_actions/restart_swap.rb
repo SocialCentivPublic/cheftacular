@@ -1,7 +1,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def restart_swap
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft restart_swap` will restart the swap on every server that doesn't have swap currently on. " +
         "Useful if you notice servers with no swap activated from `cft disk_report`",
 
@@ -10,6 +11,8 @@ class Cheftacular
           "the server was rebooted and this command fixes that."
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Restarts the swap on all servers'
     end
   end
 
