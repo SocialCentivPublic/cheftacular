@@ -17,7 +17,7 @@ class Cheftacular
 
       @config['ChefDataBag'].save_audit_bag
 
-      audit_command_to_slack_queue(audit_data) if @config['cheftacular']['notify_on_command_execute']
+      audit_command_to_slack_queue(audit_data) unless @config['cheftacular']['slack']['notify_on_command_execute'].blank?
     end
 
     def audit_run_as_hash ret_hash={}, options_to_ignore=[]
