@@ -48,6 +48,8 @@ class Cheftacular
       puts("Preparing to run command \"#{ @options['command'] }\"...") if @options['verbose']
 
       @config['auditor'].audit_run if @config['cheftacular']['auditing']
+
+      @config['queue_master'].work_off_slack_queue #this occurs twice so commands that don't "end" can be queued
     end
 
     @config['stateless_action'].check_cheftacular_yml_keys unless @config['helper'].is_initialization_command?(ARGV[0])

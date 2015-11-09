@@ -10,6 +10,12 @@
 
 * Added all slack calls to the slack queue to be sent at the end of the run
 
+* Added check in `slack` command to skip execution if there is no slack webhook set
+
+* New cheftacular.yml keys
+
+    * **slack:notify_on_command_execute** (send a slack notification if a cft command is executed)
+
 ## 2.9.1
 
 * Fix issue with `cft` not returning all the available commands for a context.

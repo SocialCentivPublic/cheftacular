@@ -11,6 +11,8 @@ class Cheftacular
       @config['slack_queue'].each do |slack_hash|
         @config['stateless_action'].slack(slack_hash[:message], slack_hash[:channel])
       end
+
+      @config['slack_queue'] = []
     end
   end
 end
