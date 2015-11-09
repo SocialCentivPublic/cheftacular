@@ -57,8 +57,6 @@ class Cheftacular
 
         initialize_version_check        if @config['cheftacular']['strict_version_checks']
 
-        initialize_auditing_checks      if @config['cheftacular']['auditing']
-
         initialize_chef_repo_up_to_date if @config['cheftacular']['keep_chef_repo_cheftacular_yml_up_to_date']
       end
     end
@@ -447,14 +445,6 @@ class Cheftacular
 
           @config['filesystem'].write_version_file detected_version
         end
-      end
-    end
-
-    def initialize_auditing_checks
-      unless File.exists? @config['filesystem'].current_audit_file_path
-        puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") } audit data..."
-
-        @config['auditor'].write_audit_cache_file
       end
     end
 
