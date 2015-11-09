@@ -2,10 +2,13 @@
 class Cheftacular
   class StatelessActionDocumentation
     def replication_status
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft replication_status` will check the status of the database master and slaves in every environment. " +
         "Also lists how far behind the slaves are from the master in milliseconds."
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Checks the replication status for the current environment (postgres only)'
     end
   end
 

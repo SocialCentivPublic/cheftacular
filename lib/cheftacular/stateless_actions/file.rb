@@ -1,7 +1,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def file
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft file NODE_NAME LOCATION_ALIAS MODE FILE_NAME` interacts with a file on the remote server",
 
         [
@@ -41,7 +42,9 @@ class Cheftacular
         ]
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Allows you to perform a variety of file commands on a remote file'
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 

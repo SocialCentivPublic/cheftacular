@@ -23,7 +23,7 @@ class Cheftacular
         true_obj = if !file_cache_nodes.empty? && @config['parser'].array_of_nodes_contains_node_name?(file_cache_nodes, n.name)
                      file_cache_nodes[@config['parser'].index_of_node_name_in_array_of_nodes(file_cache_nodes, n.name)]
                    else
-                     @config['filesystem'].cleanup_file_caches('current')
+                     @config['filesystem'].cleanup_file_caches('current-nodes')
 
                      @config['ridley'].node.find(n.name)
                    end

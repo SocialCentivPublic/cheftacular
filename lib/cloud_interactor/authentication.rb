@@ -63,10 +63,9 @@ class CloudInteractor
         }
       when 'digitalocean'
         {
-          provider:               'DigitalOcean',
-          digitalocean_api_key:   @auth_hash['cloud_authentication'][@options['preferred_cloud']]['api_key'],
-          digitalocean_client_id: @auth_hash['cloud_authentication'][@options['preferred_cloud']]['client_id']
-          #version:                :v1
+          provider:           'DigitalOcean',
+          digitalocean_token: @auth_hash['cloud_authentication'][@options['preferred_cloud']]['api_key'],
+          version:            :v2
         }
       else raise "CloudInteractor Does not currently support #{ @options['preferred_cloud'] } at this time"
       end

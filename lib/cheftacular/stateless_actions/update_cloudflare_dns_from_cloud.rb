@@ -1,7 +1,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def update_cloudflare_dns_from_cloud
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft update_cloudflare_dns_from_cloud [skip_update_tld]` command will force a full dns update for cloudflare. ",
 
         [
@@ -16,6 +17,8 @@ class Cheftacular
           "_before_ cloudflare is updated. Only skip if you believe your domain info on your cloud is accurate."
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Forces a refresh / update of all relevant cloudflare records'
     end
   end
 

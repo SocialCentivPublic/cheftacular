@@ -2,10 +2,13 @@
 class Cheftacular
   class StatelessActionDocumentation
     def reset_bag
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft reset_bag BAG_NAME` this command allows you to reset a data bag item to an empty state. " +
         "Run this on full data bags to clear them out. "
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Resets certain data bags to their initial state'
     end
   end
 

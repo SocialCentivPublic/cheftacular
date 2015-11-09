@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def service
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft service [COMMAND] [SERVICE]` will run service commands on remote servers. " +
         "This command only runs on the first server it comes across. Specify others with -n NODE_NAME.",
 
@@ -15,6 +16,8 @@ class Cheftacular
           "service if it has a .conf file on the remote server in the /etc/init directory."
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Allows you to interact with a service running on a server'
     end
   end
 

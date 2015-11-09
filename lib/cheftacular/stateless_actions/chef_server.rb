@@ -1,7 +1,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def chef_server
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft chef_server [restart|processes|memory]` this command can be used to query the chef server for stats if the cheftacular.yml " +
         "has the chef_server key filled out. Useful for low resource chef-servers.",
 
@@ -20,7 +21,9 @@ class Cheftacular
         ]
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Allows you to check the state of the primary Chef server'
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 

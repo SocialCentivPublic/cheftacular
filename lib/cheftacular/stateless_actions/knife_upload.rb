@@ -2,10 +2,13 @@
 class Cheftacular
   class StatelessActionDocumentation
     def knife_upload
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft knife_upload` will resync the chef-server with the local chef-repo code. " + 
         "This command is analog for `knife upload /`"
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Uploads your current cookbooks to the chef server'
     end
   end
 

@@ -1,13 +1,16 @@
 class Cheftacular
   class StatelessActionDocumentation
     def help
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft help COMMAND|MODE` this command returns the documentation for a specific command if COMMAND matches the name of a command. " +
         "Alternatively, it can be passed `action|arguments|application|current|devops|stateless_action` to fetch the commands for a specific mode." +
         "Misspellings of commands will display near hits."
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Displays useful help related information based on the current context'
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 
@@ -27,34 +30,42 @@ class Cheftacular
       when 'action'                  then inference_modes << 'action'
       when 'application' || 'devops' then inference_modes << 'both'
       when 'stateless_action'        then inference_modes << 'stateless_action'
-      when ''                        then inference_modes << 'both'
+      when ''                        then inference_modes << 'short_context_descriptions'
       end
 
       if @config['helper'].is_command? target_command
         @config['action_documentation'].send(target_command)
 
-        puts @config['documentation']['action'].flatten.join("\n\n")
-
+        puts @config['documentation']['action'][target_command.to_sym]['long_description'].flatten.join("\n\n")
       elsif @config['helper'].is_stateless_command? target_command
         @config['stateless_action_documentation'].send(target_command)
 
-        puts @config['documentation']['stateless_action'].flatten.join("\n\n")
+        puts @config['documentation']['stateless_action'][target_command.to_sym]['long_description'].flatten.join("\n\n")
       end
 
-      @config['action_documentation'].public_methods(false).each do |method|
-        @config['action_documentation'].send(method)
+      if inference_modes.include?('action') || inference_modes.include?('both') || inference_modes.include?('short_context_descriptions')
+        @config['action_documentation'].public_methods(false).each do |method|
+          @config['action_documentation'].send(method)
+        end
+      end
 
-      end if inference_modes.include?('action') || inference_modes.include?('both')
-
-      @config['stateless_action_documentation'].public_methods(false).each do |method|
-        @config['stateless_action_documentation'].send(method)
-
-      end if inference_modes.include?('stateless_action') || inference_modes.include?('both')
+      if inference_modes.include?('action') || inference_modes.include?('both') || inference_modes.include?('short_context_descriptions')
+ 
+        @config['stateless_action_documentation'].public_methods(false).each do |method|
+          @config['stateless_action_documentation'].send(method)
+        end
+      end
 
       puts @config['documentation']['arguments'].flatten.join("\n\n") if target_command == 'arguments'
 
-      puts @config['helper'].compile_documentation_lines('application').flatten.join("\n\n") if target_command.empty?
-
+      if inference_modes.include?('short_context_descriptions')
+        if @config['helper'].running_in_mode?('devops')
+          puts @config['helper'].compile_short_context_descriptions(@config['documentation']['action'].merge(@config['documentation']['stateless_action']), 35)
+        else
+          puts @config['helper'].compile_short_context_descriptions(@config['documentation']['action'].merge(@config['documentation']['application']))
+        end
+      end
+      
       puts @config['helper'].compile_documentation_lines(target_command).flatten.join("\n\n") if target_command =~ /action|stateless_action|application|devops/
 
       if inference_modes.empty? && @config['helper'].is_not_command_or_stateless_command?(target_command)

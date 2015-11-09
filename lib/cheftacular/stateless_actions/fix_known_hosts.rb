@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def fix_known_hosts
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft fix_known_hosts [HOSTNAME]` this command will delete entries in your known_hosts file " +
         "for all the servers that are in our system (ip addresses AND dns names)",
 
@@ -11,7 +12,9 @@ class Cheftacular
         ]
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Fixes issues with the known_hosts ssh file'
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 

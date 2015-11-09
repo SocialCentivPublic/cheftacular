@@ -1,10 +1,17 @@
 class Cheftacular
   class ActionDocumentation
     def migrate
-      @config['documentation']['action'] <<  [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
         "`cft migrate` this command will grab the first alphabetical node for a repository " +
-        "and run a migration that will hit the database primary server."
+        "and run a migration that will hit the database primary server.",
+
+        [
+          "    1. Currently only supports rails stacks."
+        ]
       ]
+
+      @config['documentation']['action'][__method__]['short_description'] = 'Creates a database migration on the current environment'
     end
   end
 
@@ -29,12 +36,14 @@ class Cheftacular
 
         puts("Beginning migration run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']
 
-        log_data, timestamp = start_task( n.name, n.public_ipaddress, n.run_list, "#{ bundle_command } exec rake db:migrate", options, locs, cheftacular)
+        log_data, timestamp, exit_status = start_task( n.name, n.public_ipaddress, n.run_list, "#{ bundle_command } exec rake db:migrate", options, locs, cheftacular)
 
-        logs_bag_hash["#{ n.name }-migrate"] = { text: log_data.scrub_pretty_text, timestamp: timestamp }
+        logs_bag_hash["#{ n.name }-#{ __method__ }"] = { "text" => log_data.scrub_pretty_text, "timestamp" => timestamp, "exit_status" => exit_status }
       end
 
       @config['ChefDataBag'].save_logs_bag
+
+      @config['helper'].send_log_bag_hash_slack_notification(logs_bag_hash, __method__, 'Failing migration detected, please fix this and deploy again, exiting...')
 
       @options['run_migration_already'] = true
 
@@ -49,7 +58,9 @@ class Cheftacular
     end
 
     def migrate_nodejs nodes=[]
-      raise "Not yet implemented"
+      puts "Method #{ __method__ } is not yet implemented"
+
+      exit
     end
 
     def migrate_all nodes=[]

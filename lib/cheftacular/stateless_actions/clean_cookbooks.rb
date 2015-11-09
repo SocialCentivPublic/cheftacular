@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def clean_cookbooks
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft clean_cookbooks [force] [remove_cookbooks]` allows you to update the internal chef-repo's cookbooks easily. " +
         "By default this script will force you to decide what to do with each cookbook individually (shows version numbers and whether to overwrite it to cookbooks or not).",
 
@@ -12,6 +13,8 @@ class Cheftacular
           "    2. If you would like to remove all the cookbooks on the chef server, run `knife cookbook bulk delete '.*' -p -c ~/.chef/knife.rb`"
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Allows you to update all cookbooks via berkshelf'
     end
   end
 
@@ -35,43 +38,9 @@ class Cheftacular
         out = `berks install`
         puts "#{out}\nFinished... Beginning directory scanning and conflict resolution..."
 
-        berkshelf_cookbooks = {}
+        berkshelf_cookbooks = @config['filesystem'].parse_latest_berkshelf_cookbook_versions
 
-        Dir.foreach(@config['locs']['berks']) do |berkshelf_cookbook|
-          next if @config['filesystem'].is_junk_filename?(berkshelf_cookbook)
-          skip = false
-
-          berkshelf_cookbooks.keys.each do |processed_berkshelf_cookbook|
-            if processed_berkshelf_cookbook.rpartition('-').first == berkshelf_cookbook.rpartition('-').first
-              cookbook_mtime  = File.mtime(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }"))
-              pcookbook_mtime = File.mtime(File.expand_path("#{ @config['locs']['berks'] }/#{ processed_berkshelf_cookbook }"))
-
-              skip = true if cookbook_mtime < pcookbook_mtime #get only the latest version, berkshelf pulls in multiple commits from git repos for SOME REASON
-            end
-          end
-
-          next if skip
-
-          berkshelf_cookbooks[berkshelf_cookbook] = if File.exists?(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }/metadata.rb"))
-                                                      File.read(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }/metadata.rb")).gsub('"',"'").gsub(/^version[\s]*('\d[.\d]+')/).peek[/('\d[.\d]+')/].gsub("'",'')
-                                                    else
-                                                      berkshelf_cookbook.split('-').last
-                                                    end
-        end
-
-        chef_repo_cookbooks = {}
-
-        Dir.foreach(@config['locs']['cookbooks']) do |chef_repo_cookbook|
-          next if @config['filesystem'].is_junk_filename?(chef_repo_cookbook)
-            
-          new_name = chef_repo_cookbook.rpartition('-').first
-
-          chef_repo_cookbooks[chef_repo_cookbook] = if File.exists?(File.expand_path("#{ @config['locs']['cookbooks'] }/#{ chef_repo_cookbook }/metadata.rb"))
-                                                      File.read(File.expand_path("#{ @config['locs']['cookbooks'] }/#{ chef_repo_cookbook }/metadata.rb")).gsub('"',"'").gsub(/^version[\s]*('\d[.\d]+')/).peek[/('\d[.\d]+')/].gsub("'",'')
-                                                    else
-                                                      JSON.parse(File.read(File.expand_path("#{ @config['locs']['cookbooks'] }/#{ chef_repo_cookbook }/metadata.json"))).to_hash['version']
-                                                    end
-        end
+        chef_repo_cookbooks = @config['filesystem'].parse_chef_repo_cookbook_versions
 
         berkshelf_cookbooks.each_pair do |berkshelf_cookbook, version|
           new_name = berkshelf_cookbook.rpartition('-').first

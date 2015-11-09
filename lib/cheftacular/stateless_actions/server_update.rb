@@ -2,15 +2,18 @@
 class Cheftacular
   class StatelessActionDocumentation
     def server_update
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft server_update [restart]` allows you to force update all nodes' packages for a specific environment. " + 
         "This should be done with caution as this *might* break something.",
 
         [
-          "    1. `cft apt_update restart` will prompt to ask if you also want to restart all servers in a rolling restart. " +
+          "    1. `cft server_update restart` will prompt to ask if you also want to restart all servers in a rolling restart. " +
           "This should be done with extreme caution and only in a worst-case scenario."
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Attempts to update all servers for an env to their latest packages'
     end
   end
 

@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def upload_nodes
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft upload_nodes` This command will resync the chef server's nodes with the data in our chef-repo/node_roles. ",
 
         [
@@ -20,12 +21,14 @@ class Cheftacular
           "        1. Due to this, only users running this against their chef-repo need to worry about having a nodes_dir, the way it should be."
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Updates all nodes based on info in your nodes_dir'
     end
   end
 
   class StatelessAction
     def upload_nodes invalidate_file_node_cache=false
-      @config['filesystem'].cleanup_file_caches('current') if invalidate_file_node_cache
+      @config['filesystem'].cleanup_file_caches('current-nodes') if invalidate_file_node_cache
 
       raise "This action can only be performed if the mode is set to devops" if !@config['helper'].running_in_mode?('devops') && !@options['in_scaling']
 
@@ -128,7 +131,7 @@ class Cheftacular
         @config['ChefDataBag'].save_node_roles_bag env
       end if !@options['force_yes'] && @config['helper'].running_in_mode?('devops')
 
-      @config['filesystem'].cleanup_file_caches('current') if invalidate_file_node_cache
+      @config['filesystem'].cleanup_file_caches('current-nodes') if invalidate_file_node_cache
     end
   end
 end

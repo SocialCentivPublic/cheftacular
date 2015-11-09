@@ -1,7 +1,8 @@
 class Cheftacular
   class ActionDocumentation
     def deploy
-      @config['documentation']['action'] <<  [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
         "`cft deploy` will do a simple chef-client run on the servers for a role. " + 
         "Logs of the run itself will be sent to the local log directory in the application (or chef-repo) where the run was conducted.",
         
@@ -19,6 +20,8 @@ class Cheftacular
           "    5. The `-v|--verbose` option will cause failed deploys to output to the terminal window and to their normal log file. Useful for debugging."
         ]
       ]
+
+      @config['documentation']['action'][__method__]['short_description'] = "Deploys the current code in the repository (runs chef-client)"
     end
   end
 
@@ -39,15 +42,10 @@ class Cheftacular
 
         log_data, timestamp, exit_status = start_deploy( n.name, n.public_ipaddress, options, locs, passwords)
 
-        logs_bag_hash["#{ n.name }-deploy"] = { "text" => log_data.scrub_pretty_text, "timestamp" => timestamp, "exit_status" => exit_status }
+        logs_bag_hash["#{ n.name }-#{ __method__ }"] = { "text" => log_data.scrub_pretty_text, "timestamp" => timestamp, "exit_status" => exit_status }
       end
 
-      #Yes, you will get pinged on EVERY deploy until you fix the problem
-      if @config['cheftacular']['slack']['webhook']
-        logs_bag_hash.each_pair do |key, hash|
-          @config['stateless_action'].slack(hash['text'].prepend('```').insert(-1, '```')) if hash['exit_status'] && hash['exit_status'] == 1
-        end
-      end
+      @config['helper'].send_log_bag_hash_slack_notification(logs_bag_hash, __method__)
       
       @config['ChefDataBag'].save_logs_bag unless @options['debug'] #We don't really need to store entire chef runs in the logs bag
 

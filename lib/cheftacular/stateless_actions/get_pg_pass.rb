@@ -2,12 +2,15 @@
 class Cheftacular
   class StatelessActionDocumentation
     def get_pg_pass
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft get_pg_pass ['clip']` command will output the current environment's pg_password to your terminal. " +
         "Optionally you can pass in clip like `cft get_pg_pass clip` to have it also copy the pass to your clipboard."
       ]
 
-      @config['documentation']['application'] << @config['documentation']['stateless_action'].last
+      @config['documentation']['stateless_action'][__method__]['short_description'] = "Fetches the current environment's postgres password"
+
+      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 

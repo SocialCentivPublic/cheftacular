@@ -2,7 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def cloud_bootstrap
-      @config['documentation']['stateless_action'] <<  [
+      @config['documentation']['stateless_action'][__method__] ||= {}
+      @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft cloud_bootstrap NODE_NAME FLAVOR_NAME [DESCRIPTOR] [--with-dn DOMAIN]` uses a cloud api to " +
         "create a server and attaches its DOMAIN_NAME to the TLD specified for that environment (IE: example-staging.com for staging)",
 
@@ -21,6 +22,8 @@ class Cheftacular
           "It is recommended to enter a custom repository-dependent tag here to make nodes easier to load-balance like \"lb:[CODEBASE_NAME]\""
         ]
       ]
+
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Uses the cloud API to setup a server and bring it to a deployable state'
     end
   end
 
