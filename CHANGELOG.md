@@ -12,6 +12,8 @@
 
 * Added check in `slack` command to skip execution if there is no slack webhook set
 
+* Added `cft version` and `cft -V` to quickly display the installed version of cheftacular.
+
 * New cheftacular.yml keys
 
     * **slack:notify_on_command_execute** (send a slack notification if a cft command is executed)

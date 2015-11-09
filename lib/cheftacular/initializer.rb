@@ -131,6 +131,12 @@ class Cheftacular
           @options['verbose'] = true
         end
 
+        opts.on('-V', '--version', "Displays the current version of cheftacular") do
+          @config['helper'].display_currently_installed_version
+
+          exit
+        end
+
         opts.on('--no-logs', "Do not make logs for any command") do
           @options['no_logs'] = true
         end

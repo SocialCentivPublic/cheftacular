@@ -290,6 +290,10 @@ class Cheftacular
       
       @config['slack_queue'] << { message: msg.prepend('```').insert(-1, '```'), channel: @config['cheftacular']['slack']['notify_on_deployment_args'] }
     end
+
+    def display_currently_installed_version
+      puts "The current version of cheftacular is #{ Cheftacular::VERSION }"
+    end
   end
 end
 
