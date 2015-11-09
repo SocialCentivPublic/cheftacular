@@ -39,8 +39,6 @@ class Cheftacular
     if @config['helper'].is_initialization_command?(ARGV[0])
       @options['command'] = ARGV[0] #this is normally set by parse_context but that is not run for initialization commands
     else
-      #@config['stateless_action'].cheftacular_config('sync') unless @config['helper'].running_on_chef_node?
-
       @config['stateless_action'].initialize_data_bag_contents(@options['env']) #ensure basic structure are always maintained before each run
 
       @config['parser'].parse_application_context if @config['helper'].running_in_mode?('application')

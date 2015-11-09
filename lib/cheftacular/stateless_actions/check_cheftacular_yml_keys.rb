@@ -16,13 +16,24 @@ class Cheftacular
     def check_cheftacular_yml_keys out=[], exit_on_missing=false, warn_on_missing=false
       base_message = "Your cheftacular.yml is missing the key KEY, its default value is being set to DEFAULT for this run."
 
+      #############################2.9.2################################################
+
+      unless @config['cheftacular']['slack'].has_key?('notify_on_command_execute')
+        #backup_config:global_backup_role_name
+        base_message.gsub('KEY', 'notify_on_command_execute').gsub('DEFAULT', 'blank')
+
+        @config['cheftacular']['slack']['notify_command_execute'] = ''
+
+        warn_on_missing = true
+      end
+
       #############################2.9.0################################################
 
       unless @config['cheftacular']['slack'].has_key?('notify_on_deployment_args')
         #backup_config:global_backup_role_name
-        base_message.gsub('KEY', 'notify_on_deployment_args').gsub('DEFAULT', 'false')
+        base_message.gsub('KEY', 'notify_on_deployment_args').gsub('DEFAULT', 'blank')
 
-        @config['cheftacular']['slack']['notify_on_deployment_args'] = false
+        @config['cheftacular']['slack']['notify_on_deployment_args'] = ''
 
         warn_on_missing = true
       end

@@ -274,7 +274,7 @@ class Cheftacular
           next unless key.include?(method.to_s)
 
           if hash['exit_status'] && hash['exit_status'] == 1
-            @config['stateless_action'].slack(hash['text'].prepend('```').insert(-1, '```'))
+            @config['slack_queue'] << { message: hash['text'].prepend('```').insert(-1, '```') }
 
             @config['error'].exception_output(on_failing_exit_status_message) if !on_failing_exit_status_message.blank?
           end
@@ -285,9 +285,10 @@ class Cheftacular
     def slack_current_deploy_arguments
       msg  = "#{ Socket.gethostname } just set for the repository #{ @config['getter'].get_repository_from_role_name(@options['role']) }:\n"
       msg << "the organization to #{ @options['deploy_organization'] }\n" if @options['deploy_organization']
-      msg << "the revision to #{ @options['target_revision'] }"           if @options['target_revision']
+      msg << "the revision to #{ @options['target_revision'] }\n"         if @options['target_revision']
+      msg << "In the environment: #{ @options['env'] }"
       
-      @config['stateless_action'].slack(msg.prepend('```').insert(-1, '```'), @config['cheftacular']['slack']['notify_on_deployment_args'])
+      @config['slack_queue'] << { message: msg.prepend('```').insert(-1, '```'), channel: @config['cheftacular']['slack']['notify_on_deployment_args'] }
     end
   end
 end

@@ -1,3 +1,15 @@
+## 2.9.2
+
+* Tweak the slack message for detected deployment args to also include the environment.
+
+* Removed calls in auditor for an audit cache, functionality is mostly redundant and has no practical use currently
+
+* Modified auditor to also slack the currently executing command if *notify_on_command_execute* is set.
+
+* Fixed issue with `check_cheftacular_yml_keys` setting some new slack defaults to booleans instead of blank strings
+
+* Added all slack calls to the slack queue to be sent at the end of the run
+
 ## 2.9.1
 
 * Fix issue with `cft` not returning all the available commands for a context.

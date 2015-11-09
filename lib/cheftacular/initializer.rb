@@ -55,9 +55,9 @@ class Cheftacular
 
         @config['helper'].completion_rate? 100, 'initializer'
 
-        initialize_version_check if @config['cheftacular']['strict_version_checks']
+        initialize_version_check        if @config['cheftacular']['strict_version_checks']
 
-        initialize_auditing_checks if @config['cheftacular']['auditing']
+        initialize_auditing_checks      if @config['cheftacular']['auditing']
 
         initialize_chef_repo_up_to_date if @config['cheftacular']['keep_chef_repo_cheftacular_yml_up_to_date']
       end
