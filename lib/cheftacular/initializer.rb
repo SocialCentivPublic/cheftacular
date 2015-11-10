@@ -433,15 +433,15 @@ class Cheftacular
     def initialize_version_check detected_version=""
       current_version = Cheftacular::VERSION
 
-      detected_version = File.exists?( @config['filesystem'].current_version_file_path ) ? File.read( @config['filesystem'].current_version_file_path ) : @config['helper'].fetch_remote_version
+      @config['helper'].set_detected_cheftacular_version
 
-      if @config['helper'].is_higher_version? detected_version, current_version
+      if @config['helper'].is_higher_version? @config['detected_cheftacular_version'], current_version
         puts "\n Your Cheftacular is out of date. Currently #{ current_version } and remote version is #{ detected_version }.\n"
 
         if @config['internal_ruby_config'].include?('@global')
           puts "Please run rvm #{ @config['internal_ruby_config'] } do gem update cheftacular to update to the latest version"
         else
-          puts "Please update the gemfile to #{ detected_version }, bundle install and then restart this process.\n"
+          @config['stateless_action'].update_cheftacular
         end
 
         exit

@@ -1,3 +1,15 @@
+## 2.10.0
+
+* Added psuedo command, `cft flags` which is an alias to `cft arguments` and just outputs all the arguments / flags available
+
+* Added `cft update_cheftacular` which is called in very specific situations to attempt to self-update the gem
+
+    * This behavior is only triggered when the cheftacular.yml key: **self_update_repository** matches the current working directory
+
+* New cheftacular.yml keys
+
+    * **self_update_repository** (the repository cheftacular should try and update itself in, defaults to blank)
+
 ## 2.9.2
 
 * Tweak the slack message for detected deployment args to also include the environment.

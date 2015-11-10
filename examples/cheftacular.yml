@@ -10,6 +10,7 @@ ssl_verify:             false                    # Only matters if using a CA au
 wrapper_cookbooks:      MyCookbook               # comma delim string of wrapper cookbooks to do clean_cookbooks on
 strict_version_checks:  false                    # when true, the gem will check rubygems once per day to see if theres a new version and prevent execution until this new version is bundled
 auditing:               true                     # when true, the gem will collect and send auditing data about all commands that are passed to the gem. This data is stored in a chef data bag
+self_update_repository: ''                       # a special repo in your organization dedicated to cheftacular users only, in this repo cft can attempt to update itself
 base_file_path:         /var/www/vhosts          # The base file path the repos are stored on for each server
 default_swap_location:  /mnt/1GB.swap            # default location of the swapfile build file on all systems (used for cft restart_swap)
 backup_filesystem:      backup_gem               # valid entries are backup_gem | raw

@@ -294,6 +294,14 @@ class Cheftacular
     def display_currently_installed_version
       puts "The current version of cheftacular is #{ Cheftacular::VERSION }"
     end
+
+    def set_detected_cheftacular_version
+      @config['detected_cheftacular_version'] ||= if File.exists?( @config['filesystem'].current_version_file_path )
+                                                    File.read( @config['filesystem'].current_version_file_path )
+                                                  else 
+                                                    @config['helper'].fetch_remote_version
+                                                  end
+    end
   end
 end
 
