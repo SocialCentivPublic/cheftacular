@@ -14,6 +14,10 @@
 
 * Reduced the number of concurrent deploys to 6 at once from 10
 
+* Auditor now records current working directory if activated
+
+* `cft migrate` no longer exits cheftacular when a nodejs or wordpress stack is attempted to migrate
+
 ## 2.9.2
 
 * Tweak the slack message for detected deployment args to also include the environment.
