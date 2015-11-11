@@ -36,11 +36,13 @@ module SSHKit
       end
 
       def get_true_environment run_list, chef_env_roles, default_env
-        chef_env_roles.each_pair do |role, env|
-          if run_list.include?("role[#{ role }]")
-            default_env = env
+        unless chef_env_roles.nil?
+          chef_env_roles.each_pair do |role, env|
+            if run_list.include?("role[#{ role }]")
+              default_env = env
 
-            break
+              break
+            end
           end
         end
 

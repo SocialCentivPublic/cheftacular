@@ -18,8 +18,8 @@ class Cheftacular
 
       #############################2.10.0################################################
 
-      unless @config['cheftacular']['slack'].has_key?('self_update_repository')
-        base_message.gsub('KEY', 'self_update_repository').gsub('DEFAULT', 'blank')
+      unless @config['cheftacular'].has_key?('self_update_repository')
+        puts base_message.gsub('KEY', 'self_update_repository').gsub('DEFAULT', 'blank')
 
         @config['cheftacular']['self_update_repository'] = ''
 
@@ -29,7 +29,7 @@ class Cheftacular
       #############################2.9.2################################################
 
       unless @config['cheftacular']['slack'].has_key?('notify_on_command_execute')
-        base_message.gsub('KEY', 'slack:notify_on_command_execute').gsub('DEFAULT', 'blank')
+        puts base_message.gsub('KEY', 'slack:notify_on_command_execute').gsub('DEFAULT', 'blank')
 
         @config['cheftacular']['slack']['notify_command_execute'] = ''
 
@@ -39,7 +39,7 @@ class Cheftacular
       #############################2.9.0################################################
 
       unless @config['cheftacular']['slack'].has_key?('notify_on_deployment_args')
-        base_message.gsub('KEY', 'slack:notify_on_deployment_args').gsub('DEFAULT', 'blank')
+        puts base_message.gsub('KEY', 'slack:notify_on_deployment_args').gsub('DEFAULT', 'blank')
 
         @config['cheftacular']['slack']['notify_on_deployment_args'] = ''
 
@@ -49,7 +49,7 @@ class Cheftacular
       #############################2.7.0################################################
 
       unless @config['cheftacular'].has_key?('backup_config')
-        base_message.gsub('KEY', 'backup_config').gsub('DEFAULT', 'nil')
+        puts base_message.gsub('KEY', 'backup_config').gsub('DEFAULT', 'nil')
 
         warn_on_missing = true
       end

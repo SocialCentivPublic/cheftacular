@@ -48,7 +48,7 @@ class Cheftacular
     def fetch_remote_version
       puts "Checking remote #{ declassify } version..."
 
-      `gem list #{ declassify } --remote`[/(\d+\.\d+\.\d+)/]
+      `gem list #{ declassify } --remote`[/([\d\.]+)/]
     end
 
     def completion_rate? percent, mode

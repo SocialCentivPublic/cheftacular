@@ -10,6 +10,10 @@
 
     * **self_update_repository** (the repository cheftacular should try and update itself in, defaults to blank)
 
+* Fix to sshkit commands hitting an error when an environment without a split_environment in the **run_list_environments** is run
+
+* Reduced the number of concurrent deploys to 6 at once from 10
+
 ## 2.9.2
 
 * Tweak the slack message for detected deployment args to also include the environment.
