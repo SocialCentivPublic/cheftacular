@@ -1,3 +1,51 @@
+## 2.10.2
+
+* Turning off some parts of auto-updating feature until they can be debugged (bundler is pain to work with)
+
+## 2.10.1
+
+* Updating documentation and testing new self-updating feature.
+
+## 2.10.0
+
+* Added psuedo command, `cft flags` which is an alias to `cft arguments` and just outputs all the arguments / flags available
+
+* Added `cft update_cheftacular` which is called in very specific situations to attempt to self-update the gem
+
+    * This behavior is only triggered when the cheftacular.yml key: **self_update_repository** matches the current working directory
+
+* New cheftacular.yml keys
+
+    * **self_update_repository** (the repository cheftacular should try and update itself in, defaults to blank)
+
+* Fix to sshkit commands hitting an error when an environment without a split_environment in the **run_list_environments** is run
+
+* Reduced the number of concurrent deploys to 6 at once from 10
+
+* Auditor now records current working directory if activated
+
+* `cft migrate` no longer exits cheftacular when a nodejs or wordpress stack is attempted to migrate
+
+## 2.9.2
+
+* Tweak the slack message for detected deployment args to also include the environment.
+
+* Removed calls in auditor for an audit cache, functionality is mostly redundant and has no practical use currently
+
+* Modified auditor to also slack the currently executing command if *notify_on_command_execute* is set.
+
+* Fixed issue with `check_cheftacular_yml_keys` setting some new slack defaults to booleans instead of blank strings
+
+* Added all slack calls to the slack queue to be sent at the end of the run
+
+* Added check in `slack` command to skip execution if there is no slack webhook set
+
+* Added `cft version` and `cft -V` to quickly display the installed version of cheftacular.
+
+* New cheftacular.yml keys
+
+    * **slack:notify_on_command_execute** (send a slack notification if a cft command is executed)
+
 ## 2.9.1
 
 * Fix issue with `cft` not returning all the available commands for a context.

@@ -54,13 +54,13 @@ class Cheftacular
     def migrate_wordpress nodes=[]
       puts "Method #{ __method__ } is not yet implemented"
 
-      exit
+      return false
     end
 
     def migrate_nodejs nodes=[]
       puts "Method #{ __method__ } is not yet implemented"
 
-      exit
+      return false
     end
 
     def migrate_all nodes=[]

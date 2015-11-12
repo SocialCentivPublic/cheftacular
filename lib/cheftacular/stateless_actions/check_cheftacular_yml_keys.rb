@@ -16,13 +16,32 @@ class Cheftacular
     def check_cheftacular_yml_keys out=[], exit_on_missing=false, warn_on_missing=false
       base_message = "Your cheftacular.yml is missing the key KEY, its default value is being set to DEFAULT for this run."
 
+      #############################2.10.0################################################
+
+      unless @config['cheftacular'].has_key?('self_update_repository')
+        puts base_message.gsub('KEY', 'self_update_repository').gsub('DEFAULT', 'blank')
+
+        @config['cheftacular']['self_update_repository'] = ''
+
+        warn_on_missing = true
+      end
+
+      #############################2.9.2################################################
+
+      unless @config['cheftacular']['slack'].has_key?('notify_on_command_execute')
+        puts base_message.gsub('KEY', 'slack:notify_on_command_execute').gsub('DEFAULT', 'blank')
+
+        @config['cheftacular']['slack']['notify_command_execute'] = ''
+
+        warn_on_missing = true
+      end
+
       #############################2.9.0################################################
 
       unless @config['cheftacular']['slack'].has_key?('notify_on_deployment_args')
-        #backup_config:global_backup_role_name
-        base_message.gsub('KEY', 'notify_on_deployment_args').gsub('DEFAULT', 'false')
+        puts base_message.gsub('KEY', 'slack:notify_on_deployment_args').gsub('DEFAULT', 'blank')
 
-        @config['cheftacular']['slack']['notify_on_deployment_args'] = false
+        @config['cheftacular']['slack']['notify_on_deployment_args'] = ''
 
         warn_on_missing = true
       end
@@ -30,8 +49,7 @@ class Cheftacular
       #############################2.7.0################################################
 
       unless @config['cheftacular'].has_key?('backup_config')
-        #backup_config:global_backup_role_name
-        base_message.gsub('KEY', 'backup_config').gsub('DEFAULT', 'nil')
+        puts base_message.gsub('KEY', 'backup_config').gsub('DEFAULT', 'nil')
 
         warn_on_missing = true
       end

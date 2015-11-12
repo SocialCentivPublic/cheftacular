@@ -72,5 +72,7 @@ class Cheftacular
 
       puts @config['documentation']['arguments']
     end
+
+    alias_method :flags, :arguments
   end
 end
