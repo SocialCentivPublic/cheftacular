@@ -1,3 +1,7 @@
+## 2.10.2
+
+* Turning off some parts of auto-updating feature until they can be debugged (bundler is pain to work with)
+
 ## 2.10.1
 
 * Updating documentation and testing new self-updating feature.

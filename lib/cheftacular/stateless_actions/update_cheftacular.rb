@@ -15,7 +15,7 @@ class Cheftacular
 
   class StatelessAction
     def update_cheftacular status_hash={}
-      update_cheftacular_not_configured_to_update if @config['cheftacular']['self_update_repository'] != @config['locs']['root']
+      update_cheftacular_not_configured_to_update if @config['cheftacular']['self_update_repository'] != @config['locs']['root'].split('/').last
 
       @config['helper'].set_detected_cheftacular_version
 
@@ -23,18 +23,20 @@ class Cheftacular
 
       status_hash['gemfile_is_latest_version'] = update_cheftacular_from_git
       status_hash['gemfile_is_latest_version'] = update_cheftacular_gemfile unless status_hash['gemfile_is_latest_version']
-      status_hash['bundled_latest_version']    = update_cheftacular_bundle if status_hash['gemfile_is_latest_version']
+      #status_hash['bundled_latest_version']    = update_cheftacular_bundle  if status_hash['gemfile_is_latest_version']
 
-      if !status_hash['gemfile_is_latest_version'] || !status_hash['bundled_latest_version']
-        puts(
-          "Issues occured in automatically updating your cheftacular " +
-          "to #{ @config['detected_cheftacular_version'] }, please send " +
-          "the output of this command to your DevOps administrator or add " +
-          "it as an issue at this gem's github page."
-        )
-      else
-        puts "Successfully installed version #{ @config['detected_cheftacular_version'] }, please re-run your command."
-      end
+      puts "Please run bundle install to update to the latest version."
+
+      #if !status_hash['gemfile_is_latest_version'] || !status_hash['bundled_latest_version']
+      #  puts(
+      #    "Issues occured in automatically updating your cheftacular " +
+      #    "to #{ @config['detected_cheftacular_version'] }, please send " +
+      #    "the output of this command to your DevOps administrator or add " +
+      #    "it as an issue at this gem's github page."
+      #  )
+      #else
+      #  puts "Successfully installed version #{ @config['detected_cheftacular_version'] }, please re-run your command."
+      #end
     end
 
     private
