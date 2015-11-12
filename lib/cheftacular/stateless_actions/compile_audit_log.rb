@@ -42,11 +42,7 @@ class Cheftacular
 
           compiled_audit_hash[day][time].each do |log_arr|
             log_arr.each do |log_hash|
-              out << "    #{ log_array_entry_count }. #{ log_hash['command'] }"
-              out << "        1. Hostname:  #{ log_hash['hostname'] }"
-              out << "        3. Arguments: #{ log_hash['arguments'] }"
-              out << "        4. Options:   #{ log_hash['options'].to_hash }"
-              out << ""
+              out << @config['auditor'].compile_audit_hash_entry_as_array(log_hash, log_array_entry_count)
 
               log_array_entry_count += 1
             end
@@ -56,7 +52,7 @@ class Cheftacular
         end
       end
 
-      File.open("#{ @config['locs']['chef-log'] }/audit-log-#{ Time.now.strftime("%Y%m%d%H%M%S") }.md", "w") { |f| f.write(out.join("\n")) }
+      File.open("#{ @config['locs']['chef-log'] }/audit-log-#{ Time.now.strftime("%Y%m%d%H%M%S") }.md", "w") { |f| f.write(out.flatten.join("\n")) }
     end
   end
 end

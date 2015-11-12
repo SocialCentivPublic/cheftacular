@@ -35,7 +35,7 @@ class Cheftacular
       options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
 
       #on is namespaced to SSHKit::Backend::Netssh.on 
-      on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ), in: :groups, limit: 10, wait: 5 do |host|
+      on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ), in: :groups, limit: 6, wait: 5 do |host|
         n = get_node_from_address(nodes, host.hostname)
 
         puts("Beginning chef client run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']

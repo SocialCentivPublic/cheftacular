@@ -177,12 +177,16 @@ class Cheftacular
       chef_repo_cookbooks
     end
 
-     def parse_version_from_berkshelf_cookbook berkshelf_cookbook
+    def parse_version_from_berkshelf_cookbook berkshelf_cookbook
       if File.exists?(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }/metadata.rb"))
         File.read(File.expand_path("#{ @config['locs']['berks'] }/#{ berkshelf_cookbook }/metadata.rb")).gsub('"',"'").gsub(/^version[\s]*('\d[.\d]+')/).peek[/('\d[.\d]+')/].gsub("'",'')
       else
         berkshelf_cookbook.split('-').last
       end
+    end
+
+    def parse_gemfile_gem_version gem_name
+      File.read(File.expand_path("#{ @config['locs']['root'] }/Gemfile"))[/#{ gem_name }.*([\d\.]+)/][/([\d\.]+)/]
     end
 
     private
