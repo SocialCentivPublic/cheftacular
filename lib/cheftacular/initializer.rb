@@ -430,7 +430,7 @@ class Cheftacular
       end
     end
 
-    def initialize_version_check detected_version=""
+    def initialize_version_check
       current_version = Cheftacular::VERSION
 
       @config['helper'].set_detected_cheftacular_version
@@ -447,9 +447,9 @@ class Cheftacular
         exit
       else
         unless File.exists?( @config['filesystem'].current_version_file_path )
-          puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") } (#{ detected_version }). No new version detected."
+          puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") } (#{ @config['detected_cheftacular_version'] }). No new version detected."
 
-          @config['filesystem'].write_version_file detected_version
+          @config['filesystem'].write_version_file @config['detected_cheftacular_version']
         end
       end
     end
