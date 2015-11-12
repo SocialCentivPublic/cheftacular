@@ -1,3 +1,7 @@
+## 2.10.1
+
+* Updating documentation and testing new self-updating feature.
+
 ## 2.10.0
 
 * Added psuedo command, `cft flags` which is an alias to `cft arguments` and just outputs all the arguments / flags available
