@@ -4,7 +4,7 @@ class Cheftacular
     def cheftacular_config
       @config['documentation']['stateless_action'][__method__] ||= {}
       @config['documentation']['stateless_action'][__method__]['long_description'] = [
-        "`cft cheftacular_config [display|sync|overwrite]` this command " +
+        "`cft cheftacular_config [diff|display|sync|overwrite]` this command " +
         "Allows you to interact with your complete cheftacular configuration, the union of all repository's cheftacular.ymls. ",
 
         [
@@ -27,7 +27,7 @@ class Cheftacular
     def cheftacular_config command=''
       command = ARGV[1] if command.blank?
 
-      raise "Unsupported command (#{ command }) for cft cheftacular_config" unless command =~ /display|sync|overwrite/
+      raise "Unsupported command (#{ command }) for cft cheftacular_config" unless command =~ /diff|display|sync|overwrite/
 
       self.send("cheftacular_config_#{ command }")
     end
