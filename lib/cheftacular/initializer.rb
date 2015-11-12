@@ -436,7 +436,7 @@ class Cheftacular
       @config['helper'].set_detected_cheftacular_version
 
       if @config['helper'].is_higher_version? @config['detected_cheftacular_version'], current_version
-        puts "\n Your Cheftacular is out of date. Currently #{ current_version } and remote version is #{ detected_version }.\n"
+        puts "\n Your Cheftacular is out of date. Currently #{ current_version } and remote version is #{ @config['detected_cheftacular_version'] }.\n"
 
         if @config['internal_ruby_config'].include?('@global')
           puts "Please run rvm #{ @config['internal_ruby_config'] } do gem update cheftacular to update to the latest version"
