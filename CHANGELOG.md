@@ -1,3 +1,7 @@
+## 2.10.3
+
+* Auditing now appends the directory where the user is running the command to the computer's name rather than it having it's own line.
+
 ## 2.10.2
 
 * Turning off some parts of auto-updating feature until they can be debugged (bundler is pain to work with)
