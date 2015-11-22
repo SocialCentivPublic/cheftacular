@@ -243,7 +243,8 @@ class Cheftacular
     end
 
     def initialize_queues
-      @config['slack_queue'] ||= []
+      @config['slack_queue']           ||= []
+      @config['server_creation_queue'] ||= []
     end
 
     def initialize_yaml_configuration
@@ -472,7 +473,7 @@ class Cheftacular
     end
 
     def initialize_directories
-      ['applog', 'deploy', 'failed-deploy', 'rolelog', 'rvm', 'stashedlog'].each do |sub_log_directory|
+      ['applog', 'deploy', 'failed-deploy', 'rolelog', 'rvm', 'server-setup', 'stashedlog'].each do |sub_log_directory|
         FileUtils.mkdir_p File.join( @config['locs']['chef-log'], sub_log_directory )
       end
 

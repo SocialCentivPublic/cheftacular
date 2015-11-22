@@ -16,6 +16,12 @@ class Cheftacular
     def check_cheftacular_yml_keys out=[], exit_on_missing=false, warn_on_missing=false
       base_message = "Your cheftacular.yml is missing the key KEY, its default value is being set to DEFAULT for this run."
 
+      #############################2.11.0################################################
+
+      unless @config['cheftacular'].has_key?('server_creation_tries')
+        @config['cheftacular']['server_creation_tries'] = 2
+      end
+
       #############################2.10.0################################################
 
       unless @config['cheftacular'].has_key?('self_update_repository')

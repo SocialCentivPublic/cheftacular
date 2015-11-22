@@ -4,7 +4,7 @@ class Cheftacular
     def environment
       @config['documentation']['stateless_action'][__method__] ||= {}
       @config['documentation']['stateless_action'][__method__]['long_description'] = [
-        "`cft environment boot|destroy` will boot / destroy the current environment",
+        "`cft environment boot|destroy|destroy_raw_servers` will boot / destroy the current environment",
 
         [
           "    1. `boot` will spin up servers and bring them to a stable state. " +
@@ -12,7 +12,12 @@ class Cheftacular
 
           "    2. `destroy` will destroy all servers needed for the target environment",
 
-          "    3. This command will prompt when attempting to destroy servers in staging or production"
+          "    3. `destroy_raw_servers` will destroy the servers without destroying the node data.",
+
+          "    4. `boot_without_deploy` will spin up servers and bring them to a state where they are ready to be deployed",
+
+          "    5. This command will prompt when attempting to destroy servers in staging or production. " + 
+          "Additionally, only devops clients will be able to destroy servers in those environments."
         ]
       ]
 
@@ -32,7 +37,9 @@ class Cheftacular
 
       type = ARGV[1] if ARGV[1]
 
-      raise "Unknown type: #{ type }, can only be 'boot' or 'destroy'" unless (type =~ /boot|destroy/) == 0
+      unless (type =~ /boot|destroy|destroy_raw_servers|boot_without_deploy/) == 0
+        raise "Unknown type: #{ type }, can only be 'boot'/'boot_without_deploy'/'destroy'/'destroy_raw_servers'"
+      end
 
       nodes = @config['getter'].get_true_node_objects(true)
 
@@ -50,44 +57,45 @@ class Cheftacular
       end
 
       case type
-      when 'boot'
-        initial_servers.each_pair do |name, config_hash|
-          next if nodes.map { |n| n.name }.include?(name)
-          config_hash ||= {}
+      when /boot|boot_without_deploy/
+        begin
+          initial_servers.each_pair do |name, config_hash|
+            next if nodes.map { |n| n.name }.include?(name)
+            config_hash ||= {}
+            node_hash     = {}
 
-          @options['node_name']   = name
-          @options['flavor_name'] = config_hash.has_key?('flavor') ? config_hash['flavor'] : @config['cheftacular']['default_flavor_name']
-          @options['descriptor']  = config_hash.has_key?('descriptor') ? config_hash['descriptor'] : name
-          @options['with_dn']     = config_hash.has_key?('dns_config') ? @config['parser'].parse_to_dns(config_hash['dns_config']) : @config['parser'].parse_to_dns('NODE_NAME.ENV_TLD')
+            node_hash['node_name']   = name
+            node_hash['flavor_name'] = config_hash.has_key?('flavor') ? config_hash['flavor'] : @config['cheftacular']['default_flavor_name']
+            node_hash['descriptor']  = config_hash.has_key?('descriptor') ? config_hash['descriptor'] : name
+            node_hash['dns_config']  = if config_hash.has_key?('dns_config')
+                                         @config['parser'].parse_to_dns(config_hash['dns_config'], node_hash['node_name'])
+                                       else
+                                         @config['parser'].parse_to_dns('NODE_NAME.ENV_TLD', node_hash['node_name'])
+                                       end
 
-          puts("Preparing to boot server #{ @options['node_name'] } for #{ @options['env'] }!") unless @options['quiet']
+            @config['server_creation_queue'] << node_hash
+          end
 
-          @config['stateless_action'].cloud_bootstrap
-
-          sleep 15
+          @config['stateless_action'].cloud_bootstrap_from_queue
+        ensure
+          @config['ChefDataBag'].save_server_passwords_bag
         end
 
-        @config['ChefDataBag'].save_server_passwords_bag
+        if type == 'boot'
+          @options['node_name'] = nil
 
-        @options['node_name'] = nil
+          @options['role'] = 'db'
 
-        @options['role'] = 'all'
+          @config['action'].deploy
 
-        @config['action'].deploy
+          @config['stateless_action'].backups('load')
 
-        #TODO INTEGRATE backups TO LOAD DATA INTO THE NEWLY BOOTED ENV
-      when 'destroy'
-        raise "This action can only be performed if the mode is set to devops" if !@config['helper'].running_in_mode?('devops')
-        
-        if ask_on_destroy
-          puts "Preparing to delete nodes in #{ @options['env'] }.\nEnter Y/y to confirm."
+          @options['role'] = 'all'
 
-          input = STDIN.gets.chomp
-
-          remove = false unless ( input =~ /y|Y|yes|Yes/ ) == 0
+          @config['action'].deploy
         end
-
-        return false unless remove
+      when 'destroy'        
+        return false if ask_on_destroy && !environment_is_destroyable?
 
         @options['delete_server_on_remove'] = true
 
@@ -100,7 +108,34 @@ class Cheftacular
 
           sleep 15
         end
+      when 'destroy_raw_servers'
+        return false if ask_on_destroy && !environment_is_destroyable?
+
+        @options['delete_server_on_remove'] = true
+
+        initial_servers.each_pair do |name, config_hash|
+          next if nodes.map { |n| n.name }.include?(name)
+          @options['node_name'] = name
+
+          real_node_name = @config['getter'].get_current_real_node_name
+
+          @config['stateless_action'].cloud('servers', "destroy:#{ real_node_name }")
+
+          sleep 15
+        end
       end
+    end
+
+    private
+
+    def environment_is_destroyable?
+      raise "This action can only be performed if the mode is set to devops" unless @config['helper'].running_in_mode?('devops')
+
+      puts "Preparing to delete nodes in #{ @options['env'] }.\nEnter Y/y to confirm."
+
+      input = STDIN.gets.chomp
+
+      ( input =~ /y|Y|yes|Yes/ ) == 0
     end
   end
 end

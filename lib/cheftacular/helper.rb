@@ -126,16 +126,6 @@ class Cheftacular
       @config['dummy_sshkit'].set_log_loc_and_timestamp @config['locs']
     end
 
-    def knife_bootstrap_command
-      address  = @options['address']
-      user     = @config['cheftacular']['deploy_user']
-      password = @config['server_passwords'][@options['address']]
-      nodename = @options['node_name']
-      chef_ver = @config['cheftacular']['chef_version'].to_i >= 12 ? '12.4.0' : '11.16.4'
-
-      "knife bootstrap #{ address } -x #{ user } -P #{ password } -N #{ nodename } --sudo --use-sudo-password --bootstrap-version #{ chef_ver }"
-    end
-
     #the documentation hashes must be populated *before* this method runs for it to return anything!
     def compile_documentation_lines mode, out=[]
       doc_arr = case mode
@@ -250,24 +240,6 @@ class Cheftacular
       master_hash
     end
 
-    def install_rvm_sh_file out=[]
-      puts("Starting rvm.sh installation...") unless @options['quiet']
-
-      commands = [
-        "#{ @config['helper'].sudo(@options['address']) } mv /home/deploy/rvm.sh /etc/profile.d",
-        "#{ @config['helper'].sudo(@options['address']) } chmod 755 /etc/profile.d/rvm.sh",
-        "#{ @config['helper'].sudo(@options['address']) } chown root:root /etc/profile.d/rvm.sh"
-      ]
-
-      out << `scp -oStrictHostKeyChecking=no #{ @config['locs']['cheftacular-lib-files'] }/rvm.sh #{ @config['cheftacular']['deploy_user'] }@#{ @options['address'] }:/home/#{ @config['cheftacular']['deploy_user'] }`
-
-      commands.each do |command|
-        out << `ssh -t -oStrictHostKeyChecking=no #{ @config['cheftacular']['deploy_user'] }@#{ @options['address'] } "#{ command }"`
-      end
-
-      puts("Completed rvm.sh installation into /etc/profile.d/rvm.sh") unless @options['quiet']
-    end
-
     def send_log_bag_hash_slack_notification logs_bag_hash, method, on_failing_exit_status_message=''
       if @config['cheftacular']['slack']['webhook']
         logs_bag_hash.each_pair do |key, hash|
@@ -301,6 +273,14 @@ class Cheftacular
                                                   else 
                                                     @config['helper'].fetch_remote_version
                                                   end
+    end
+
+    def return_options_as_hash options_array, return_hash={}
+      options_array.each do |key|
+        return_hash[key] = @options[key]
+      end
+
+      return_hash
     end
   end
 end

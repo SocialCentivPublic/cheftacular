@@ -26,7 +26,7 @@ class Cheftacular
   end
 
   class Action
-    def deploy
+    def deploy deployment_args={ in: :groups, limit: 6, wait: 5 }
       nodes = @config['getter'].get_true_node_objects false, true #when this is run in scaling we'll need to make sure we deploy to new nodes
 
       nodes = @config['parser'].exclude_nodes( nodes, [{ if: "role[#{ @options['negative_role'] }]" }]) if @options['negative_role']
@@ -34,8 +34,10 @@ class Cheftacular
       #this must always precede on () calls so they have the instance variables they need
       options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
 
+      deployment_args = { in: :groups, limit: 10, wait: 5 } if @options['env'] == 'production'
+
       #on is namespaced to SSHKit::Backend::Netssh.on 
-      on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ), in: :groups, limit: 6, wait: 5 do |host|
+      on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ), deployment_args do |host|
         n = get_node_from_address(nodes, host.hostname)
 
         puts("Beginning chef client run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']

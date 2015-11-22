@@ -14,7 +14,7 @@ class CloudInteractor
     end
 
     def generic_list_call identity, resource, output=true
-      puts "Returning list of #{ identity } for #{ resource == 'DNS' ? @options['route_dns_changes_via'] : @options['preferred_cloud'] }..."
+      puts "(#{ identity.capitalize }) Returning list of #{ identity } for #{ resource == 'DNS' ? @options['route_dns_changes_via'] : @options['preferred_cloud'] }..."
 
       @main_obj[identity] = JSON.parse(@classes['auth'].auth_service(resource).instance_eval(identity).to_json)
 
@@ -30,7 +30,7 @@ class CloudInteractor
 
       @main_obj[identity].each do |identity_hash|
         if specific_identity.nil?
-          puts("Query arguments \"#{ args }\" are not being mapped correctly for #{ identity.singularize } reads from method #{ caller[3][/`.*'/][1..-2] }! This read will return no objects.")
+          puts("(#{ identity.capitalize }) Query arguments \"#{ args }\" are not being mapped correctly for #{ identity.singularize } reads from method #{ caller[3][/`.*'/][1..-2] }! This read will return no objects.")
         
           break
         end
@@ -46,7 +46,8 @@ class CloudInteractor
         ap(identity_hash) if output
       end
 
-      puts("#{ specific_identity } not found in #{ identity }!") if @main_obj["specific_#{ identity }"].empty?
+      puts("(#{ identity.capitalize }) #{ specific_identity } matched and being utilized for #{ identity }.") unless @main_obj["specific_#{ identity }"].empty?
+      puts("(#{ identity.capitalize }) #{ specific_identity } not found in #{ identity }!")                       if @main_obj["specific_#{ identity }"].empty?
     end
 
     def generic_destroy_parse destroy_hash, identity, resource, mode='name'
@@ -58,7 +59,7 @@ class CloudInteractor
         raise "Name mismatch on destroy! Expected #{ destroy_hash[mode] } and was going to destroy #{ @main_obj["specific_#{ identity }"].last[mode] }"
       end
 
-      puts "Destroying #{ destroy_hash[mode] }..."
+      puts "(#{ identity.capitalize }) Destroying #{ destroy_hash[mode] }..."
 
       specific_fog_object = @classes['auth'].auth_service(resource).instance_eval(identity).get @main_obj["specific_#{ identity }"].last['id']
 
@@ -68,7 +69,7 @@ class CloudInteractor
         @main_obj["#{ identity }_destroy_request"] = specific_fog_object.destroy
       end
 
-      puts "REMINDER! This destroy is not instant! It can take up to a few minutes for a #{ identity.singularize } to actually be fully destroyed!"
+      puts "(#{ identity.capitalize }) REMINDER! This destroy is not instant! It can take up to a few minutes for a #{ identity.singularize } to actually be fully destroyed!"
     end
   end
 end

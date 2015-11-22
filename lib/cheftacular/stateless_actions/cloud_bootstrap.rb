@@ -28,12 +28,19 @@ class Cheftacular
   end
 
   class StatelessAction
-    def cloud_bootstrap
+    def cloud_bootstrap server_hash={}, options_to_sync=['node_name', 'flavor_name', 'descriptor', 'dns_config', 'address', 'private_address', 'client_pass']
       raise "This action can only be performed if the mode is set to devops" if !@config['helper'].running_in_mode?('devops') && !@options['in_scaling']
       
+      @options['node_name']   = server_hash['node_name']   if server_hash.has_key?('node_name')
+      @options['flavor_name'] = server_hash['flavor_name'] if server_hash.has_key?('flavor_name')
+      @options['descriptor']  = server_hash['descriptor']  if server_hash.has_key?('descriptor')
+      @options['with_dn']     = server_hash['dns_config']  if server_hash.has_key?('dns_config')
+
       @options['node_name']   = ARGV[1] unless @options['node_name']
       @options['flavor_name'] = ARGV[2] unless @options['flavor_name']
       @options['descriptor']  = ARGV[3] if ARGV[3] && !@options['descriptor']
+
+      puts "Preparing to boot #{ @options['node_name'] }(#{ @options['flavor_name'] })..."
 
       if `which sshpass`.empty?
         raise "sshpass not installed! Please run brew install https://raw.github.com/eugeneoden/homebrew/eca9de1/Library/Formula/sshpass.rb (or get it from your repo for linux)"
@@ -46,23 +53,18 @@ class Cheftacular
 
       status_hash = @config['stateless_action'].cloud "server", "poll:#{ real_node_name }"
 
-      status_hash['created_servers'].each do |server_hash|
-        next unless server_hash['name'] == "#{ real_node_name }"
+      status_hash['created_servers'].each do |cloud_server_hash|
+        next unless cloud_server_hash['name'] == "#{ real_node_name }"
 
-        @options['address'], @options['private_address'] = @config['cloud_provider'].parse_addresses_from_server_create_hash server_hash
+        @options['address'], @options['private_address'] = @config['cloud_provider'].parse_addresses_from_server_create_hash cloud_server_hash
       end
 
       @options['client_pass'] = @config['cloud_provider'].parse_server_root_password_from_server_create_hash status_hash, real_node_name
-
-      tld = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld']
-
-      target_serv_index = @config[@options['env']]['addresses_bag_hash']['addresses'].count
-
-      compile_args = ['set_all_attributes']
-
-      compile_args << "set_specific_domain:#{ @options['with_dn'] }" if @options['with_dn']
-
-      address_hash = @config['DNS'].compile_address_hash_for_server_from_options(*compile_args)
+      tld                     = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld']
+      target_serv_index       = @config[@options['env']]['addresses_bag_hash']['addresses'].count
+      compile_args            = ['set_all_attributes']
+      compile_args           << "set_specific_domain:#{ @options['with_dn'] }" if @options['with_dn']
+      address_hash            = @config['DNS'].compile_address_hash_for_server_from_options(*compile_args)
 
       @config['DNS'].create_dns_record_for_domain_from_address_hash(@options['with_dn'], address_hash, "specific_domain_mode") if @options['with_dn']
 
@@ -72,7 +74,12 @@ class Cheftacular
 
       @options['dont_remove_address_or_server'] = true #flag to make sure our entry isnt removed in addresses bag
 
-      @config['stateless_action'].full_bootstrap #bootstrap server with ruby and attach it to the chef server
+      @config['queue_master'].sync_server_hash_into_queue(server_hash.merge(@config['helper'].return_options_as_hash(options_to_sync)))
+
+      puts("Created server #{ server_hash['node_name'] } and attached additional flags:")                                                  unless @options['quiet']
+      ap(@config['queue_master'].return_hash_from_queue('server_creation_queue', server_hash, 'node_name').except(*options_to_sync[0..3])) unless @options['quiet']
+
+      @config['stateless_action'].full_bootstrap_from_queue unless @config['in_server_creation_queue'] #bootstrap server with ruby and attach it to the chef server
     end
   end
 end

@@ -1,7 +1,7 @@
 class CloudInteractor
   class Domain
     def list_records args, output=false
-      puts "Querying #{ args["domain"] } for records..."
+      puts "(#{ IDENTITY.capitalize }) Querying #{ args["domain"] } for records..."
 
       specific_fog_object = @classes['auth'].auth_service(RESOURCE).instance_eval('zones').get @main_obj["specific_#{ IDENTITY }"].last['id']
 

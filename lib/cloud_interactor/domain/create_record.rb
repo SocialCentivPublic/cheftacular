@@ -22,7 +22,7 @@ class CloudInteractor
 
         specific_fog_object.records.create(name: args['target_domain'], value: args['target_ip'], type: args['type'], ttl: args['ttl'])
 
-        puts "Attached #{ args['subdomain'] } (#{ args['target_ip'] }) to #{ args[IDENTITY.singularize] } (#{ args['target_domain'] })..."
+        puts "(#{ IDENTITY.capitalize }) Attached #{ args['subdomain'] } (#{ args['target_ip'] }) to #{ args[IDENTITY.singularize] } (#{ args['target_domain'] })..."
       end
     end
   end

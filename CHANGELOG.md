@@ -1,3 +1,15 @@
+## 2.11.0
+
+* Improving cloud_bootstrap process, adding queue steps and parallelization so that servers can be setup in a much faster manner than one by one by one
+
+* CloudInteractor Messages are now much more helpful
+
+* `cft test_env boot` has also been parallelized
+
+* Fixed bug in boot server process that could occur when two repositories shared names where one name was a subset of another name
+
+* `cft check [all]` now supports the all argument which will check all repositories for commits in an env
+
 ## 2.10.3
 
 * Auditing now appends the directory where the user is running the command to the computer's name rather than it having it's own line.

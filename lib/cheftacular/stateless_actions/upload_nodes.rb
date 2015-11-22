@@ -27,7 +27,7 @@ class Cheftacular
   end
 
   class StatelessAction
-    def upload_nodes invalidate_file_node_cache=false
+    def upload_nodes invalidate_file_node_cache=true
       @config['filesystem'].cleanup_file_caches('current-nodes') if invalidate_file_node_cache
 
       raise "This action can only be performed if the mode is set to devops" if !@config['helper'].running_in_mode?('devops') && !@options['in_scaling']

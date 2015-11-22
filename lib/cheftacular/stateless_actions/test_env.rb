@@ -48,25 +48,31 @@ class Cheftacular
 
       case type
       when 'boot'
-        @config['cheftacular']['split_env_nodes'].each_pair do |name, config_hash|
-          config_hash           ||= {}
-          true_name               = name.gsub('SPLITENV', split_env)
-          @options['sub_env']     = split_env
-          @options['node_name']   = "#{ true_name }#{ 'p' if @options['env'] == 'production' }" 
-          @options['flavor_name'] = config_hash.has_key?('flavor') ? config_hash['flavor'] : @config['cheftacular']['default_flavor_name']
-          @options['descriptor']  = config_hash.has_key?('descriptor') ? "#{ config_hash['descriptor'] }-#{ split_env }" : name
-          @options['with_dn']     = config_hash.has_key?('dns_config') ? @config['parser'].parse_to_dns(config_hash['dns_config']) : @config['parser'].parse_to_dns('NODE_NAME.ENV_TLD')
-                                    
-          next if nodes.map { |n| n.name }.include?(@options['node_name'])
+        begin
+          @config['cheftacular']['split_env_nodes'].each_pair do |name, config_hash|                                    
+            next if nodes.map { |n| n.name }.include?(@options['node_name'])
+            config_hash ||= {}
+            node_hash     = {}
+            true_name                = name.gsub('SPLITENV', split_env)
+            @options['sub_env']      = split_env
+            node_hash['node_name']   = name
+            node_hash['flavor_name'] = config_hash.has_key?('flavor') ? config_hash['flavor'] : @config['cheftacular']['default_flavor_name']
+            node_hash['descriptor']  = config_hash.has_key?('descriptor') ? "#{ config_hash['descriptor'] }-#{ split_env }" : name
+            node_hash['dns_config']  = if config_hash.has_key?('dns_config')
+                                         @config['parser'].parse_to_dns(config_hash['dns_config'], node_hash['node_name'])
+                                       else
+                                         @config['parser'].parse_to_dns('NODE_NAME.ENV_TLD', node_hash['node_name'])
+                                       end
 
-          puts("Preparing to boot server #{ @options['node_name'] } for #{ @options['env'] }'s #{ split_env } environment!") unless @options['quiet']
+            puts("Preparing to boot server #{ @options['node_name'] } for #{ @options['env'] }'s #{ split_env } environment!") unless @options['quiet']
 
-          @config['stateless_action'].cloud_bootstrap
+            @config['stateless_action'].cloud_bootstrap_from_queue
 
-          sleep 15
+            sleep 15
+          end
+        ensure
+          @config['ChefDataBag'].save_server_passwords_bag
         end
-
-        @config['ChefDataBag'].save_server_passwords_bag
       when 'destroy'
         @options['delete_server_on_remove'] = true
 

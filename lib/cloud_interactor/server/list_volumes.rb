@@ -1,7 +1,7 @@
 class CloudInteractor
   class Server
     def list_volumes args, output=true
-      puts "Returning list of volumes for #{ args['server_name'] } in #{ IDENTITY }..."
+      puts "(#{ IDENTITY }) Returning list of volumes for #{ args['server_name'] } in #{ IDENTITY }..."
 
       read(args, false, 'name', 'server_name') if @main_obj["specific_#{ IDENTITY }"].nil?
 
