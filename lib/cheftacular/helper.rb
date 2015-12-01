@@ -302,9 +302,7 @@ class Cheftacular
       elsif !git_output.include?(revision_to_check)
         puts "! The remote organization #{ org_name_to_check } does not have a revision / branch #{ revision_to_check } for repository: #{ @options['repository'] } !"
 
-        heads = git_output.scan(/refs\/heads\/(.*)/).flatten
-
-        sorted_heads = heads.uniq.sort_by { |head| compare_strings(revision_to_check, head)}
+        sorted_heads = git_output.scan(/refs\/heads\/(.*)/).flatten.uniq.sort_by { |head| compare_strings(revision_to_check, head)}
 
         puts "The closest matches for #{ revision_to_check } are:"
         puts "    #{ sorted_heads.at(0) }"
