@@ -38,7 +38,7 @@ class Cheftacular
         @config['initializer'].initialize_node_roles_bag_contents env
       end
 
-      nodes = @options['multi-step'] ? @config['getter'].get_true_node_objects(true,true) : @config['getter'].get_true_node_objects(true)
+      nodes = @options['multi-step'] ? @config['getter'].get_true_node_objects(true) : @config['getter'].get_true_node_objects(true)
 
       node_roles_hash, bag_hash, allowed_changes_hash = {},{},{}
 

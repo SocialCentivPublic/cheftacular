@@ -1,0 +1,316 @@
+mode:                   '[devops|application] devops mode unlocks full functionality, application limits the instance to a subset of commands. devops mode should only be set for repos that are the chef-repo.'
+default_environment:    'The initial environment all commands are run in without an env setting flag like -d, -p, or --env ENV'
+default_repository:     'The default repository all commands are run in'
+ruby_version:           '[ruby-\d\.\d\.\d]The default ruby version that the nodes utilize (required to be set for some commands like cft console)'
+deploy_user:            'The user that the servers use as the basic deploy user'
+cheftacular_chef_user:  'The user that cheftacular will try to authenticate as'
+chef_server_url:        'The chef server url'
+ssl_verify:             '[true|false] Whether or not the https cert for the chef server should be verified or not'
+wrapper_cookbooks:      'Comma delimited string of wrapper cookbooks to do cft clean_cookbooks on'
+strict_version_checks:  '[true|false] When true, the gem will check rubygems once per day to see if theres a new version and prevent execution until this new version is bundled'
+auditing:               '[true|false] When true, the gem will collect and send auditing data about all commands that are passed to the gem that will hit your chef server'
+base_file_path:         'The base file path the repos are stored on for each server'
+default_swap_location:  'Default location of the swapfile build on all systems (used for cft restart_swap)'
+backup_filesystem:      '[backup_gem|raw] backup tool used on the servers'
+chef_version:           '[11|12] Major chef version of your chef server / environment'
+data_bag_key_file:      'Name of the data bag key file in the ~/.chef folder for workstations'
+server_pass_length:     '(20) Default length of the generated passwords for the servers'
+default_flavor_name:    '(1 GB Performance) When booting servers, this flavor name is used if a flavor is not set in some way'
+preferred_cloud:        '[rackspace|digitalocean](rackspace) Preferred cloud to interact with'
+preferred_cloud_region: '(dfw) Preferred cloud region to interact with (please check your cloud provider for specific regions)'
+preferred_cloud_os:     '(ubuntu) Can be centos|coreos|debian|fedora|redhat|ubuntu|vyatta. Bear in mind not all OSes have supported bootstraps at the moment'
+preferred_cloud_image:  '(Ubuntu 14.04 LTS (Trusty Tahr) (PV)) preferred cloud image to install, can use custom built images here as well. The string is matched to a valid image but specific is better'
+virtualization_mode:    '(PV) On rackspace cloud, set your default virtualization mode to this (only PV or PVHVM are supported)'
+git_based_deploys:      '[true|false] this initializes a key in your authentication data bag to fetch authentication from git'
+route_dns_changes_via:  '[rackspace|dnsimple] Tells cheftacular to send dns changes to this provider instead of the preferred_cloud_option'
+node_name_separator:    'On rackspace, can be anything except a space, on most other hosting sites, it must be a valid url character'
+pre_install_packages:   "Space delimited list of packages to install during a node's initial setup process"
+
+git:
+  key_description:      'Stores various configs for interacting with git'
+  check_remote_for_branch_existence: '(false)[true|false] Checks the remote repository to see if the branch exists on -Z branch_name deploys, you must be authenticated LOCALLY to do this. This does not occur on remote servers and only works if TheCheftacularCookbook is being used'
+
+backup_config:
+  key_description:         'stores all the required configuration data for cft backups'   
+  global_backup_role_name: 'Role name of the server that is useful for fetching backups from for cft backups'
+  global_backup_environ:   'Environment of the server that is useful for fetching backups from for cft backups'
+  global_backup_path:      'Root location of backups on backup server'
+  backup_dir_mode:         '(775) Permissions to create backup dirs with on servers with no backup dir'
+  backup_load_command:     'This command should run the ENTIRE backup if the contents are detected on the disk, used in cft backups'
+  db_primary_backup_path:  'Backup path on database primaries'
+  db_primary_role:         'Role that defines a database primary, used for backups command'
+
+#chef-repo
+keep_chef_repo_cheftacular_yml_up_to_date: '[true|false] When changes are detected in the cheftacular.yml, mirror those key changes into your wrapper cookbook(s)'
+location_of_chef_repo_cheftacular_yml:     '(/files/default) This should be the location of the cheftacular.yml file in your wrapper cookbooks(s). NOTE: The file should be in the same place in all cases'
+replace_keys_in_chef_repo:
+  key_description:                         'Keys that should be changed when the cheftacular.yml is created in the chef-repo (its a good idea to turn off strict version checks)'
+
+slack:
+  key_description: 'Stores the confiruation information for slack access'
+  default_channel: '(#default) Useful if the default channel on the webhook is NOT where you want to send notifications to (like failed deploys)'
+  webhook:         'The full https webhook slack gives you for a webhook integration goes here'
+
+#RVM
+install_rvm_on_boot: '[true|false] If true, this will cause RVM to be installed for the deploy_user on boot, this makes managing RVM via cookbook impossible.'
+rvm_gpg_key:         'The rvm gpg key to add as a key signing request'
+
+cloudflare:
+  key_description: 'Stores the configuration data for cloudflare requests'
+  api_key:         'API key for accessing cloudflare'
+  user_email:      'User email for cloudflare account'
+  default_ttl:     'Default TTL(time-to-live) for all dns settings'
+
+cloud_authentication:
+  key_description:   'Stores the authentication data for all cft cloud requests'
+  rackspace:
+    key_description: 'Stores the authenication data for rackspace cloud requests'
+    api_key:         'API key for accessing rackspace cloud'
+    email:           'Email for accessing rackspace cloud'
+    username:        'Username for accessing rackspace cloud'
+  digitalocean:
+    key_description: 'Stores the authenication data for digitalocean cloud requests'
+    api_key:         'API key for accessing digitalocean cloud'
+    client_id:       'Client authentication id for accessing digitalocean cloud'
+  dnsimple:
+    key_description: 'Stores the authenication data for dnsimple cloud requests'
+    email:           'Email for accessing dnsimple via cloud requests'
+    password:        'Passwords for accessing dnsimple via cloud requests'
+    token:           'Authenitcation token for accessing dnsimple via cloud requests'
+
+role_maps:
+  key_description:   'Role maps for log tailing, the first comma in the list of log locations is what is tailable, the others are only loggable'
+  sensu_server_role:
+    key_description: 'Role map for default sensu log location'
+    role_name:       '(sensu_server) Name of the role for the role_map'
+    log_location:    '(/var/log/sensu/sensu-server.log) Location of the logs for the role_map'
+  graphite_server_role:
+    key_description: 'Role map for default sensu log location'
+    role_name:       '(graphite_server) Name of the role for the role_map'
+    log_location:    '(/var/log/carbon-cache/current) Location of the logs for the role_map'
+
+  worker_server_role:
+    key_description: 'Role map for default sensu log location'
+    role_name:       '(worker) Name of the role for the role_map'
+    log_location:    '(/var/log/syslog,|current_repo_location|/log/delayed_job.log) Location of the logs for the role_map. Commas will pull logs from multiple locations. |current_repo_location| acts as an alias for a roles default repo location'
+
+repositories:
+  key_description:                   'Hash of all the repositories you can access via your cheftacular instance'
+  STAR_MATCHER:
+    key_description:                 'This key is reserved for role names of repos, preferably names that eliminate any hyphens in the repo_name'
+    repo_name:                       'The name of the repository references with the role_name that is the parent key of this one'
+    database:                        '[postgresql|mysql] The default database type utilized by the repository'
+    application_database_user:       'Name of the database user on the remote server (useful if each app has its own database user)'
+    stack:                           '[ruby_on_rails|wordpress|nodejs] Application stack currently utilized by the repository'
+    db_primary_host_role:            '(db_primary) The primary database role'
+    custom_database_name:            'This key only needs to exist if your database is named differently from REPONAME_ENV'
+    not_a_migration_message:         'If you have some text that will always show up after migrations, put it here so the system doesnt think it needs to run deploys after a migration again'
+    has_split_branches:              '[true|false] If you have branches like split-a and split-c, you can use this to access them when defined in the run_list_environments hash'
+    specific_chef_passwords:
+      key_description:               'Special keys that you want auto-generated for their repo by for the ENV chef_passwords bag, the value for them is their length'
+      pg_root_pass:                  '(20) The length of the root password for pg_root_pass {TheCheftacularCookbook}'
+      pg_app_pass:                   '(20) The length of the application password {TheCheftacularCookbook}'
+    short_database_name:             "If the repo_name contains dashes, it can't be used for the database name. This is a shorter name that can be used for backup_gem {TheCheftacularCookbook}"
+    test_database_setup_command:     '(rake db:test:prepare) The command to run to setup your test database on build servers {TheCheftacularCookbook}'
+    custom_nginx_configs:            'Array of nginx configurations to load for the repository {TheCheftacularCookbook}'
+    route_wildcard_requests_for_tld: '[true|false] This triggers special behaviors for server creation (cloud_bootstrap). If a server is a load balancer for this repo, server creation will route wildcard requests to it'
+    application_services:
+      key_description:               'Hash of services the application can load {TheCheftacularCookbook}'
+      STAR_MATCHER:
+        key_description:             'The name of the service'
+        rewrite_underscore_to_dash:  '[true|false] This key existing triggers the effect, it must not exist to not have the effect. It rewrites the service name to something with dashes'
+        run_on_role:                 'The role that this service is loaded on'
+        deactivate_on_role:          'The role that this service is deactivated on'
+        command:                     'The command that runs the role, some data is prepended to the command depending on the stack'
+        application_log_cleanup:     'Deletes most of the application logs daily if this key is true'
+        delayedjob_log_cleanup:      'Deletes most of the delayed job logs daily if this key is true'
+        syslog_cleanup:              'Deletes most of the /var/log/syslog daily if this key is true'
+        queues:
+          key_description:           'For delayed job services, this stores which queues are loaded, any matching environment name can be listed under this hash'
+          default:                   'Array of queues that are loaded in all environments'
+          production:                'Array of queues that are loaded in the production environment'
+    application_crons:
+      key_description:               'Hash of application crons the application can load {TheCheftacularCookbook}'
+      STAR_MATCHER:
+        key_description:             'Cron job that is loaded for this application on TheCheftacularCookbook'
+        minute:                      'Minutes that the cron job is ran on'
+        hour:                        'Hours that the cron job is ran on'
+        command:                     'Command that the cron job is ran on'
+        type:                        '[rake|raw] If rake, the command is run with the ruby prepended information, otherwise as raw, it is run as is'
+
+run_list_environments:
+  key_description: 'If you are assigning environments with run lists *in addition to* chef environments, use this. Nodes should have 0-1 of these run list envs, no more. Also used for the update_split_branches command, a branch like split_staging is parsed into split-staging. '
+  staging:
+    key_description: &rlkd 'List your split_environments, what environment theyre under, and their role name here, The key should be the role name and the value should be the ENVIRONMENT this key corresponds to (for RAILS_ENV and the like)'
+    split_staging:   '(splitstaging) The split environment for staging'
+  production:
+    key_description: *rlkd
+    split_a:         '(splita) A possible split environment for production'
+
+db_primary_backup_database_stacks: 'YAML array of the types of databases stored on your database primary'
+
+env_boot_nodes:
+  key_description: 'Nodes to initialize when cft environment command is run. All keys are optional but not assigning a flavor to a node will default it to the default_flavor_name key'
+  STAR_MATCHER:
+    STAR_MATCHER:     
+      flavor:      'The flavor the node will be booted with for the cft environment command, if this key does not exist it uses the default flavor'
+      descriptor:  'The descriptor the node will be set with for the cft environment command, descriptor is used by TheCheftacularCookbook to decide if a node is load balanced. If this key does not exist the node uses its node name for the descriptor.'
+      dns_config:  "By default, nodes are assigned NODE_NAME.ENV_TLD for their DNS, this can be overridden here. Both NODE_NAME and ENV_TLD are interpolated if used"
+
+scaling_nodes:
+  key_description: 'Used for nodes when the cft scale up command is run. Digits in the node are parsed out and the nodes name (without digits) must match 100% to trigger the custom data'
+  STAR_MATCHER:
+    flavor:        'The flavor of the scaled node'
+    descriptor:    'The descriptor of the scaled node'
+
+split_env_nodes:
+  key_description: "Used in the test_env command, these are nodes that spun up for split-testing environments. They connect to their primary environment's database. IE a splitstaging node may connect to a staging database. NOTE! splitenv data bag data is contained in whatever env houses the splitenv"
+  STAR_MATCHER:
+    flavor:        'The flavor of the split-env node'
+    descriptor:    'The descriptor of the split-env node'
+    dns_config:    'The dns configuration (domain name) of the split_env node'
+
+global_chef_passwords:
+  key_description: 'Passwords you want auto-generated for a chef_env for all repositories, the key value is the length'
+  STAR_MATCHER:    "A password that will automatically generated for it's length and placed into every environment"
+
+haproxy_config:
+  key_description: 'These configs are used in the cft get_haproxy_log command'
+  role_name:       'The default role all haproxy servers will have'
+  default_port:    '(22002) The port to the administation interface that all haproxy servers will have'
+
+location_aliases:
+  key_description: 'A hash containing all of the location aliases your environment(s) use, this hash is used in the cft location_aliases command and in cft file'
+  STAR_MATCHER:    'The path that the location alias refers to'
+
+chef_server:
+  key_description: 'This hash stores information for the chef_server command, as this command is an initialization command, these keys must exist on the repo to work'
+  interactable:    '[true|false] this key can be used to easily disable access to the chef-server command'
+  ssh_user:        "This is the user who can be ssh'd with onto the chef-server. If root, you can leave sudo_password blank."
+  sudo_password:   'sudo password for accessing the chef-server-ctl command for the chef-server command, ideally this field should not be used'
+
+role_toggling:
+  key_description:         'This hash stores info for the cft role_toggle command'
+  deactivated_role_suffix: '(_deactivate) for the cft role_toggle command, the suffix for your deactivated roles'
+  strict_roles:            '(true)[true|false] for the cft role_toggle command, if roles should be able to be set for a node that did not have the role (at all) before'
+  skip_confirm:            '(false)[true|false] skips confirming if a role should be set or not for role toggle command'
+
+TheCheftacularCookbook:
+  key_description:           'This hash stores configuration data for TheCheftacularCookbook configs'
+  organization_name:         'The name of your github organization'
+  base_application_location: 'The base location on disk where you want the application(s) to be installed to'
+  bundler_version:           '(1.10.6) The bundler version you want to install on the remote servers'
+  deploys:
+    key_description:         'Hash for storing various deploy configurations that can be toggled / interacted with'
+    rollback_on_error:       '(true)[true|false] Allow for debugging of code checked out into base_application_location if false but can cause strange side-effects'
+  override_delayed_job_queues_on_split_environments: '(false)[true|false] Overwrite the queues on delayed job workers to their SPLIT ENVIRONMENT NAME if they are in a SPLIT ENV'
+  chef_environment_to_app_repo_branch_mappings:
+    key_description:         'THESE BRANCHES MUST EXIST ON THE REPO(S) OR ELSE CHEF-CLIENT WILL ERROR, these mappings are 1:1, that environment will install that branch by default.'
+    STAR_MATCHER:            'The chef_environment and repo branch that it connects to'
+  additional_db_schemas:
+    key_description:         'An array of hashes listing information about any additional schemas you wish to construct / maintain on your database(s) [{environment: ENV_NAME, schema_name: SCHEMA_NAME}]. This is constructed so you can define multiple schemas per single env'
+  default_volume_config:
+    key_description:         'NOTE: This hash will only create volumes on clouds that support creating volumes. It is a hash of the different types of defaults for possible volumes'
+    STAR_MATCHER:
+      key_description:       'The defaults for the volume that will be attached to nodes with various roles'
+      default_size:          '(100) The default size of new volumes in gigabytes, for most clouds the max varies, so please check your provider'
+      default_type:          '(SSD) The default type of volume for new volumes, please check with your provider to make sure the string value here matches their type(s)'
+  graphite:
+    key_description:         'The hash for various information related to graphite / grafana instances'
+    grafana_auth_user:       'The username you wish to use for grafana basic authentication, the password is stored in your ENVIRONMENT_NAME chef_passwords bag'
+    secret_key:              '(blank) Generate your own secret key in a terminal with "pwgen -s 32 1" and enter it here'
+    time_zone:               '(America/Chicago) Default time zone for grafana requests'
+    storage_schemas:
+      key_description:       'Stores data on the various graphite storage schemas you wish to use, bear in mind that graphite has a very tight syntax for schemas.'
+      STAR_MATCHER:
+        names:               'An array of SPECIFIC SCHEMA_NAMES you want to give a sub-schema, useful for when you want a high level schema and several more broad schemas under it. If this entry is left blank, you cannot use SCHEMA_NAME in the pattern'
+        pattern:             '(^mybackendrepo.production.SCHEMA_NAME.*) A graphite schema pattern, SCHEMA_NAME is subbed for an iterated entry in the names array'
+        retentions:          '(15m:900d) A graphite schema retention, this one as an example says: take in one value every 15 minutes and keep it for at most 900 days'
+  graylog2:
+    key_description:         'Stores data on various secrets for graylog2 roles'
+    password_secret:         '(blank) Generate your own secret key in a terminal with "pwgen -s 96 1" and enter it here'
+    root_password_sha2:      '(blank) Generate a checksum of your desired password with "echo -n yourpassword | shasum -a 256" and enter it here'
+  haproxy:
+    key_description:         'Stores data on various secrets and configurations for haproxy load balancers'
+    admin_username:          'The admin username for haproxy stats pages if enabled'
+    admin_password:          'The admin password for haproxy stats pages if enabled'
+    ssl:
+      cookbook_containing_ssl_certs: 'The name of the cookbook that will store your SSL certs in the files/default location'
+      ssl_file_name:                 '(ENVIRONMENT.pem) This file should be stored in the files/default directory of the cookbook, ENVIRONMENT is gsubbed to the actual chef_env name'
+    role_to_node_name_routing:
+      key_description:       'If a certain SPLIT_ENV is detected, forcefully route the requests to this node_name instead of the normal backends the requests would go to'
+      STAR_MATCHER:          'key named like "haproxy_route_to_split_a" that will route all requests for a haproxy node with split_a role to this node that is the value of the key'
+  swap:
+    key_description:         'Various configs for your default swap files'
+    check_file_name:         '(4gb_swap_genfile.sh) The name of the check_swap file that can be used to quickly tell if a server has swap setup or not, generates in the home directory'
+    path:                    '(/mnt/4GB.swap) The fullpath to the swapfile'
+    bs:                      '(4096) The multiplier to determine the swap amount'
+    count:                   '(1048576) The base to determine the swap amount' 
+    swappiness:              '(60) The swappiness of the virtual machine'
+  attribute_toggles: 
+    key_description:         'A hash for storing various attribute toggles you would like to set. For these to trigger, the setting must already be TRUE'
+    STAR_MATCHER:
+      key_description:       'The name of the attribute you would like to toggle, CHEF_ENVIRONMENT can be interpolated here'
+      set_to:                'The new value you would like to set when the "when" condition is true'
+      when:
+        key_description:     'This conditional is evaluated to see if the toggle can be set'
+        not_include_role:    'If the node does NOT possess this role, the attribute will be set to the set_to value'
+  sensu_build:
+    key_description:         'A hash for storing various information about sensu_build servers if enabled'
+    chef_daemon_delay:       '(1200) Time between chef-client runs on the build server in *seconds*'
+    repository_role_names:
+      key_description:       'The keys of this hash should be your repository role names. This stores which branches you would like to test and when'
+      STAR_MATCHER:
+        key_description:     'This hash stores the branches you would like to interact with whenever this repo is loaded into the sensu build server'
+        branches_to_test:    'An array of branches you would like to checkout for this repo when running automated builds'
+  sensu:
+    key_description:         'Sensu configuration options'
+    custom_checks:
+      key_description:       'A hash of custom checks you would like to load and define on the sensu server'
+      STAR_MATCHER:
+        key_description:     'Information about the custom check file you would like to set up'
+        check_file_folder:   'The folder in files/default/sensu/plugins that your check is in'
+        check_file_name:     'The name of your check file'
+        cookbooks:           'The cookbook your check file is located in'
+    reinstall_sensu_gems:    '(false)[true|false] Forces all clients to reinstall the sensu gems when true. Make sure to set this back to false when no longer needed'
+    uchiwa_http_basic_username: 'The username for your uchiwa login, the password is stored in the chef_passwords bag'
+    environments_to_monitor: '{CUSTOM_KEY} These are the environments you wish to monitor as an array but is not used by TheCheftacularCookbook itself, it could be used in your business logic cookbook'
+    haproxy_monitoring_roles: 'An array of the different haproxy roles you would like to monitor for haproxy events'
+    additional_sensu_server_checks:
+      key_description:       'A hash containing all of the additional sensu recipes you would like to define and utilize on your sensu_server, use this for heavy business logic checks'
+      STAR_MATCHER:
+        key_dewscription:           'Information about the individual sensu recipe'
+        cookbook:                   'The cookbook your sensu recipe resides in'
+        filename_without_extension: 'The filename without extension of your sensu recipe'
+    slack_handlers: 
+      key_description:       'A hash of your slack handlers for sensu. Valid modes are: general-infrastructure|critical|deployment|continuous-integration|slow-queries'
+      STAR_MATCHER:
+        key_description:     'A hash of information about your specific slack handler'
+        token:               'YOUR_SLACK_TOKEN, should look like "TXXXXXXXX/XXXXXXXX/XZXZXZXZXZXZXZXZXZXZXZXZ"'
+        team_name:           'Your slack team name'
+        channel:             'The channel you would like to send notifications to for this event type'
+        modes:               'An array containing the different modes you would like to send notifications for, feel free to mix-and-match.'
+    crons:
+      key_description:       'A hash of all crons you would like sensu to run, sensu installs cheftacular so this can be used to run cft commands at certain times'
+      STAR_MATCHER:
+        key_description:     'A hash of information about the specific cron'
+        minute:              'The minute of the hour you would like the cron to activate on, standard cron syntax allowed'
+        hour:                'The hour of the day you would like the cron to activate on, standard cron syntax allowed'
+        command:             'The command you would like to trigger (run cft commands with /opt/sensu/embedded/bin/cft)'
+  iptables:
+    key_description:         'A hash of all information related to setting iptables configurations'
+    additional_iptables_recipes:
+      key_description:       'A hash for all additional iptables recipes you would like to load during the setup process (business logic blocks and such)'
+      STAR_MATCHER:
+        key_description:            'Contains basic information about the recipe you would like to load'
+        cookbook:                   'The cookbook that the iptables recipe is stored in'
+        filename_without_extension: 'The filename of the iptables recipe'
+    role_maps:
+      key_description:       "A hash containing information about the roles you've defined, the 'true' role must be matched to the custom role, if a node has these role(s) it will add to their iptables rules"
+      web_servers:           "(web) The web server role"
+      sensu_server:          "(sensu_server) The sensu server role"
+      sensu_clients:         "(sensu_client) The sensu client role"
+      haproxy:               "(haproxy) The haproxy role"
+      graylog2_server:       "(graylog2_server) The graylog2 server role"
+      graphite_server:       "(graphite_server) The graphite server role"
+      database:              "(db) The db role"

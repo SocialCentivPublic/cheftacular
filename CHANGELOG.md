@@ -10,6 +10,13 @@
 
 * `cft check [all]` now supports the all argument which will check all repositories for commits in an env
 
+* Added full documentation for the cheftacular.yml keys, as well as the method to check them `cft yml_help` or `cft cheftacular_yml_help`
+* New cheftacular.yml keys
+
+    * **git:check_remote_for_branch_existence** (if true, whenever -Z arguments are set, a local git will try to see if the branch exists on the remote)
+
+* Added functionality to allow the above new cheftacular.yml key to work
+
 ## 2.10.3
 
 * Auditing now appends the directory where the user is running the command to the computer's name rather than it having it's own line.

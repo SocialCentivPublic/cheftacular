@@ -26,6 +26,10 @@ git_based_deploys:      true
 route_dns_changes_via:  rackspace                # tells cheftacular to send dns changes to this provider instead of the preferred_cloud_option
 node_name_separator:    '.'                      # On rackspace, can be anything except a space, on most other hosting sites, it must be a valid url character
 pre_install_packages:   ''                       # space delimited list of packages to install during a  node's initial setup process
+
+git:
+  check_remote_for_branch_existence: false       #checks the remote repository to see if the branch exists on -Z branch_name deploys, you must be authenticated LOCALLY to do this. This does not occur on remote servers
+
 backup_config:   
   global_backup_role_name: ''                # server that is useful for fetching backups from for cft backups
   global_backup_environ:   ''
@@ -93,8 +97,7 @@ repositories:
       pg_root_pass:         20
       pg_app_pass:          20
     short_database_name:         api #used for backup_gem
-    test_database_setup_command: 'rake db:test:ready'
-    sensu_monitoring_role:       apiscentiv_sensu_web_ENVIRONMENT
+    test_database_setup_command: 'rake db:test:prepare'
     custom_nginx_configs:        &custom_nginx_configs
       - 'client_max_body_size 15M'
       - 'client_body_in_single_buffer on'
@@ -154,7 +157,7 @@ run_list_environments:
 db_primary_backup_database_stacks: 
   - postgresql
 
-#nodes to initialize when cft devstaging command is run. All keys are optional but not assigning a flavor to a node will default it to the default_flavor_name key
+#nodes to initialize when cft environment command is run. All keys are optional but not assigning a flavor to a node will default it to the default_flavor_name key
 #flavor:     the flavor the node will be booted with
 #descriptor: optional string to be parsed into the nodes config. Can be used to pair with load balancers, etc
 #dns_config: by default, nodes are assigned NODE_NAME.ENV_TLD for their DNS, this can be overridden here. Both NODE_NAME and ENV_TLD are interpolated if used
@@ -216,7 +219,7 @@ TheCheftacularCookbook:
   bundler_version:           1.10.6
   deploys:
     rollback_on_error:       true        #allow for debugging of code placed in directory if false.
-  override_delayed_job_queues_on_split_environments: true
+  override_delayed_job_queues_on_split_environments: false
   chef_environment_to_app_repo_branch_mappings: #THESE BRANCHES MUST EXIST ON THE REPO(S)
     devstaging:  devstaging
     staging:     staging

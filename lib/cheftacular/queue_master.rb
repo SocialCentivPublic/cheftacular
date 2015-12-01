@@ -23,6 +23,8 @@ class Cheftacular
       end
 
       @config[server_queue] << server_hash unless found_result
+
+      server_hash
     end
 
     def generate_passwords_for_each_server_hash_in_queue server_queue='server_creation_queue'

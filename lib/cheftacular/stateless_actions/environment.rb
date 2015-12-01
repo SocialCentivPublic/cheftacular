@@ -4,7 +4,7 @@ class Cheftacular
     def environment
       @config['documentation']['stateless_action'][__method__] ||= {}
       @config['documentation']['stateless_action'][__method__]['long_description'] = [
-        "`cft environment boot|destroy|destroy_raw_servers` will boot / destroy the current environment",
+        "`cft environment boot|boot_without_deploy|destroy|destroy_raw_servers [SERVER_NAMES]` will boot / destroy the current environment",
 
         [
           "    1. `boot` will spin up servers and bring them to a stable state. " +
@@ -17,7 +17,9 @@ class Cheftacular
           "    4. `boot_without_deploy` will spin up servers and bring them to a state where they are ready to be deployed",
 
           "    5. This command will prompt when attempting to destroy servers in staging or production. " + 
-          "Additionally, only devops clients will be able to destroy servers in those environments."
+          "Additionally, only devops clients will be able to destroy servers in those environments.",
+
+          "    6. This command also accepts a *comma delimited list* of server names to boot / destroy instead of all the stored ones for an environment."
         ]
       ]
 
@@ -28,7 +30,7 @@ class Cheftacular
   end
 
   class StatelessAction
-    def environment type="boot", ask_on_destroy=false, remove=true
+    def environment type="boot", ask_on_destroy=false, remove=true, servers_to_interact_with=[], threads=[]
       ask_on_destroy = case @options['env']
                        when 'staging'    then true
                        when 'production' then true
@@ -36,6 +38,8 @@ class Cheftacular
                        end
 
       type = ARGV[1] if ARGV[1]
+
+      servers_to_interact_with = ARGV[2].split(',') if ARGV[2]
 
       unless (type =~ /boot|destroy|destroy_raw_servers|boot_without_deploy/) == 0
         raise "Unknown type: #{ type }, can only be 'boot'/'boot_without_deploy'/'destroy'/'destroy_raw_servers'"
@@ -49,6 +53,10 @@ class Cheftacular
       @options['in_scaling'] = true
 
       initial_servers = @config['cheftacular']['env_boot_nodes']["#{ @options['env'] }_nodes"]
+
+      unless servers_to_interact_with.empty?
+        initial_servers = initial_servers.delete_if {|name, config_hash| !servers_to_interact_with.include?(name)}
+      end
 
       if initial_servers.empty?
         puts "There are no servers defined for #{ @options['env'] } in the env_boot_nodes hash in your cheftacular.yml... Exiting"
@@ -77,22 +85,28 @@ class Cheftacular
           end
 
           @config['stateless_action'].cloud_bootstrap_from_queue
-        ensure
-          @config['ChefDataBag'].save_server_passwords_bag
         end
 
-        if type == 'boot'
-          @options['node_name'] = nil
+        @config['ChefDataBag'].save_server_passwords_bag
 
-          @options['role'] = 'db'
+        if type == 'boot'
+          @options = @options.delete_if { |k,v| ['node_name','address', 'descriptor', 'with_dn', 'private_address', 'client_pass'].include?(k) }
+
+          @options['role'] = @config['cheftacular']['backup_config']['db_primary_role']
+
+          @options['unset_address_and_node_name'] = true
 
           @config['action'].deploy
 
-          @config['stateless_action'].backups('load')
+          backup_pid = Process.spawn("cft backups load --env=#{ @options['env'] }")
 
           @options['role'] = 'all'
 
           @config['action'].deploy
+
+          Process.wait backup_pid
+
+          puts "Done loading data and setting up #{ @options['env'] }!"
         end
       when 'destroy'        
         return false if ask_on_destroy && !environment_is_destroyable?

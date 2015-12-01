@@ -282,6 +282,31 @@ class Cheftacular
 
       return_hash
     end
+
+    def check_if_possible_repo_state repo_state_hash, git_output=''
+      revision_to_check = repo_state_hash.has_key?('revision')            ? repo_state_hash['revision']            : nil
+      org_name_to_check = repo_state_hash.has_key?('deploy_organization') ? repo_state_hash['deploy_organization'] : @config['cheftacular']['TheCheftacularCookbook']['organization_name']
+     
+      revision_to_check = nil if revision_to_check == '<use_default>'
+
+      @config['cheftacular']['TheCheftacularCookbook']['chef_environment_to_app_repo_branch_mappings'].each_pair do |chef_env, app_env|
+        revision_to_check = app_env if @options['env'] == chef_env && revision_to_check.nil?
+      end
+
+      git_output = `git ls-remote --heads git@github.com:#{ org_name_to_check }/#{ @options['repository'] }.git`
+
+      if git_output.blank?
+        puts "! The remote organization #{ org_name_to_check } does not have the repository: #{ @options['repository'] }! Please verify your repositories and try again"
+
+        exit
+      elsif !git_output.include?(revision_to_check)
+        puts "! The remote organization #{ org_name_to_check } does not have a revision / branch #{ revision_to_check } for repository: #{ @options['repository'] }!"
+
+        puts "Please verify the correct revision / branch and run this command again."
+        
+        exit
+      end
+    end
   end
 end
 

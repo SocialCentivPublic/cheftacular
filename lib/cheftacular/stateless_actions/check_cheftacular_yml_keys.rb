@@ -22,6 +22,30 @@ class Cheftacular
         @config['cheftacular']['server_creation_tries'] = 2
       end
 
+      unless @config['cheftacular']['backup_config'].has_key?('db_primary_role')
+        puts base_message.gsub('KEY', 'backup_config:db_primary_role').gsub('DEFAULT', 'db_primary')
+
+        @config['cheftacular']['backup_config']['db_primary_role'] = 'db_primary'
+
+        warn_on_missing = true
+      end
+
+      unless @config['cheftacular'].has_key?('git')
+        puts(base_message.gsub('KEY', 'git').split(',').first + ', Please add the git high level key to your cheftacular.yml.')
+
+        @config['cheftacular']['git'] ||= {}
+
+        warn_on_missing = true
+      end
+
+      unless @config['cheftacular']['git'].has_key?('check_remote_for_branch_existence')
+        puts base_message.gsub('KEY', 'git:check_remote_for_branch_existence').gsub('DEFAULT', 'false')
+
+        @config['cheftacular']['git']['check_remote_for_branch_existence'] = false
+
+        warn_on_missing = true
+      end
+
       #############################2.10.0################################################
 
       unless @config['cheftacular'].has_key?('self_update_repository')

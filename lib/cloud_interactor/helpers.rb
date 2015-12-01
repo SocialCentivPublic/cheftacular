@@ -53,7 +53,11 @@ class CloudInteractor
     def generic_destroy_parse destroy_hash, identity, resource, mode='name'
       puts("Queried #{ identity } #{ ap @main_obj["specific_#{ identity }"] }") if @options['verbose']
 
-      raise "#{ identity.singularize } not found for #{ destroy_hash[mode] }" unless @main_obj["specific_#{ identity }"]
+      if @main_obj["specific_#{ identity }"].empty?
+        puts "#{ destroy_hash[mode] } was not found in #{ identity.singularize } to destroy!" 
+
+        return false
+      end
 
       if destroy_hash[mode].empty? || @main_obj["specific_#{ identity }"].last[mode] != destroy_hash[mode] #without this it will delete the first object in the list, this is obviously bad
         raise "Name mismatch on destroy! Expected #{ destroy_hash[mode] } and was going to destroy #{ @main_obj["specific_#{ identity }"].last[mode] }"

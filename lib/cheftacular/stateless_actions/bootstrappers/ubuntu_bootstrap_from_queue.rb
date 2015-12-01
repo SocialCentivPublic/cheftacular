@@ -14,7 +14,7 @@ class Cheftacular
 
   class StatelessAction
     def ubuntu_bootstrap_from_queue threads=[], execution_hash_array=[]
-      raise "This action is not meant to be called directly!" unless @options['in_scaling']
+      raise "This action is not meant to be called directly!" if !@options['in_scaling'] && !@options['in_single_server_creation']
 
       if `which sshpass`.empty?
         raise "sshpass not installed! Please run brew install https://raw.github.com/eugeneoden/homebrew/eca9de1/Library/Formula/sshpass.rb (or get it from your repo for linux)"
@@ -31,7 +31,7 @@ class Cheftacular
       execution_hash_array  = execution_hash_array.flatten(1)
 
       @config['server_creation_queue'].each do |server_hash|
-        puts("(#{ server_hash['node_name'] })[#{ server_hash['address'] }]Starting initial setup for server...") if @options['in_scaling']
+        puts("#{ server_name_output(server_hash) }_Starting initial setup for server...") if @options['in_scaling']
 
         threads << Thread.new { execute_execution_hash_array(server_hash, execution_hash_array) }
       end
@@ -139,7 +139,7 @@ class Cheftacular
 
             if execution_hash.has_key?(:command_array)
               execution_hash[:command_array].each do |command|
-                puts("(#{ server_hash['node_name'] })[#{ server_hash['address'] }] Preparing to execute #{ command }")
+                puts("#{ server_name_output(server_hash) }_Preparing to execute #{ command }")
 
                 Net::SSH.start(*ssh_arguments.flatten) do |ssh|
                   output << ssh.exec!(replace_placeholders_in_command(server_hash, command))
@@ -148,7 +148,7 @@ class Cheftacular
             end
           when 'scp'
             if execution_hash.has_key?(:upload) && execution_hash.has_key?(:to)
-              puts("(#{ server_hash['node_name'] })[#{ server_hash['address'] }] Preparing to upload #{ execution_hash[:upload] } to #{ execution_hash[:to] }")
+              puts("#{ server_name_output(server_hash) }_Preparing to upload #{ execution_hash[:upload] } to #{ execution_hash[:to] }")
 
               Net::SCP.upload!(server_hash['address'], @config['cheftacular']['deploy_user'], execution_hash[:upload], execution_hash[:to])
             end
@@ -159,28 +159,41 @@ class Cheftacular
 
             if execution_hash.has_key?(:command_array)
               execution_hash[:command_array].each do |command|
-                puts("(#{ server_hash['node_name'] })[#{ server_hash['address'] }] Preparing to execute #{ command }")
+                puts("#{ server_name_output(server_hash) }_Preparing to execute #{ command }")
 
                 output << `#{ replace_placeholders_in_command(server_hash, command) }`
               end
             end
           end
+        rescue Net::SSH::HostKeyMismatch => e
+          puts "#{ server_name_output(server_hash) }_Has a host key mismatch! Rewriting known_hosts file..."
+
+          @config['filesystem'].scrub_from_known_hosts(server_hash['address'])
+
+          sleep 15
+
+          retry
         rescue StandardError => e
-          puts "Encountered::#{ e }\n #{ e.backtrace }" if @config['helper'].running_in_mode?('devops')
-          puts "Failing execution hash on #{ server_hash['node_name'] }(#{ server_hash['address'] })"
-          ap execution_hash
+          puts "#{ server_name_output(server_hash) }_@@@@@@@@@@@ Failing execution hash because of #{ e }!@@@@@@@@@@"
+          puts "#{ e.backtrace.join("\n") }" if @options['verbose']
 
           if execution_hash.has_key?(:retries)
             execution_hash[:retries] = execution_hash[:retries] -= 1
             puts "There are #{ execution_hash[:retries] } tries left to evaluate the command."
 
-            raise "Unable to complete setup process for #{ server_hash['node_name'] }(#{ server_hash['address'] })" if execution_hash[:retries] == 0
+            sleep 60
+
+            raise "#{ server_name_output(server_hash) }_@@@@@@@@@@@ Unable to complete setup process!@@@@@@@@@@" if execution_hash[:retries] <= 0
             retry
           end
         end
       end
 
       File.open("#{ @config['locs']['chef-log'] }/server-setup/#{ server_hash['node_name'] }-#{ log_sub_dir }-#{ @config['bootstrap_timestamp'] }.txt", 'a+') { |f| f.write(output.join("\n").scrub_pretty_text) }
+    end
+
+    def server_name_output server_hash
+      "#{ server_hash['node_name'] }".ljust(17,'_') + "#{ server_hash['address'] }".ljust(18,'_')
     end
 
     def replace_placeholders_in_command server_hash, command

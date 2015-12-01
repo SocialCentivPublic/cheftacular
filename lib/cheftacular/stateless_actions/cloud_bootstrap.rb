@@ -40,6 +40,8 @@ class Cheftacular
       @options['flavor_name'] = ARGV[2] unless @options['flavor_name']
       @options['descriptor']  = ARGV[3] if ARGV[3] && !@options['descriptor']
 
+      @options['in_single_server_creation'] = true
+
       puts "Preparing to boot #{ @options['node_name'] }(#{ @options['flavor_name'] })..."
 
       if `which sshpass`.empty?
@@ -74,7 +76,7 @@ class Cheftacular
 
       @options['dont_remove_address_or_server'] = true #flag to make sure our entry isnt removed in addresses bag
 
-      @config['queue_master'].sync_server_hash_into_queue(server_hash.merge(@config['helper'].return_options_as_hash(options_to_sync)))
+      server_hash = @config['queue_master'].sync_server_hash_into_queue(server_hash.merge(@config['helper'].return_options_as_hash(options_to_sync)))
 
       puts("Created server #{ server_hash['node_name'] } and attached additional flags:")                                                  unless @options['quiet']
       ap(@config['queue_master'].return_hash_from_queue('server_creation_queue', server_hash, 'node_name').except(*options_to_sync[0..3])) unless @options['quiet']

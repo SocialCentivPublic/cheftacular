@@ -18,7 +18,7 @@ class Cheftacular
 
   class StatelessAction
     def chef_bootstrap_from_queue threads=[]
-      raise "This action is not meant to be called directly!" unless @options['in_scaling']
+      raise "This action is not meant to be called directly!" if !@options['in_scaling'] && !@options['in_single_server_creation']
 
       #@config['stateless_action'].remove_client #just in case
 

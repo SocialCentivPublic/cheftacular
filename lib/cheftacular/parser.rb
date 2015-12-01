@@ -113,6 +113,8 @@ class Cheftacular
         repo_state_hash['deploy_organization'] = nil
       end
 
+      @config['helper'].check_if_possible_repo_state(repo_state_hash) if @config['cheftacular']['git']['check_remote_for_branch_existence'] && !@config['helper'].running_on_chef_node?
+
       @config['helper'].slack_current_deploy_arguments unless @config['cheftacular']['slack']['notify_on_deployment_args'].blank?
 
       @config['ChefDataBag'].save_config_bag 
@@ -131,7 +133,7 @@ class Cheftacular
     end
 
     #parse nodes out of array based on hash, ex: [{ unless: 'role[rails]'}, {if: 'role[worker]'}, { if: { run_list: 'role[db]', role: 'pg_data' } }]
-    def exclude_nodes nodes, statement_arr, only_one_node = false, ret_arr = []
+    def exclude_nodes nodes, statement_arr, only_one_node=false, ret_arr=[]
       nodes.each do |n|
         go_next = false
 

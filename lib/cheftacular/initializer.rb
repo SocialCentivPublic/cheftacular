@@ -320,6 +320,7 @@ class Cheftacular
       locs['chef-log']              = File.expand_path("#{ locs['root']}/log")             unless locs['chef-log']
       locs['app-tmp']               = File.expand_path("#{ locs['app-root']}/tmp")
       locs['examples']              = File.expand_path("../../../examples", __FILE__)
+      locs['doc']                   = File.expand_path("../../../doc", __FILE__)
       locs['cheftacular-lib']       = File.expand_path("../..", __FILE__)
       locs['cheftacular-lib-files'] = locs['cheftacular-lib'] + '/cheftacular/files'
 

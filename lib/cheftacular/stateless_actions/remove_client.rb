@@ -32,7 +32,7 @@ class Cheftacular
 
       raise "Invalid arguments! Node name is blank. Please call this script as cft remove_client <node_name>" unless @options['node_name']
       
-      nodes = @config['getter'].get_true_node_objects(false, true)
+      nodes = @config['getter'].get_true_node_objects
 
       nodes.each do |n|
         begin

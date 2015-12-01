@@ -27,7 +27,7 @@ class Cheftacular
 
   class Action
     def deploy deployment_args={ in: :groups, limit: 6, wait: 5 }
-      nodes = @config['getter'].get_true_node_objects false, true #when this is run in scaling we'll need to make sure we deploy to new nodes
+      nodes = @config['getter'].get_true_node_objects(false) #when this is run in scaling we'll need to make sure we deploy to new nodes
 
       nodes = @config['parser'].exclude_nodes( nodes, [{ if: "role[#{ @options['negative_role'] }]" }]) if @options['negative_role']
       
