@@ -17,6 +17,8 @@
 
 * Added functionality to allow the above new cheftacular.yml key to work
 
+* Set httpclient gem version as >= 2.7 to get rid of the annoying constant message in 2.6
+
 ## 2.10.3
 
 * Auditing now appends the directory where the user is running the command to the computer's name rather than it having it's own line.
