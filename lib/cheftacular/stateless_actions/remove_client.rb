@@ -68,9 +68,9 @@ class Cheftacular
         end
       end
       
-      puts("Done. Please verify that the output of the next line(s) match your expectations (running client-list)") if @options['verbose']
+      puts("Done. Please verify that the output of the next line(s) match your expectations (running cft client_list)") if @options['verbose']
       
-      puts(`client-list`) if @options['verbose']
+      @config['stateless_actions'].client_list if @options['verbose']
     end
 
     alias_method :remove_node, :remove_client

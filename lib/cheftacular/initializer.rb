@@ -168,7 +168,7 @@ class Cheftacular
         end
 
         # client-list
-        opts.on('-W', '--with-priv', "On client-list this will show each server's private addresses") do
+        opts.on('-W', '--with-priv', "On cft client_list this will show each server's private addresses") do
           @options['with_private'] = true
         end 
 

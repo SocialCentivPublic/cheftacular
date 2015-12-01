@@ -22,7 +22,7 @@ Note: You can substitute `cft` for `cftr`, `cheftacular`, or `cftclr`.
 
 1.  To view detailed information about nodes connected to the chef server, run (this is a good command to test installation on)
 
-        client-list
+        cft client_list
 
     You can also pass the -v argument to view more detailed information. This command works in any application the gem is loaded into.
 

@@ -116,8 +116,6 @@
 
     2. `-W|--with-priv` option will make this command display the server's local (private) ip address. This address is also the server's `local.<SERVER_DNS_NAME>`.
 
-    3. This command is aliased to `client-list` with no arguments or cft prefix.
-
 8. `cft console` will create a console session on the first node found for a repository.
 
     1. Attempts to setup a console for the unique stack, stacks currently supported for console is only Rails.
@@ -328,8 +326,6 @@
     1. `-v` option will make this command display the server's domain name, whether its password is stored on the chef server and what that password is.
 
     2. `-W|--with-priv` option will make this command display the server's local (private) ip address. This address is also the server's `local.<SERVER_DNS_NAME>`.
-
-    3. This command is aliased to `client-list` with no arguments or cft prefix.
 
 13. `cft cloud <FIRST_LEVEL_ARG> [<SECOND_LEVEL_ARG>[:<SECOND_LEVEL_ARG_QUERY>]*] ` this command handles talking to various cloud APIs. If no args are passed nothing will happen.
 
