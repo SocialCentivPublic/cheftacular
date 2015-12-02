@@ -21,7 +21,7 @@ class CloudInteractor
         ap(record_hash) if output
       end
 
-      puts("#{ args[IDENTITY.singularize] } does not have the subdomain #{ args['subdomain'] }!") if @main_obj["specific_queried_domains"].nil?
+      puts("(#{ IDENTITY.capitalize }) #{ args[IDENTITY.singularize] } does not have the subdomain #{ args['subdomain'] }!") if @main_obj["specific_queried_domains"].nil?
     end
   end
 end

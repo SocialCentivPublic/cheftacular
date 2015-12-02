@@ -27,7 +27,7 @@ class Cheftacular
   end
 
   class StatelessAction
-    def upload_nodes invalidate_file_node_cache=false
+    def upload_nodes invalidate_file_node_cache=true
       @config['filesystem'].cleanup_file_caches('current-nodes') if invalidate_file_node_cache
 
       raise "This action can only be performed if the mode is set to devops" if !@config['helper'].running_in_mode?('devops') && !@options['in_scaling']
@@ -38,7 +38,7 @@ class Cheftacular
         @config['initializer'].initialize_node_roles_bag_contents env
       end
 
-      nodes = @options['multi-step'] ? @config['getter'].get_true_node_objects(true,true) : @config['getter'].get_true_node_objects(true)
+      nodes = @options['multi-step'] ? @config['getter'].get_true_node_objects(true) : @config['getter'].get_true_node_objects(true)
 
       node_roles_hash, bag_hash, allowed_changes_hash = {},{},{}
 

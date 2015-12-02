@@ -5,7 +5,7 @@ class CloudInteractor
       @classes['image'].read @options['preferred_cloud_image'], false
 
       #Note, if no flavor is passed it defaults to a 512MB standard!
-      @classes['flavor'].read args['flavor']
+      @classes['flavor'].read args['flavor'], @options.has_key?('verbose')
 
       @classes['region'].read(@options['preferred_cloud_region'], false) if @options['preferred_cloud'] == 'digitalocean'
       @classes['sshkey'].bootstrap if @options['preferred_cloud'] == 'digitalocean'
@@ -13,12 +13,12 @@ class CloudInteractor
       read args, false
 
       unless @main_obj["specific_#{ IDENTITY }"].empty?
-        puts "#{ IDENTITY } #{ args['name'] } already exists... returning."
+        puts "(#{ IDENTITY }) #{ IDENTITY } #{ args['name'] } already exists... returning."
 
         return false
       end
 
-      puts "Creating #{ args['name'] } in #{ IDENTITY }..."
+      puts "(#{ IDENTITY }) Creating #{ args['name'] } in #{ IDENTITY }..."
 
       final_create_args = {
         name:      args['name'],
@@ -45,7 +45,7 @@ class CloudInteractor
       @main_obj["#{ IDENTITY }_created_details"] ||= {}
       @main_obj["#{ IDENTITY }_created_details"][args['name']] = @main_obj["#{ IDENTITY }_create_request"]
 
-      puts "Successfully created #{ args['name'] } with pass #{ @main_obj["#{ IDENTITY }_created_passwords"][args['name']] }"
+      puts "(#{ IDENTITY }) Successfully created #{ args['name'] } with pass #{ @main_obj["#{ IDENTITY }_created_passwords"][args['name']] }"
 
       @main_obj['output']['admin_passwords'] = { args['name'] => @main_obj["#{ IDENTITY }_created_passwords"][args['name']] }
     end

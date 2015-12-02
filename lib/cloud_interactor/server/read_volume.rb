@@ -18,7 +18,7 @@ class CloudInteractor
         ap(volume_hash) if output
       end
 
-      puts("#{ specific_volume } not attached to #{ args['server_name'] }!") if @main_obj["specific_attached_volumes"].nil?
+      puts("(#{ IDENTITY }) #{ specific_volume } not attached to #{ args['server_name'] }!") if @main_obj["specific_attached_volumes"].nil?
     end
   end
 end

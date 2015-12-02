@@ -113,6 +113,8 @@ class Cheftacular
         repo_state_hash['deploy_organization'] = nil
       end
 
+      @config['helper'].check_if_possible_repo_state(repo_state_hash) if @config['cheftacular']['git']['check_remote_for_branch_existence'] && !@config['helper'].running_on_chef_node?
+
       @config['helper'].slack_current_deploy_arguments unless @config['cheftacular']['slack']['notify_on_deployment_args'].blank?
 
       @config['ChefDataBag'].save_config_bag 
@@ -131,7 +133,7 @@ class Cheftacular
     end
 
     #parse nodes out of array based on hash, ex: [{ unless: 'role[rails]'}, {if: 'role[worker]'}, { if: { run_list: 'role[db]', role: 'pg_data' } }]
-    def exclude_nodes nodes, statement_arr, only_one_node = false, ret_arr = []
+    def exclude_nodes nodes, statement_arr, only_one_node=false, ret_arr=[]
       nodes.each do |n|
         go_next = false
 
@@ -190,17 +192,19 @@ class Cheftacular
       end
     end
 
-    def parse_to_dns dns_string
-      raise "Unable to parse DNS without @option['node_name'] for #{ dns_string }!" if dns_string.include?('NODE_NAME') && @options['node_name'].nil?
+    def parse_to_dns dns_string, node_name=''
+      raise "Unable to parse DNS without node_name for #{ dns_string }!" if dns_string.include?('NODE_NAME') && node_name.blank?
       raise "Unable to parse DNS without a tld set in the config bag for #{ @options['env'] }!" if dns_string.include?('ENV_TLD') && @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld'].nil?
 
-      dns_string.gsub('NODE_NAME', @options['node_name']).gsub('ENV_TLD', @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld'])
+      dns_string.gsub('NODE_NAME', node_name).gsub('ENV_TLD', @config[@options['env']]['config_bag_hash'][@options['sub_env']]['tld'])
     end
 
-    def parse_repository_hash_from_string string
+    def parse_repository_hash_from_string string, checked_hashes={}
       @config['getter'].get_repo_names_for_repositories.each do |repository, repository_hash|
-        return repository_hash if string.include?(repository)
+        checked_hashes[repository_hash['role']] = @config['helper'].compare_strings(string, repository)
       end
+
+      return @config['cheftacular']['repositories'][ Hash[checked_hashes.sort_by { |key, val| val }].keys.first ]
     end
 
     def parse_location_alias string

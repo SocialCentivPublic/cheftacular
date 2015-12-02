@@ -49,7 +49,7 @@ class Cheftacular
       old_role, old_env, backup_env = @options['role'], @options['env'], @config['cheftacular']['backup_config']['global_backup_environ']
 
       if backup_env != @options['env']
-        @config['initializer'].initialize_data_bags_for_environment(backup_env, false, ['addresses', 'server_passwords'])
+        @config['initializer'].initialize_data_bags_for_environment(backup_env, false, ['addresses', 'server_passwords', 'logs'])
         @config['initializer'].initialize_passwords backup_env
       end
 
@@ -57,7 +57,7 @@ class Cheftacular
       @options['env']  = backup_env
 
       puts "Deploying to backup master to force refresh of the ssh keys..." 
-      #@config['action'].deploy
+      @config['action'].deploy
 
       @options['role'] = old_role
       @options['env']  = old_env

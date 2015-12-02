@@ -10,7 +10,7 @@ class Cheftacular
     end
 
     #[TODO] if ridley changes its parsing strategy
-    def get_true_node_objects get_all_nodes=false, get_new_nodes=false
+    def get_true_node_objects get_all_nodes=false
       nodes, all_nodes, names, iter_arr, file_cache_nodes, h = [],[],[],[],[],{}
 
       @config['chef_nodes'] = @config['ridley'].node.all

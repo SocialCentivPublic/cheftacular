@@ -13,7 +13,7 @@ class CloudInteractor
 
       raise "Subdomain not found for #{ args[IDENTITY.singularize] }" unless already_exists
 
-      puts "Destroying #{ args['subdomain'] } from #{ args[IDENTITY.singularize] }..."
+      puts "(#{ IDENTITY.capitalize }) Destroying #{ args['subdomain'] } from #{ args[IDENTITY.singularize] }..."
 
       specific_fog_object = @classes['auth'].auth_service(RESOURCE).instance_eval('zones').get @main_obj["specific_#{ IDENTITY }"].last['id']
 

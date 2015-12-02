@@ -5,7 +5,7 @@ class CloudInteractor
 
       read_volume args, false, true
 
-      puts "Detaching #{ args['volume_name'] } from #{ args['server_name'] } in #{ IDENTITY }..."
+      puts "(#{ IDENTITY }) Detaching #{ args['volume_name'] } from #{ args['server_name'] } in #{ IDENTITY }..."
 
       specific_fog_object = @classes['auth'].auth_service(RESOURCE).instance_eval(IDENTITY).get @main_obj["specific_#{ IDENTITY }"].last['id']
 
@@ -15,7 +15,7 @@ class CloudInteractor
         out << attachment.detach.to_s
       end
 
-      puts "The state of the volume detachment is #{ out } for #{ args['server_name'] } in #{ IDENTITY }"
+      puts "(#{ IDENTITY }) The state of the volume detachment is #{ out } for #{ args['server_name'] } in #{ IDENTITY }"
     end
   end
 end
