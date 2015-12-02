@@ -288,6 +288,7 @@ class Cheftacular
       org_name_to_check = repo_state_hash.has_key?('deploy_organization') ? repo_state_hash['deploy_organization'] : @config['cheftacular']['TheCheftacularCookbook']['organization_name']
      
       revision_to_check = nil if revision_to_check == '<use_default>'
+      org_name_to_check = @config['cheftacular']['TheCheftacularCookbook']['organization_name'] if org_name_to_check.nil?
 
       @config['cheftacular']['TheCheftacularCookbook']['chef_environment_to_app_repo_branch_mappings'].each_pair do |chef_env, app_env|
         revision_to_check = app_env if @options['env'] == chef_env && revision_to_check.nil?

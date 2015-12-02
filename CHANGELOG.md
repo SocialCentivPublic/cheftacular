@@ -1,3 +1,9 @@
+## 2.11.1
+
+* Removing httpclient version dependency
+
+* Fixing edge case when checking for deploy arguments
+
 ## 2.11.0
 
 * Improving cloud_bootstrap process, adding queue steps and parallelization so that servers can be setup in a much faster manner than one by one by one
