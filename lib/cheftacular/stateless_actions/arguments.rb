@@ -58,12 +58,16 @@ class Cheftacular
         "    3.  The `-z|--unset-github-deploy-args` option will clear your current `-Z` and `-O` flags."
       ]
     end
+
+    alias_method :flags, :arguments
   end
 
   class InitializationAction
     def arguments
       
     end
+
+    alias_method :flags, :arguments
   end
 
   class StatelessAction
