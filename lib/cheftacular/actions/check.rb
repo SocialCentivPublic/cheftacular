@@ -62,7 +62,7 @@ class Cheftacular
       end
 
       headers << "\n#{ 'name'.ljust(20) }"
-      headers << 'repository'.ljust(30,'_')   if repositories_to_check.length > 1
+      headers << 'repository'.ljust(30)   if repositories_to_check.length > 1
       headers << "#{ 'deployed_on'.ljust(22) } #{ 'commit'.ljust(40) }"
       headers << 'revision'.ljust(21)     if have_revisions
       headers << 'organization'.ljust(30) if have_changed_orgs
@@ -74,7 +74,7 @@ class Cheftacular
           if commit_hash[n.name].has_key?(repo) && !commit_hash[n.name][repo].nil?
             out  = []
             out << n.name.ljust(20, '_')
-            out << repo.ljust(30) if repositories_to_check.length > 1
+            out << repo.ljust(30,'_') if repositories_to_check.length > 1
             out << commit_hash[n.name][repo]['time'].ljust(22)
             out << commit_hash[n.name][repo]['name'].ljust(40)
             out << commit_hash[n.name][repo]['branch'].ljust(21, '_')  if commit_hash[n.name][repo].has_key?('branch')
