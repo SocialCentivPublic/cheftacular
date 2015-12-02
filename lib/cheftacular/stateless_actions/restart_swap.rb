@@ -18,7 +18,6 @@ class Cheftacular
 
   class StatelessAction
     def restart_swap
-
       nodes = @config['getter'].get_true_node_objects(true)
 
       nodes = @config['parser'].exclude_nodes( nodes, [{ if: { env: '_default' }}] )

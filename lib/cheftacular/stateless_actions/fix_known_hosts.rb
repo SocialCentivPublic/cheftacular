@@ -45,29 +45,8 @@ class Cheftacular
       end
 
       targets.each do |target|
-        puts "clearing #{ target }"
-        case CONFIG['host_os']
-        when /mswin|windows/i
-          raise "#{ __method__ } does not support this operating system at this time"
-        when /linux|arch/i
-          puts "#{ __method__ } does not support this operating system at this time"
-        when /sunos|solaris/i
-          raise "#{ __method__ } does not support this operating system at this time"
-        when /darwin/i
-          cleanup_known_hosts_for_BSD_linux_architecture target
-        else
-          raise "#{ __method__ } does not support this operating system at this time"
-        end
+        @config['filesystem'].scrub_from_known_hosts target
       end
-    end
-    private
-
-    def cleanup_known_hosts_for_BSD_linux_architecture target
-      #Removes the entire line containing the string
-      `sed -i '' "s/#{ target }.*//g" ~/.ssh/known_hosts`
-
-      #remove empty lines
-      `sed -i '' "/^$/d" ~/.ssh/known_hosts`
     end
   end
 end

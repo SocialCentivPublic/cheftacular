@@ -17,7 +17,7 @@ class CloudInteractor
         @classes['volume'].read args
       end
 
-      puts "Attaching #{ args['volume_name'] } to #{ args['server_name'] } in #{ IDENTITY }..."
+      puts "(#{ IDENTITY }) Attaching #{ args['volume_name'] } to #{ args['server_name'] } in #{ IDENTITY }..."
 
       read args, false, 'name', 'server_name'
 

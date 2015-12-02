@@ -189,6 +189,26 @@ class Cheftacular
       File.read(File.expand_path("#{ @config['locs']['root'] }/Gemfile"))[/#{ gem_name }.*([\d\.]+)/][/([\d\.]+)/]
     end
 
+    def scrub_from_known_hosts target
+      puts "Clearing #{ target } from known_hosts file."
+      case CONFIG['host_os']
+      when /mswin|windows/i
+        puts "#{ __method__ } does not support this operating system at this time"
+      when /linux|arch/i
+        puts "#{ __method__ } does not support this operating system at this time"
+      when /sunos|solaris/i
+        puts "#{ __method__ } does not support this operating system at this time"
+      when /darwin/i
+        #Removes the entire line containing the string
+        `sed -i '' "s/#{ target }.*//g" ~/.ssh/known_hosts`
+
+        #remove empty lines
+        `sed -i '' "/^$/d" ~/.ssh/known_hosts`
+      else
+        puts "#{ __method__ } does not support this operating system at this time"
+      end
+    end
+
     private
     def current_file_path file_name, use_timestamp=true
       File.join( @config['locs']['app-root'], 'tmp', @config['helper'].declassify, ( use_timestamp ? "#{ Time.now.strftime("%Y%m%d") }-#{ file_name }" : file_name ))

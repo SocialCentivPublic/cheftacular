@@ -35,7 +35,7 @@ class Cheftacular
 
       puts("Starting reinitialization...") unless @options['quiet']
 
-      out << `#{ @config['helper'].knife_bootstrap_command }`
+      out << `#{ knife_bootstrap_command }`
 
       puts(out.last) unless @options['quiet']
     end

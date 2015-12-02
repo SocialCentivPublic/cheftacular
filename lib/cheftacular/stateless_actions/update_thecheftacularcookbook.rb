@@ -30,7 +30,7 @@ class Cheftacular
 
         `rm -Rf #{ @config['locs']['cookbooks'] }/TheCheftacularCookbook` if File.exists?(File.expand_path("#{ @config['locs']['cookbooks'] }/TheCheftacularCookbook"))
         `cp -Rf #{ @config['locs']['berks'] }/#{ cheftacular_cookbook['location'] } #{ @config['locs']['cookbooks'] }/TheCheftacularCookbook`
-
+        
         break
       end
     end

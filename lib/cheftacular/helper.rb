@@ -126,16 +126,6 @@ class Cheftacular
       @config['dummy_sshkit'].set_log_loc_and_timestamp @config['locs']
     end
 
-    def knife_bootstrap_command
-      address  = @options['address']
-      user     = @config['cheftacular']['deploy_user']
-      password = @config['server_passwords'][@options['address']]
-      nodename = @options['node_name']
-      chef_ver = @config['cheftacular']['chef_version'].to_i >= 12 ? '12.4.0' : '11.16.4'
-
-      "knife bootstrap #{ address } -x #{ user } -P #{ password } -N #{ nodename } --sudo --use-sudo-password --bootstrap-version #{ chef_ver }"
-    end
-
     #the documentation hashes must be populated *before* this method runs for it to return anything!
     def compile_documentation_lines mode, out=[]
       doc_arr = case mode
@@ -250,24 +240,6 @@ class Cheftacular
       master_hash
     end
 
-    def install_rvm_sh_file out=[]
-      puts("Starting rvm.sh installation...") unless @options['quiet']
-
-      commands = [
-        "#{ @config['helper'].sudo(@options['address']) } mv /home/deploy/rvm.sh /etc/profile.d",
-        "#{ @config['helper'].sudo(@options['address']) } chmod 755 /etc/profile.d/rvm.sh",
-        "#{ @config['helper'].sudo(@options['address']) } chown root:root /etc/profile.d/rvm.sh"
-      ]
-
-      out << `scp -oStrictHostKeyChecking=no #{ @config['locs']['cheftacular-lib-files'] }/rvm.sh #{ @config['cheftacular']['deploy_user'] }@#{ @options['address'] }:/home/#{ @config['cheftacular']['deploy_user'] }`
-
-      commands.each do |command|
-        out << `ssh -t -oStrictHostKeyChecking=no #{ @config['cheftacular']['deploy_user'] }@#{ @options['address'] } "#{ command }"`
-      end
-
-      puts("Completed rvm.sh installation into /etc/profile.d/rvm.sh") unless @options['quiet']
-    end
-
     def send_log_bag_hash_slack_notification logs_bag_hash, method, on_failing_exit_status_message=''
       if @config['cheftacular']['slack']['webhook']
         logs_bag_hash.each_pair do |key, hash|
@@ -301,6 +273,47 @@ class Cheftacular
                                                   else 
                                                     @config['helper'].fetch_remote_version
                                                   end
+    end
+
+    def return_options_as_hash options_array, return_hash={}
+      options_array.each do |key|
+        return_hash[key] = @options[key]
+      end
+
+      return_hash
+    end
+
+    def check_if_possible_repo_state repo_state_hash, git_output=''
+      revision_to_check = repo_state_hash.has_key?('revision')            ? repo_state_hash['revision']            : nil
+      org_name_to_check = repo_state_hash.has_key?('deploy_organization') ? repo_state_hash['deploy_organization'] : @config['cheftacular']['TheCheftacularCookbook']['organization_name']
+     
+      revision_to_check = nil if revision_to_check == '<use_default>'
+
+      @config['cheftacular']['TheCheftacularCookbook']['chef_environment_to_app_repo_branch_mappings'].each_pair do |chef_env, app_env|
+        revision_to_check = app_env if @options['env'] == chef_env && revision_to_check.nil?
+      end
+
+      git_output = `git ls-remote --heads git@github.com:#{ org_name_to_check }/#{ @options['repository'] }.git`
+
+      if git_output.blank?
+        puts "! The remote organization #{ org_name_to_check } does not have the repository: #{ @options['repository'] }! Please verify your repositories and try again"
+
+        exit
+      elsif !git_output.include?(revision_to_check)
+        puts "! The remote organization #{ org_name_to_check } does not have a revision / branch #{ revision_to_check } for repository: #{ @options['repository'] } !"
+
+        sorted_heads = git_output.scan(/refs\/heads\/(.*)/).flatten.uniq.sort_by { |head| compare_strings(revision_to_check, head)}
+
+        puts "The closest matches for #{ revision_to_check } are:"
+        puts "    #{ sorted_heads.at(0) }"
+        puts "    #{ sorted_heads.at(1) }"
+        puts "    #{ sorted_heads.at(2) }"
+        puts "    #{ sorted_heads.at(3) }\n"
+
+        puts "Please verify the correct revision / branch and run this command again."
+        
+        exit
+      end
     end
   end
 end

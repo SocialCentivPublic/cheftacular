@@ -17,7 +17,7 @@ class CloudInteractor
 
       ap(@main_obj["specific_#{ IDENTITY }"]) if output
 
-      puts("#{ specific_identity } not found in #{ IDENTITY }!") if @main_obj["specific_#{ IDENTITY }"].empty?
+      puts("(#{ IDENTITY.capitalize }) #{ specific_identity } not found in #{ IDENTITY }!") if @main_obj["specific_#{ IDENTITY }"].empty?
     end
   end
 end

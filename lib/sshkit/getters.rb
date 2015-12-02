@@ -23,7 +23,7 @@ module SSHKit
         raise "Unknown repository or rolename for #{ name }"
       end
 
-      def get_node_from_address nodes, address, ret_node = nil
+      def get_node_from_address nodes, address, ret_node=nil
         nodes.each do |n|
           if n.public_ipaddress == address
             ret_node = n
@@ -63,6 +63,14 @@ module SSHKit
         end
 
         ret
+      end
+
+      def get_server_hash_from_address array_of_server_hashes, address, ret_hash=nil
+        array_of_server_hashes.each do |server_hash|
+          ret_hash = server_hash if server_hash['address'] == address
+        end
+
+        ret_hash
       end
     end
   end

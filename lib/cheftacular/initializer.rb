@@ -168,7 +168,7 @@ class Cheftacular
         end
 
         # client-list
-        opts.on('-W', '--with-priv', "On client-list this will show each server's private addresses") do
+        opts.on('-W', '--with-priv', "On cft client_list this will show each server's private addresses") do
           @options['with_private'] = true
         end 
 
@@ -243,7 +243,8 @@ class Cheftacular
     end
 
     def initialize_queues
-      @config['slack_queue'] ||= []
+      @config['slack_queue']           ||= []
+      @config['server_creation_queue'] ||= []
     end
 
     def initialize_yaml_configuration
@@ -319,6 +320,7 @@ class Cheftacular
       locs['chef-log']              = File.expand_path("#{ locs['root']}/log")             unless locs['chef-log']
       locs['app-tmp']               = File.expand_path("#{ locs['app-root']}/tmp")
       locs['examples']              = File.expand_path("../../../examples", __FILE__)
+      locs['doc']                   = File.expand_path("../../../doc", __FILE__)
       locs['cheftacular-lib']       = File.expand_path("../..", __FILE__)
       locs['cheftacular-lib-files'] = locs['cheftacular-lib'] + '/cheftacular/files'
 
@@ -472,7 +474,7 @@ class Cheftacular
     end
 
     def initialize_directories
-      ['applog', 'deploy', 'failed-deploy', 'rolelog', 'rvm', 'stashedlog'].each do |sub_log_directory|
+      ['applog', 'deploy', 'failed-deploy', 'rolelog', 'rvm', 'server-setup', 'stashedlog'].each do |sub_log_directory|
         FileUtils.mkdir_p File.join( @config['locs']['chef-log'], sub_log_directory )
       end
 

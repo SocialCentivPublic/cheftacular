@@ -12,9 +12,7 @@ class Cheftacular
           "whether its password is stored on the chef server and what that password is.",
 
           "    2. `-W|--with-priv` option will make this command display the server's local (private) ip address. " + 
-          "This address is also the server's `local.<SERVER_DNS_NAME>`.",
-
-          "    3. This command is aliased to `client-list` with no arguments or cft prefix."
+          "This address is also the server's `local.<SERVER_DNS_NAME>`."
         ]
       ]
 

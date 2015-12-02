@@ -8,7 +8,7 @@ class CloudInteractor
 
       read args, false
 
-      puts "Updating #{ args['subdomain'] } for #{ args[IDENTITY.singularize] }..."
+      puts "(#{ IDENTITY.capitalize }) Updating #{ args['subdomain'] } for #{ args[IDENTITY.singularize] }..."
 
       @main_obj['specific_records'][args[IDENTITY.singularize]].each do |record_hash|
         already_created = true if record_hash['name'] == args['target_domain'] && record_hash['type'] == args['type']
@@ -35,7 +35,7 @@ class CloudInteractor
           raise "Unsupported action #{ __method__ } for #{ @options['preferred_cloud'] }. Please create an issue on github or submit a PR to fix this issue."
         end
 
-        puts "Updated #{ args['subdomain'] } (#{ args['target_ip'] }) to #{ args[IDENTITY.singularize] } (#{ args['target_domain'] })..."
+        puts "(#{ IDENTITY.capitalize }) Updated #{ args['subdomain'] } (#{ args['target_ip'] }) to #{ args[IDENTITY.singularize] } (#{ args['target_domain'] })..."
       else
         create_record [ args ]
       end

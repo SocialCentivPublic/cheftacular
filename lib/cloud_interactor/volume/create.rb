@@ -1,7 +1,7 @@
 class CloudInteractor
   class Volume
     def create args
-      puts "Creating #{ args['display_name'] } in #{ IDENTITY }..."
+      puts "(#{ IDENTITY }) Creating #{ args['display_name'] } in #{ IDENTITY }..."
 
       puts("Creating #{ IDENTITY.singularize } with args #{ ap(args) }") if @options['verbose']
 
