@@ -261,6 +261,16 @@ class Cheftacular
       @config['initial_cheftacular_yml'] = @config['cheftacular'].deep_dup
 
       @config['cheftacular'] = @config['default']['cheftacular_bag_hash'].deep_merge(@config['cheftacular'])
+
+      parsed_cheftacular = Digest::SHA2.hexdigest(@config['helper'].get_cheftacular_yml_as_hash.to_s)
+
+      return true if File.exist?(@config['filesystem'].local_cheftacular_file_cache_path) && File.read(@config['filesystem'].local_cheftacular_file_cache_path) == parsed_cheftacular
+
+      @config['helper'].display_cheftacular_config_diff
+
+      puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") }'s local cheftacular.yml."
+
+      @config['filesystem'].write_local_cheftacular_cache_file parsed_cheftacular
     end
 
     def initialize_default_cheftacular_options

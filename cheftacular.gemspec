@@ -22,7 +22,8 @@ Gem::Specification.new do |s|
   s.add_dependency "chef", ">= 11.12"
   s.add_dependency "httpclient"
   s.add_dependency "ridley"
-  s.add_dependency "berkshelf"
+  s.add_dependency "berkshelf", '>= 4.0'
+  s.add_dependency "berkshelf-api-client", '>= 2.0'
   s.add_dependency "highline"
   s.add_dependency "ffi-yajl"
   s.add_dependency "awesome_print"

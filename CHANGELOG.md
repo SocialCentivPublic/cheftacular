@@ -1,3 +1,11 @@
+## 2.11.2
+
+* Fix issue with `cft cheftacular_config sync | diff` on application clients. They are unable to run the command because of a malformed slack message
+
+    * Dramatically improved the process for detecting diffed cheftacular.ymls. Clients are now notified if they have a change and what they should run to sync it if there is a change.
+
+* Added documentation for new TheCheftacularCookbook key, *backup_gem_backup* on repo hashes. ([yaml documentation](https://github.com/SocialCentivPublic/cheftacular/blob/master/doc/cheftacular_yml_help.yml))
+
 ## 2.11.1
 
 * Removing httpclient version dependency
