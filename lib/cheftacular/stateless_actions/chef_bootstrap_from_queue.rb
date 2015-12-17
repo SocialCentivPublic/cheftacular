@@ -27,7 +27,7 @@ class Cheftacular
       @config['bootstrap_timestamp'] ||= Time.now.strftime("%Y%m%d%H%M%S")
 
       @config['server_creation_queue'].each do |server_hash|
-        puts("(#{ server_hash['node_name'] })[#{ server_hash['address'] }] Starting chef-client installation...") unless @options['quiet']
+        puts("#{ server_name_output(server_hash) } Starting chef-client installation...") unless @options['quiet']
 
         threads << Thread.new { execute_execution_hash_array(server_hash, execution_hash_array) }
       end

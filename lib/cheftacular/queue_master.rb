@@ -22,6 +22,10 @@ class Cheftacular
         found_result = true
       end
 
+      server_hash.each_pair do |key, val|
+        server_hash[key] = '' if val.nil?
+      end
+
       @config[server_queue] << server_hash unless found_result
 
       server_hash

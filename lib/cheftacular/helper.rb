@@ -334,7 +334,7 @@ class Cheftacular
           @config['slack_queue'] << { message: diff_hash.awesome_inspect({plain: true, indent: 2}).prepend('```').insert(-1, '```'), channel: @config['cheftacular']['slack']['notify_on_yaml_sync'] }
         end
 
-        puts("If these are your intended changes you want to sync into the environment, you should run `cft cheftacular_config sync`\n\n") if ARGV[1] != 'cheftacular_config' && ARGV[2] != 'sync'
+        puts("If these are your intended changes you want to sync into the environment, you should run `cft cheftacular_config sync`\n\n") if ARGV[0] != 'cheftacular_config' && ARGV[1] != 'sync'
       end
     end
 

@@ -1,7 +1,7 @@
 module SSHKit
   module Backend
     class Netssh
-      def start_task name, ip_address, run_list, command, options, locs, cheftacular, out=""
+      def start_task name, ip_address, run_list, command, options, locs, cheftacular, passwords, out=""
         log_loc, timestamp = set_log_loc_and_timestamp(locs)
         true_env = get_true_environment run_list, cheftacular['run_list_environments'][options['env']], options['env']
 
@@ -9,7 +9,7 @@ module SSHKit
 
         target_loc = "#{ cheftacular['base_file_path'] }/#{ options['repository'] }/current"
 
-        if test( target_loc )
+        if !sudo_test( passwords[ip_address], target_loc )
           puts "#{ name } (#{ ip_address }) cannot run #{ command } as there is no directory at #{ target_loc }!"
 
           return ['', timestamp]

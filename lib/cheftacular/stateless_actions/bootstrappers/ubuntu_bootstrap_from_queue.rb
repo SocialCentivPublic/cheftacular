@@ -31,7 +31,7 @@ class Cheftacular
       execution_hash_array  = execution_hash_array.flatten(1)
 
       @config['server_creation_queue'].each do |server_hash|
-        puts("#{ server_name_output(server_hash) }_Starting initial setup for server...") if @options['in_scaling']
+        puts("#{ server_name_output(server_hash) }_Starting initial setup for server...")
 
         threads << Thread.new { execute_execution_hash_array(server_hash, execution_hash_array) }
       end
@@ -83,7 +83,7 @@ class Cheftacular
       deploy_commands = [
         "#{ sudo } apt-get update",
         "#{ sudo } apt-get install curl #{ @config['cheftacular']['pre_install_packages'] } -y",
-        "#{ sudo } apt-get upgrade -y"
+        "#{ sudo } DEBIAN_FRONTEND=noninteractive apt-get upgrade -y -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
       ]
 
       if @config['cheftacular']['install_rvm_on_boot']

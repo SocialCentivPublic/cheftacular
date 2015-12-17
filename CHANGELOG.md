@@ -6,6 +6,12 @@
 
 * Added documentation for new TheCheftacularCookbook key, *backup_gem_backup* on repo hashes. ([yaml documentation](https://github.com/SocialCentivPublic/cheftacular/blob/master/doc/cheftacular_yml_help.yml))
 
+* Fixed error on server creation for DigitalOcean environments
+
+* Fixed "timeout" that could occur in server creation due to the package "grub-pc" waiting for input when none could be given.
+
+* `cft backups fetch` is now implemented. This gives people an easy way to download a dump from a database without using a long `cft file` command.
+
 ## 2.11.1
 
 * Removing httpclient version dependency

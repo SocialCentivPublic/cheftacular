@@ -191,7 +191,7 @@ class Cheftacular
 
     def scrub_from_known_hosts target
       puts "Clearing #{ target } from known_hosts file."
-      case CONFIG['host_os']
+      case RbConfig::CONFIG['host_os']
       when /mswin|windows/i
         puts "#{ __method__ } does not support this operating system at this time"
       when /linux|arch/i
