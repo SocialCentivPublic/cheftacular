@@ -12,6 +12,10 @@
 
 * `cft backups fetch` is now implemented. This gives people an easy way to download a dump from a database without using a long `cft file` command.
 
+* `cft update_thecheftacularcookbook` has been reworked to `cft update_cookbook [COOKBOOK_NAME]`
+
+     * If no cookbook name is passed, it retains it's previous functionality.
+
 ## 2.11.1
 
 * Removing httpclient version dependency
