@@ -111,6 +111,10 @@ class Cheftacular
           @options['verbose'] = true
         end
 
+        opts.on('-E', '--search-env-name ENV_NAME', 'For commands that support searching, return results with this environment in them') do |name|
+          @options['search_env_name'] = name
+        end
+
         opts.on('-n', '--node-name NAME', "Run your command against this node_name") do |name|
           @options['node_name'] = name
         end
@@ -125,6 +129,14 @@ class Cheftacular
 
         opts.on('-R', '--repository NAME', 'Run your command against this repository / context') do |name|
           @options['repository'] = name
+        end
+
+        opts.on('-s', '--search-node-name NODE_NAME', 'For commands that support searching, return results with NODE_NAME in them') do |name|
+          @options['search_node_name'] = name
+        end
+
+        opts.on('-S', '--search-role-name ROLE_NAME', 'For commands that support searching, return results with ROLE_NAME in them') do |name|
+          @options['search_role_name'] = name
         end
 
         opts.on('-v', '--verbose', "Activates slightly more verbose logging, also causes commands to output to terminal and logs") do

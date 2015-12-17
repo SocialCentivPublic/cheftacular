@@ -16,6 +16,10 @@
 
      * If no cookbook name is passed, it retains it's previous functionality.
 
+* Added 3 new flags, `-s|--search-node-name NODE_NAME`, `-S|--search-role-name ROLE_NAME`, and `-E|--search-env-name ENV_NAME`
+
+     * Updated `cft client_list` to support the new searching flags as well as returning ONLY nodes in a certain environment when an environment flag is passed. By default (no environment flags) it will still print all nodes for all environments
+
 ## 2.11.1
 
 * Removing httpclient version dependency

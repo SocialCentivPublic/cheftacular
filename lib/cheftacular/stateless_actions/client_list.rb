@@ -12,7 +12,13 @@ class Cheftacular
           "whether its password is stored on the chef server and what that password is.",
 
           "    2. `-W|--with-priv` option will make this command display the server's local (private) ip address. " + 
-          "This address is also the server's `local.<SERVER_DNS_NAME>`."
+          "This address is also the server's `local.<SERVER_DNS_NAME>`.",
+
+          "    3. `-s|--search-node-name NODE_NAME` option will make this command return results that INCLUDE the NODE_NAME.",
+
+          "    4. `-S|--search-role-name ROLE_NAME` option will make this command return results that INCLUDE the ROLE_NAME.",
+
+          "    5. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment."
         ]
       ]
 
@@ -36,9 +42,11 @@ class Cheftacular
 
       environments.uniq.each do |env|
         next if env == '_default'
+        next if @options['env'] != @config['cheftacular']['default_environment'] && env != @options['env']
+        next if @options['search_env_name'] && env != @options['search_env_name']
 
         env_nodes = @config['parser'].exclude_nodes(nodes, [{ if: { not_env: env } }])
-        puts "\nFound #{ env_nodes.count } #{ env } nodes:"
+        puts "\nFound #{ env_nodes.count } #{ env } total nodes: (If you input search arguments the number returned will be smaller)"
         out = "  #{ 'name'.ljust(22) } #{ 'ip_address'.ljust(21) }"
         out << "#{ 'private_address'.ljust(21) }"                   if @options['with_private']
         out << "#{ 'pass?'.ljust(5) } #{ 'domain'.ljust(41) }"      if @options['verbose']
@@ -52,7 +60,9 @@ class Cheftacular
         addresses_hash = @config['getter'].get_addresses_hash env
 
         env_nodes.each do |node|
-          #client = @ridley.client.find(options['node_name'])
+          next if @options['search_node_name'] && !node.name.include?(@options['search_node_name'])
+          next if @options['search_role_name'] && !node.run_list.join(', ').gsub('role[','').gsub(']','').include?(@options['search_role_name'])
+          
           out = "  #{ node.chef_id.ljust(22,'_') }_#{ node.public_ipaddress.ljust(20,'_') }"
 
           if @options['with_private']
@@ -80,7 +90,7 @@ class Cheftacular
             end
           end
 
-          out << "_#{ node.run_list.join(', ') }"
+          out << "_#{ node.run_list.join(', ').gsub('role[','').gsub(']','') }"
           
           puts out
         end

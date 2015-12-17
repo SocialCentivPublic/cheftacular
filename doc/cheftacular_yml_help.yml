@@ -124,6 +124,7 @@ repositories:
     short_database_name:             "If the repo_name contains dashes, it can't be used for the database name. This is a shorter name that can be used for backup_gem {TheCheftacularCookbook}"
     test_database_setup_command:     '(rake db:test:prepare) The command to run to setup your test database on build servers {TheCheftacularCookbook}'
     custom_nginx_configs:            'Array of nginx configurations to load for the repository {TheCheftacularCookbook}'
+    server_socket_type:              '[puma|unicorn] For rails apps, can be used to choose unicorn over puma (if this key does not exist it defaults to puma) {TheCheftacularCookbook}'
     route_wildcard_requests_for_tld: '[true|false] This triggers special behaviors for server creation (cloud_bootstrap). If a server is a load balancer for this repo, server creation will route wildcard requests to it'
     application_services:
       key_description:               'Hash of services the application can load {TheCheftacularCookbook}'
