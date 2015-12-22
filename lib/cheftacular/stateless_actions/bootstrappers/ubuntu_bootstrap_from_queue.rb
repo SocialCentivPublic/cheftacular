@@ -16,10 +16,6 @@ class Cheftacular
     def ubuntu_bootstrap_from_queue threads=[], execution_hash_array=[]
       raise "This action is not meant to be called directly!" if !@options['in_scaling'] && !@options['in_single_server_creation']
 
-      if `which sshpass`.empty?
-        raise "sshpass not installed! Please run brew install https://raw.github.com/eugeneoden/homebrew/eca9de1/Library/Formula/sshpass.rb (or get it from your repo for linux)"
-      end
-
       @config['bootstrap_timestamp'] ||= Time.now.strftime("%Y%m%d%H%M%S")
 
       @config['queue_master'].generate_passwords_for_each_server_hash_in_queue

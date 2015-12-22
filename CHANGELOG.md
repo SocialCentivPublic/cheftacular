@@ -1,3 +1,15 @@
+## 2.12.0
+
+* Rolling 2.11.2 into 2.12.0
+
+* Directory initialization now occurs when it should rather than later (after tmp dirs are already needed)
+
+* More tweaks to cheftacular diffing
+
+* Removing sshpass dependency
+
+* Fixed cheftacular not sending slack messages on erroring migrations and tasks
+
 ## 2.11.2
 
 * Fix issue with `cft cheftacular_config sync | diff` on application clients. They are unable to run the command because of a malformed slack message

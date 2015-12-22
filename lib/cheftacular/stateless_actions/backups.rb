@@ -48,9 +48,11 @@ class Cheftacular
     end
 
     def backups_load status_hash={}
-      target_db_primary, nodes, status_hash = backups_get_status_hash_from_backupmaster
+      target_db_primary, nodes, status_hash, backup_master_local_ip = backups_get_status_hash_from_backupmaster
 
       return false unless status_hash['latest_backup']['file_check']
+
+      options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
 
       on ( target_db_primary.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
         n = get_node_from_address(nodes, host.hostname)
@@ -82,7 +84,7 @@ class Cheftacular
     end
 
     def backups_fetch
-      target_db_primary, nodes, status_hash = backups_get_status_hash_from_backupmaster(__method__.to_s)
+      target_db_primary, nodes, status_hash, backup_master_local_ip = backups_get_status_hash_from_backupmaster(__method__.to_s)
 
       full_backup_dir  = File.join(@config['cheftacular']['backup_config']['db_primary_backup_path'], status_hash['latest_backup']['file_dir'])
       full_backup_path = File.join(full_backup_dir, status_hash['latest_backup']['filename'])
@@ -157,7 +159,7 @@ class Cheftacular
 
       return [nil, nil, {}] unless status_hash['latest_backup']['file_check']
 
-      [target_db_primary, nodes, status_hash]
+      [target_db_primary, nodes, status_hash, backup_master_local_ip]
     end
   end
 end

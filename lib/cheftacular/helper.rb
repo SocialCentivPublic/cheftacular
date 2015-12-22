@@ -248,7 +248,11 @@ class Cheftacular
           if hash['exit_status'] && hash['exit_status'] == 1
             @config['slack_queue'] << { message: hash['text'].prepend('```').insert(-1, '```') }
 
-            @config['error'].exception_output(on_failing_exit_status_message) if !on_failing_exit_status_message.blank?
+            if !on_failing_exit_status_message.blank?
+              @config['queue_master'].work_off_slack_queue
+
+              @config['error'].exception_output(on_failing_exit_status_message)
+            end
           end
         end
       end
@@ -343,6 +347,8 @@ class Cheftacular
         if value.nil?
           hash.delete(key)
         elsif value.class == Hash && value.empty?
+          hash.delete(key)
+        elsif value.class == Hash && value[value.keys.first].empty?
           hash.delete(key)
         elsif value.class == Hash
           recursive_hash_scrub(hash[key])

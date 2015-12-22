@@ -12,6 +12,8 @@ class Cheftacular
 
       initialize_locations
 
+      initialize_directories
+
       initialize_data_bag_cheftacular_hash if !@config['helper'].is_initialization_command?(ARGV[0]) && !@config['helper'].running_on_chef_node?
 
       initialize_monkeypatches unless @config['helper'].running_on_chef_node?
@@ -29,8 +31,6 @@ class Cheftacular
       initialize_ridley unless @config['helper'].is_initialization_command?(ARGV[0])
 
       initialize_classes
-
-      initialize_directories
 
       unless @config['helper'].is_initialization_command?(ARGV[0])
         initialize_cloud_checks
