@@ -10,6 +10,8 @@
 
 * Fixed cheftacular not sending slack messages on erroring migrations and tasks
 
+* Fixed issue with the cookbook commands not correctly fetching cookbook data
+
 ## 2.11.2
 
 * Fix issue with `cft cheftacular_config sync | diff` on application clients. They are unable to run the command because of a malformed slack message

@@ -4,7 +4,7 @@ class Cheftacular
     def update_cookbook
       @config['documentation']['stateless_action'][__method__] ||= {}
       @config['documentation']['stateless_action'][__method__]['long_description'] = [
-        "`cft update_cookbook [COOKBOOK_NAME]` allows you to specifically update a single cookbook",
+        "`cft update_cookbook [COOKBOOK_NAME] [INSTALL_VERSION]` allows you to specifically update a single cookbook",
 
         [
           "    1. This command passed with no arguments will update TheCheftacularCookbook"
@@ -16,10 +16,11 @@ class Cheftacular
   end
 
   class StatelessAction
-    def update_cookbook cookbook='TheCheftacularCookbook', local_options={'interactive' => true}
+    def update_cookbook cookbook='TheCheftacularCookbook', version='latest'
       raise "This action can only be performed if the mode is set to devops" unless @config['helper'].running_in_mode?('devops')
 
       cookbook = ARGV[1] if ARGV[1]
+      version  = ARGV[2] if ARGV[2]
 
       @config['cheftacular']['wrapper_cookbooks'].split(',').each do |wrapper_cookbook|
         wrapper_cookbook_loc = "#{ @config['locs']['cookbooks'] }/#{ wrapper_cookbook }"
@@ -30,7 +31,7 @@ class Cheftacular
         out = `berks install`
         puts "#{out}\nFinished fetching cookbooks, moving #{ cookbook } into local chef repo"
 
-        specific_cookbook = @config['filesystem'].parse_latest_berkshelf_cookbook_versions.select {|key| key.include?(cookbook)}[cookbook]
+        specific_cookbook = @config['filesystem'].parse_berkshelf_cookbook_versions(version).select {|key| key.include?(cookbook)}[cookbook]
 
         puts "Moving #{ cookbook } (#{ specific_cookbook['version'] })[#{ specific_cookbook['mtime'] }] to your chef-repo!"
 

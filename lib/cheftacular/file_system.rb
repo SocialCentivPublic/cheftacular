@@ -137,7 +137,7 @@ class Cheftacular
       File.open( File.join(@config['locs']['chef-repo'], "config", to_be_created_filename), "w") { |f| f.write(File.read(File.join(@config['locs']['examples'], example_filename))) }
     end
 
-    def parse_latest_berkshelf_cookbook_versions berkshelf_cookbooks={}
+    def parse_berkshelf_cookbook_versions version='latest', berkshelf_cookbooks={}
 
       Dir.foreach(@config['locs']['berks']) do |berkshelf_cookbook|
         next if is_junk_filename?(berkshelf_cookbook)
@@ -148,7 +148,12 @@ class Cheftacular
 
         #get only the latest version, berkshelf pulls in multiple commits from git repos for SOME REASON
         use_current_cookbook = !berkshelf_cookbooks.has_key?(true_cookbook_name)
-        use_current_cookbook = @config['helper'].is_higher_version?(cookbook_version, berkshelf_cookbooks[true_cookbook_name]['version']) if berkshelf_cookbooks.has_key?(true_cookbook_name)
+
+        if version == 'latest'
+          use_current_cookbook = @config['helper'].is_higher_version?(cookbook_version, berkshelf_cookbooks[true_cookbook_name]['version']) if berkshelf_cookbooks.has_key?(true_cookbook_name)
+        else
+          use_current_cookbook = true if berkshelf_cookbooks.has_key?(true_cookbook_name) && cookbook_version == version
+        end
 
         if use_current_cookbook
           berkshelf_cookbooks[true_cookbook_name] ||= {}
