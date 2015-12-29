@@ -12,6 +12,8 @@
 
 * Fixed issue with the cookbook commands not correctly fetching cookbook data
 
+* Fixed issue with `cft run` not working
+
 ## 2.11.2
 
 * Fix issue with `cft cheftacular_config sync | diff` on application clients. They are unable to run the command because of a malformed slack message
