@@ -47,9 +47,12 @@ replace_keys_in_chef_repo:
   key_description:                         'Keys that should be changed when the cheftacular.yml is created in the chef-repo (its a good idea to turn off strict version checks)'
 
 slack:
-  key_description: 'Stores the confiruation information for slack access'
-  default_channel: '(#default) Useful if the default channel on the webhook is NOT where you want to send notifications to (like failed deploys)'
-  webhook:         'The full https webhook slack gives you for a webhook integration goes here'
+  key_description:           'Stores the confiruation information for slack access'
+  default_channel:           '(#default) Useful if the default channel on the webhook is NOT where you want to send notifications to (like failed deploys)'
+  notify_on_yaml_sync:       'Notifies this channel if an application user runs cft cheftacular_config sync'
+  notify_on_deployment_args: 'Notifies this channel on slack if -O or -Z are detected'
+  notify_on_command_execute: 'Notifies this channel on slack if a command that is not an initialization command is run and this channel name is not blank AND auditing is activated'
+  webhook:                   'The full https webhook slack gives you for a webhook integration goes here'
 
 #RVM
 install_rvm_on_boot: '[true|false] If true, this will cause RVM to be installed for the deploy_user on boot, this makes managing RVM via cookbook impossible.'
@@ -100,6 +103,14 @@ repositories:
     key_description:                 'This key is reserved for role names of repos, preferably names that eliminate any hyphens in the repo_name'
     repo_name:                       'The name of the repository references with the role_name that is the parent key of this one'
     database:                        '[postgresql|mysql] The default database type utilized by the repository'
+    backup_gem_backups:
+      key_description:               'If this key exists and has children, servers will attempt to store backups locally and more depending on the configuraion {TheCheftacularCookbook}'
+      minute:                        '[Integer 0-60] The minute you would like to trigger backups on'
+      hour:                          '[Integer 0-60] The hour you would like to trigger backups on'
+      keep:                          '[Integer] The number of backups you would like to keep on the partition / server'
+      active:                        '[true|false] Is this backup currently active? If this key does not exist OR is true, backups will be run. If this key is false they will not'
+      store_on_backup_server:        '[true|false] Store the backup_gem_backups:keep number of backups on the backup_server as well'
+      backup_in_environments:        'Array containing the exact name of the environment(s) you want to run backups for'
     application_database_user:       'Name of the database user on the remote server (useful if each app has its own database user)'
     stack:                           '[ruby_on_rails|wordpress|nodejs] Application stack currently utilized by the repository'
     db_primary_host_role:            '(db_primary) The primary database role'
@@ -113,6 +124,7 @@ repositories:
     short_database_name:             "If the repo_name contains dashes, it can't be used for the database name. This is a shorter name that can be used for backup_gem {TheCheftacularCookbook}"
     test_database_setup_command:     '(rake db:test:prepare) The command to run to setup your test database on build servers {TheCheftacularCookbook}'
     custom_nginx_configs:            'Array of nginx configurations to load for the repository {TheCheftacularCookbook}'
+    server_socket_type:              '[puma|unicorn] For rails apps, can be used to choose unicorn over puma (if this key does not exist it defaults to puma) {TheCheftacularCookbook}'
     route_wildcard_requests_for_tld: '[true|false] This triggers special behaviors for server creation (cloud_bootstrap). If a server is a load balancer for this repo, server creation will route wildcard requests to it'
     application_services:
       key_description:               'Hash of services the application can load {TheCheftacularCookbook}'

@@ -248,7 +248,11 @@ class Cheftacular
           if hash['exit_status'] && hash['exit_status'] == 1
             @config['slack_queue'] << { message: hash['text'].prepend('```').insert(-1, '```') }
 
-            @config['error'].exception_output(on_failing_exit_status_message) if !on_failing_exit_status_message.blank?
+            if !on_failing_exit_status_message.blank?
+              @config['queue_master'].work_off_slack_queue
+
+              @config['error'].exception_output(on_failing_exit_status_message)
+            end
           end
         end
       end
@@ -314,6 +318,41 @@ class Cheftacular
         puts "Please verify the correct revision / branch and run this command again."
         
         exit
+      end
+    end
+
+    def display_cheftacular_config_diff
+      diff_hash = @config['initial_cheftacular_yml'].deep_diff(@config['default']['cheftacular_bag_hash'], true).except('mode', 'default_repository').compact
+
+      recursive_hash_scrub(diff_hash)
+      recursive_hash_scrub(diff_hash) #scrub out any leftover empty hashes
+
+      if diff_hash.empty?
+        puts "No difference detected between your cheftacular.yml and the global environment."
+      else
+        puts "Difference detected between local cheftacular.yml and data bag cheftacular.yml! Displaying...\n\n"
+
+        ap diff_hash
+          
+        if @config['helper'].running_in_mode?('application') && @config['default']['cheftacular_bag_hash']['slack']['webhook'] && !diff_hash.empty?
+          @config['slack_queue'] << { message: diff_hash.awesome_inspect({plain: true, indent: 2}).prepend('```').insert(-1, '```'), channel: @config['cheftacular']['slack']['notify_on_yaml_sync'] }
+        end
+
+        puts("If these are your intended changes you want to sync into the environment, you should run `cft cheftacular_config sync`\n\n") if ARGV[0] != 'cheftacular_config' && ARGV[1] != 'sync'
+      end
+    end
+
+    def recursive_hash_scrub hash
+      hash.each_pair do |key, value|
+        if value.nil?
+          hash.delete(key)
+        elsif value.class == Hash && value.empty?
+          hash.delete(key)
+        elsif value.class == Hash && value[value.keys.first].empty?
+          hash.delete(key)
+        elsif value.class == Hash
+          recursive_hash_scrub(hash[key])
+        end
       end
     end
   end

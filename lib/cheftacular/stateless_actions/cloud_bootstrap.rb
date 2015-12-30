@@ -44,10 +44,6 @@ class Cheftacular
 
       puts "Preparing to boot #{ @options['node_name'] }(#{ @options['flavor_name'] })..."
 
-      if `which sshpass`.empty?
-        raise "sshpass not installed! Please run brew install https://raw.github.com/eugeneoden/homebrew/eca9de1/Library/Formula/sshpass.rb (or get it from your repo for linux)"
-      end
-
       real_node_name = @config['getter'].get_current_real_node_name
 
       #the output of the cloud command is a hash, this hash is UPDATED every time a rax command is run so you only need to grab it when you need it

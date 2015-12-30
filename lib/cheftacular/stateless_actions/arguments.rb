@@ -36,7 +36,13 @@ class Cheftacular
 
         '7.  `-R|--repository NAME` will make the command run against a specific repository or context (automatically set for application mode)',
 
-        '8.  `-v|--verbose` toggles on verbose logging. All commands that write logs will also output to terminal AND write the logs.',
+        '8.  `-s|--search-node-name NODE_NAME` option will make this command return results that INCLUDE the NODE_NAME.',
+
+        '9.  `-S|--search-role-name ROLE_NAME` option will make this command return results that INCLUDE the ROLE_NAME.',
+
+        '10. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment.',
+
+        '11.  `-v|--verbose` toggles on verbose logging. All commands that write logs will also output to terminal AND write the logs.',
 
         '### Help Related',
 

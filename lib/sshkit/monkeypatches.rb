@@ -9,8 +9,6 @@ module SSHKit
         message = ""
         message += "#{command} exit status: " + exit_status.to_s + "\n"
         message += "#{command} stdout: " + (full_stdout.strip || "Nothing written") + "\n"
-
-        stderr_message = [stderr.strip, full_stderr.strip].delete_if(&:empty?).first
         message += "#{command} stderr: " + (full_stderr.strip || 'Nothing written') + "\n\n"
         raise Failed, message
       end

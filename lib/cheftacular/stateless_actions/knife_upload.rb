@@ -8,7 +8,9 @@ class Cheftacular
         "This command is analog for `knife upload /`",
 
         [
-          "    1. The force option will add the force option to knife upload."
+          "    1. The force option will add the force option to knife upload.",
+
+          "    2. Utilize `knife cookbook upload -a -V --cookbook-path ./cookbooks` if this command gives you trouble"
         ]
       ]
 

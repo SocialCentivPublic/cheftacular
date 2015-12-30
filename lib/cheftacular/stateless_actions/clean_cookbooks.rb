@@ -38,17 +38,15 @@ class Cheftacular
         out = `berks install`
         puts "#{out}\nFinished... Beginning directory scanning and conflict resolution..."
 
-        berkshelf_cookbooks = @config['filesystem'].parse_latest_berkshelf_cookbook_versions
+        berkshelf_cookbooks = @config['filesystem'].parse_berkshelf_cookbook_versions
 
         chef_repo_cookbooks = @config['filesystem'].parse_chef_repo_cookbook_versions
 
-        berkshelf_cookbooks.each_pair do |berkshelf_cookbook, version|
-          new_name = berkshelf_cookbook.rpartition('-').first
-
-          if chef_repo_cookbooks.has_key?(new_name) || chef_repo_cookbooks.has_key?(berkshelf_cookbook) #don't overwrite cookbooks without user input
+        berkshelf_cookbooks.each_pair do |berkshelf_cookbook, cookbook_hash|
+          if chef_repo_cookbooks.has_key?(berkshelf_cookbook) || chef_repo_cookbooks.has_key?(cookbook_hash['location']) #don't overwrite cookbooks without user input
             if local_options['interactive']
-              puts "COOKBOOK::~~~~#{ new_name }~~~~::VERSION::~~~~~~~~#{ version } VS #{ chef_repo_cookbooks[new_name] }"
-              puts "\nEnter O | o | overwrite to overwrite ~~~~#{ new_name }~~~~ in the chef-repo (THIS SHOULD NOT BE DONE LIGHTLY)"
+              puts "COOKBOOK::~~~~#{ berkshelf_cookbook }~~~~::VERSION::~~~~~~~~#{ cookbook_hash['version'] } VS #{ chef_repo_cookbooks[berkshelf_cookbook] }"
+              puts "\nEnter O | o | overwrite to overwrite ~~~~#{ berkshelf_cookbook }~~~~ in the chef-repo (THIS SHOULD NOT BE DONE LIGHTLY)"
               puts "Enter N | n | no        to skip to the next conflict"
               puts "If you pass force to this script, it will always overwrite."
               #puts "If you pass a STRING of comma delimited cookbooks, it will skip these cookbooks automatically and overwrite others"
@@ -59,12 +57,12 @@ class Cheftacular
               next if (input =~ /N|n|no/) == 0
             end
 
-            next if @config['helper'].is_higher_version?(chef_repo_cookbooks[new_name], version)
+            next if @config['helper'].is_higher_version?(chef_repo_cookbooks[berkshelf_cookbook], cookbook_hash['version'])
           end
 
-          cmnd = "#{ @config['locs']['berks'] }/#{ berkshelf_cookbook } #{ @config['locs']['cookbooks'] }/#{ new_name }"
-          puts "Moving #{ cmnd } (#{ version }:#{ chef_repo_cookbooks[new_name] })" if @options['verbose']
-          `rm -Rf #{ @config['locs']['cookbooks'] }/#{ new_name }`
+          cmnd = "#{ @config['locs']['berks'] }/#{ cookbook_hash['location'] } #{ @config['locs']['cookbooks'] }/#{ berkshelf_cookbook }"
+          puts "Moving #{ cmnd } (#{ cookbook_hash['version'] }:#{ chef_repo_cookbooks[berkshelf_cookbook] })" if @options['verbose']
+          `rm -Rf #{ @config['locs']['cookbooks'] }/#{ berkshelf_cookbook }`
           `cp -Rf #{ cmnd }`
         end
       end
