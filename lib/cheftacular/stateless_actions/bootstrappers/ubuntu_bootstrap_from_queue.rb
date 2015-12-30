@@ -16,10 +16,6 @@ class Cheftacular
     def ubuntu_bootstrap_from_queue threads=[], execution_hash_array=[]
       raise "This action is not meant to be called directly!" if !@options['in_scaling'] && !@options['in_single_server_creation']
 
-      if `which sshpass`.empty?
-        raise "sshpass not installed! Please run brew install https://raw.github.com/eugeneoden/homebrew/eca9de1/Library/Formula/sshpass.rb (or get it from your repo for linux)"
-      end
-
       @config['bootstrap_timestamp'] ||= Time.now.strftime("%Y%m%d%H%M%S")
 
       @config['queue_master'].generate_passwords_for_each_server_hash_in_queue
@@ -31,7 +27,7 @@ class Cheftacular
       execution_hash_array  = execution_hash_array.flatten(1)
 
       @config['server_creation_queue'].each do |server_hash|
-        puts("#{ server_name_output(server_hash) }_Starting initial setup for server...") if @options['in_scaling']
+        puts("#{ server_name_output(server_hash) }_Starting initial setup for server...")
 
         threads << Thread.new { execute_execution_hash_array(server_hash, execution_hash_array) }
       end
@@ -83,7 +79,7 @@ class Cheftacular
       deploy_commands = [
         "#{ sudo } apt-get update",
         "#{ sudo } apt-get install curl #{ @config['cheftacular']['pre_install_packages'] } -y",
-        "#{ sudo } apt-get upgrade -y"
+        "#{ sudo } DEBIAN_FRONTEND=noninteractive apt-get upgrade -y -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\""
       ]
 
       if @config['cheftacular']['install_rvm_on_boot']

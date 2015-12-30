@@ -41,7 +41,73 @@
 
 7.  `-R|--repository NAME` will make the command run against a specific repository or context (automatically set for application mode)
 
-8.  `-v|--verbose` toggles on verbose logging. All commands that write logs will also output to terminal AND write the logs.
+8.  `-s|--search-node-name NODE_NAME` option will make this command return results that INCLUDE the NODE_NAME.
+
+9.  `-S|--search-role-name ROLE_NAME` option will make this command return results that INCLUDE the ROLE_NAME.
+
+10. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment.
+
+11.  `-v|--verbose` toggles on verbose logging. All commands that write logs will also output to terminal AND write the logs.
+
+### Help Related
+
+1. `-h|--help` Displays the full readme and exits.
+
+### Action Flags
+
+1.  `-e|--except-role ROLE_NAME` will *prevent* any server with this role from being *deployed to* for the deploy command. Other commands will ignore this argument.
+
+2.  `-z|--unset-github-deploy-args` will unset a custom revision specified in the arg below and make the codebase utilize the default.
+
+3.  `-Z|--revision REVISION` will force the role you're deploying to to utilize the revision specified here. This can be a specific commit, a branch name or even a tag.
+
+    1. Note: The system does not check if the revision exists, if you pass a non-existent revision no one will be able to deploy to that role until -Z with a correction revision or -z is passed.
+
+4.  The `-O ORGANIZATION` flag can be used with TheCheftacularCookbook to set an *organization* your app can try deploying from, your git user needs access to these forks / organization(s).
+
+    3.  The `-z|--unset-github-deploy-args` option will clear your current `-Z` and `-O` flags.
+
+## Arguments and flags for cheftacular
+
+### Environment flags
+
+1.  `-d|--dev-remote` toggles on dev-remote mode. Commands passed to cft will hit the devremote server(s) instead of the default server(s)
+
+2.  `--env ENV` sets the environment commands hit to one you specify instead of the default one.
+
+3.  `-p|--prod` toggles on production mode. Commands passed to cft will hit the production server(s) instead of the default server(s)
+
+4.  `-Q|--qa` toggles on QA mode. Commands passed to cft will hit the QA server(s) instead of the default server(s)
+
+5.  `-s|--staging` toggles on staging mode. Commands passed to cft will hit the staging server(s) instead of the default server(s)
+
+6.  `--split-env SPLIT_ENV_NAME` sets the sub-environment to SPLIT_ENV_NAME. This only slightly affects certain commands.
+
+7.  `-t|--test` toggles on test mode. Commands passed to cft will hit the test server(s) instead of the default server(s)
+
+### General Flags
+
+1.  `-a|--address ADDRESS` will force the command to only run against the specified address if it belongs to a node
+
+2.  `-D|--debug` toggles on extremely verbose logging. Chef-client runs will generate ~10 times the amounts of logs including any additional effects that the `-v` flag will activate
+
+3. `--no-logs` will make the cft commands not generate log files, you must still specify `-v` if you want output of most verbose commands to your terminal.
+
+4.  `-n|--node-name NODE_NAME` will force the command to only run against the specified name if it belongs to a node
+
+5.  `-q|--quiet` will make the cft commands only output information that is a direct result of the command being run
+
+6.  `-r|--role-name ROLE_NAME` will force the command to only run against the specified role if it exists (this argument is generally not needed though it can be used to deploy a codebase for an application you're not currently cd'd into when running this as a gem)
+
+7.  `-R|--repository NAME` will make the command run against a specific repository or context (automatically set for application mode)
+
+8.  `-s|--search-node-name NODE_NAME` option will make this command return results that INCLUDE the NODE_NAME.
+
+9.  `-S|--search-role-name ROLE_NAME` option will make this command return results that INCLUDE the ROLE_NAME.
+
+10. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment.
+
+11.  `-v|--verbose` toggles on verbose logging. All commands that write logs will also output to terminal AND write the logs.
 
 ### Help Related
 
@@ -64,15 +130,17 @@
 
 ## Commands that can be run in the application context
 
-1. `cft backups [activate|deactivate|load|restore]` this command sets the fetch_backups and restore_backups flags in your config data bag for an environment. These can be used to give application developers a way to trigger / untrigger restores in an environment
+1. `cft backups [activate|deactivate|fetch|load|restore]` this command sets the fetch_backups and restore_backups flags in your config data bag for an environment. These can be used to give application developers a way to trigger / untrigger restores in an environment
 
     1. `activate` will turn on automated backup running (turns on the flag for the env in the config bag).
 
     2. `deactivate` will turn off automated backup running.
 
-    3. `load` will fetch the latest backup from the production primary **if it doesn't already exist on the server** and run the _backup loading command_ to load this backup into the env.
+    3. `fetch` will fetch the latest backup and drop it onto your machine. This argument accepts the --save-to-file LOCATION flag.
 
-    4. `restore` will simply just run the _backup loading command_ to load the latest backup onto the server.
+    4. `load` will fetch the latest backup from the production primary **if it doesn't already exist on the server** and run the _backup loading command_ to load this backup into the env.
+
+    5. `restore` will simply just run the _backup loading command_ to load the latest backup onto the server.
 
 2. `cft check [all]` Checks the commits for all servers for a repository (for an environment) and returns them in a simple chart. Also shows when these commits were deployed to the server.
 
@@ -115,6 +183,12 @@
     1. `-v` option will make this command display the server's domain name, whether its password is stored on the chef server and what that password is.
 
     2. `-W|--with-priv` option will make this command display the server's local (private) ip address. This address is also the server's `local.<SERVER_DNS_NAME>`.
+
+    3. `-s|--search-node-name NODE_NAME` option will make this command return results that INCLUDE the NODE_NAME.
+
+    4. `-S|--search-role-name ROLE_NAME` option will make this command return results that INCLUDE the ROLE_NAME.
+
+    5. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment.
 
 8. `cft console` will create a console session on the first node found for a repository.
 
@@ -269,15 +343,17 @@
 
     1. `SPECIFIC_REPOSITORY` is a special argument, if left blank the key will be placed in the authorized_keys array in the bag, otherwise it will be placed in the specific_authorized_keys hash under a key named for the repository that is passed. The script will error if SPECIFIC_REPOSITORY does not exist in the cheftacular.yml respositories hash. You can then use this data to give users selective ssh access to certain servers.
 
-4. `cft backups [activate|deactivate|load|restore]` this command sets the fetch_backups and restore_backups flags in your config data bag for an environment. These can be used to give application developers a way to trigger / untrigger restores in an environment
+4. `cft backups [activate|deactivate|fetch|load|restore]` this command sets the fetch_backups and restore_backups flags in your config data bag for an environment. These can be used to give application developers a way to trigger / untrigger restores in an environment
 
     1. `activate` will turn on automated backup running (turns on the flag for the env in the config bag).
 
     2. `deactivate` will turn off automated backup running.
 
-    3. `load` will fetch the latest backup from the production primary **if it doesn't already exist on the server** and run the _backup loading command_ to load this backup into the env.
+    3. `fetch` will fetch the latest backup and drop it onto your machine. This argument accepts the --save-to-file LOCATION flag.
 
-    4. `restore` will simply just run the _backup loading command_ to load the latest backup onto the server.
+    4. `load` will fetch the latest backup from the production primary **if it doesn't already exist on the server** and run the _backup loading command_ to load this backup into the env.
+
+    5. `restore` will simply just run the _backup loading command_ to load the latest backup onto the server.
 
 5. `cft check_cheftacular_yml_keys` allows you to check to see if your cheftacular yml keys are valid to the current version of cheftacular. It will also set your missing keys to their likely default and let you know to update the cheftacular.yml file.
 
@@ -326,6 +402,12 @@
     1. `-v` option will make this command display the server's domain name, whether its password is stored on the chef server and what that password is.
 
     2. `-W|--with-priv` option will make this command display the server's local (private) ip address. This address is also the server's `local.<SERVER_DNS_NAME>`.
+
+    3. `-s|--search-node-name NODE_NAME` option will make this command return results that INCLUDE the NODE_NAME.
+
+    4. `-S|--search-role-name ROLE_NAME` option will make this command return results that INCLUDE the ROLE_NAME.
+
+    5. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment.
 
 13. `cft cloud <FIRST_LEVEL_ARG> [<SECOND_LEVEL_ARG>[:<SECOND_LEVEL_ARG_QUERY>]*] ` this command handles talking to various cloud APIs. If no args are passed nothing will happen.
 
@@ -623,7 +705,11 @@
 
     3. The argument `skip_update_tld` will stop the long process of checking and updating all the server domains _before_ cloudflare is updated. Only skip if you believe your domain info on your cloud is accurate.
 
-49. `cft update_split_branches` will perform a series of git commands that will merge all the split branches for your split_branch enabled repositories with what is currently on master and push them.
+49. `cft update_cookbook [COOKBOOK_NAME]` allows you to specifically update a single cookbook
+
+    1. This command passed with no arguments will update TheCheftacularCookbook
+
+50. `cft update_split_branches` will perform a series of git commands that will merge all the split branches for your split_branch enabled repositories with what is currently on master and push them.
 
     1. Repository must be set with `-R REPOSITORY_NAME` for this command to work.
 
@@ -632,8 +718,6 @@
     3. This command will only succeed *IF THERE ARE NO MERGE CONFLICTS*.
 
     4. This command will return a helpful error statement if you attempt to run the command with changes to your current working directory. You must commit these changes before running this command.
-
-50. `cft update_thecheftacularcookbook` allows you to update ONLY the internal chef-repo's TheCheftacularCookbook.
 
 51. `cft update_tld TLD` command will force a full dns update for a tld in the preferred cloud. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address.
 

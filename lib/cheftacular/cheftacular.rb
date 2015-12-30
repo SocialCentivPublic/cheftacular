@@ -30,6 +30,7 @@ class Cheftacular
   def initialize options={'env'=>'staging'}, config={}
     @options, @config                = options, config
     SSHKit.config.format             = :blackhole
+    Excon.defaults[:ssl_verify_peer] = false #https://github.com/excon/excon/issues/479 # issues with cert bundle chains
     #Fog::Logger[:warning]            = nil
     @config['start_time']            = Time.now
     @config['helper']                = Helper.new(@options, @config)

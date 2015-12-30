@@ -12,6 +12,8 @@ class Cheftacular
 
       initialize_locations
 
+      initialize_directories
+
       initialize_data_bag_cheftacular_hash if !@config['helper'].is_initialization_command?(ARGV[0]) && !@config['helper'].running_on_chef_node?
 
       initialize_monkeypatches unless @config['helper'].running_on_chef_node?
@@ -29,8 +31,6 @@ class Cheftacular
       initialize_ridley unless @config['helper'].is_initialization_command?(ARGV[0])
 
       initialize_classes
-
-      initialize_directories
 
       unless @config['helper'].is_initialization_command?(ARGV[0])
         initialize_cloud_checks
@@ -111,6 +111,10 @@ class Cheftacular
           @options['verbose'] = true
         end
 
+        opts.on('-E', '--search-env-name ENV_NAME', 'For commands that support searching, return results with this environment in them') do |name|
+          @options['search_env_name'] = name
+        end
+
         opts.on('-n', '--node-name NAME', "Run your command against this node_name") do |name|
           @options['node_name'] = name
         end
@@ -125,6 +129,14 @@ class Cheftacular
 
         opts.on('-R', '--repository NAME', 'Run your command against this repository / context') do |name|
           @options['repository'] = name
+        end
+
+        opts.on('-s', '--search-node-name NODE_NAME', 'For commands that support searching, return results with NODE_NAME in them') do |name|
+          @options['search_node_name'] = name
+        end
+
+        opts.on('-S', '--search-role-name ROLE_NAME', 'For commands that support searching, return results with ROLE_NAME in them') do |name|
+          @options['search_role_name'] = name
         end
 
         opts.on('-v', '--verbose', "Activates slightly more verbose logging, also causes commands to output to terminal and logs") do
@@ -261,6 +273,16 @@ class Cheftacular
       @config['initial_cheftacular_yml'] = @config['cheftacular'].deep_dup
 
       @config['cheftacular'] = @config['default']['cheftacular_bag_hash'].deep_merge(@config['cheftacular'])
+
+      parsed_cheftacular = Digest::SHA2.hexdigest(@config['helper'].get_cheftacular_yml_as_hash.to_s)
+
+      return true if File.exist?(@config['filesystem'].local_cheftacular_file_cache_path) && File.read(@config['filesystem'].local_cheftacular_file_cache_path) == parsed_cheftacular
+
+      @config['helper'].display_cheftacular_config_diff
+
+      puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") }'s local cheftacular.yml."
+
+      @config['filesystem'].write_local_cheftacular_cache_file parsed_cheftacular
     end
 
     def initialize_default_cheftacular_options

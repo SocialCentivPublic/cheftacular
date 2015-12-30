@@ -49,9 +49,10 @@ replace_keys_in_chef_repo:                      # keys that should be changed wh
   strict_version_checks: false
 
 slack:
-  default_channel: '#default'   # Useful if the default channel on the webhook is NOT where you want to send notifications to (like failed deploys)
+  default_channel:           '#default' # Useful if the default channel on the webhook is NOT where you want to send notifications to (like failed deploys)
   notify_on_deployment_args: '' # notifies slack if -O or -Z are detected and this channel name is not blank
   notify_on_command_execute: '' # notifies slack if a command that is not an initialization command is run and this channel name is not blank AND auditing is activated
+  notify_on_yaml_sync:       '' # notifies if an application user runs cft cheftacular_config sync
   webhook:                      # the full https webhook slack gives you for a webhook integration goes here
 
 #RVM

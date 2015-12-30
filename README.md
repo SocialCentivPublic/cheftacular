@@ -12,7 +12,7 @@ Read the [initial chef server setup documentation](https://github.com/SocialCent
 
 ## Cheftacular Gem Installation Instructions
 
-1. This gem more complex to install than a simple `bundle install`, follow the instructions [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/doc/initial_setup.md#getting-your-repositores-setup)
+1. This gem is a little more complex to install than a simple `bundle install`, follow the instructions [here](https://github.com/SocialCentivPublic/cheftacular/blob/master/doc/initial_setup.md#getting-your-repositores-setup)
 
 ## Usage
 
@@ -20,7 +20,7 @@ After you have a successful chef and cheftacular installation you can now connec
 
 Note: You can substitute `cft` for `cftr`, `cheftacular`, or `cftclr`.
 
-1.  To view detailed information about nodes connected to the chef server, run (this is a good command to test installation on)
+1.  To view detailed information about nodes connected to the chef server, run (NOTE: this is a good command to test installation on)
 
         cft client_list
 
@@ -38,7 +38,7 @@ Note: You can substitute `cft` for `cftr`, `cheftacular`, or `cftclr`.
 
         cft migrate
 
-    Like with `hip deploy`, you simply just need to pass -p to hit production servers instead.
+    Like with `cft deploy`, you simply just need to pass -p to hit production servers instead.
 
 5.  To tail a log for a specific NODE_NAME, run
 

@@ -4,7 +4,7 @@ class Cheftacular
     def backups
       @config['documentation']['stateless_action'][__method__] ||= {}
       @config['documentation']['stateless_action'][__method__]['long_description'] = [
-        "`cft backups [activate|deactivate|load|restore]` this command " +
+        "`cft backups [activate|deactivate|fetch|load|restore]` this command " +
         "sets the fetch_backups and restore_backups flags in your config data bag for an environment. " +
         "These can be used to give application developers a way to trigger / untrigger restores in an environment",
       
@@ -13,10 +13,12 @@ class Cheftacular
 
           "    2. `deactivate` will turn off automated backup running.",
 
-          "    3. `load` will fetch the latest backup from the production primary **if it doesn't already exist on " +
+          "    3. `fetch` will fetch the latest backup and drop it onto your machine. This argument accepts the --save-to-file LOCATION flag.",
+
+          "    4. `load` will fetch the latest backup from the production primary **if it doesn't already exist on " +
           "the server** and run the _backup loading command_ to load this backup into the env.",
 
-          "    4. `restore` will simply just run the _backup loading command_ to load the latest backup onto the server."
+          "    5. `restore` will simply just run the _backup loading command_ to load the latest backup onto the server."
         ]
       ]
 
@@ -30,7 +32,7 @@ class Cheftacular
     def backups command=''
       command = ARGV[1] if command.blank?
 
-      raise "Unsupported command (#{ command }) for cft backups" unless command =~ /activate|deactivate|load|restore/
+      raise "Unsupported command (#{ command }) for cft backups" unless command =~ /activate|deactivate|fetch|load|restore/
 
       self.send("backups_#{ command }")
     end
@@ -46,43 +48,11 @@ class Cheftacular
     end
 
     def backups_load status_hash={}
-      old_role, old_env, backup_env = @options['role'], @options['env'], @config['cheftacular']['backup_config']['global_backup_environ']
-
-      if backup_env != @options['env']
-        @config['initializer'].initialize_data_bags_for_environment(backup_env, false, ['addresses', 'server_passwords', 'logs'])
-        @config['initializer'].initialize_passwords backup_env
-      end
-
-      @options['role'] = @config['cheftacular']['backup_config']['global_backup_role_name']
-      @options['env']  = backup_env
-
-      puts "Deploying to backup master to force refresh of the ssh keys..." 
-      @config['action'].deploy
-
-      @options['role'] = old_role
-      @options['env']  = old_env
-
-      target_db_primary, nodes = @config['getter'].get_db_primary_node_and_nodes
-
-      args_config = [
-        { unless: "role[#{ @config['cheftacular']['backup_config']['global_backup_role_name'] }]" },
-        { if: { not_env: backup_env } }
-      ]
-
-      backup_master          = @config['parser'].exclude_nodes( nodes, args_config, true)
-      backup_master_local_ip = @config['getter'].get_address_hash(backup_master.first.name, true)[backup_master.first.name]['priv']
-
-      options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
-
-      on ( backup_master.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
-        n = get_node_from_address(nodes, host.hostname)
-
-        puts("Beginning latest db_fetch_and_check for #{ n.name } (#{ n.public_ipaddress }) for env #{ backup_env }") unless options['quiet']
-
-        status_hash['latest_backup'] = start_db_check_and_fetch( n.name, n.public_ipaddress, options, locs, cheftacular, passwords)
-      end
+      target_db_primary, nodes, status_hash, backup_master_local_ip = backups_get_status_hash_from_backupmaster
 
       return false unless status_hash['latest_backup']['file_check']
+
+      options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
 
       on ( target_db_primary.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
         n = get_node_from_address(nodes, host.hostname)
@@ -113,6 +83,17 @@ class Cheftacular
       end
     end
 
+    def backups_fetch
+      target_db_primary, nodes, status_hash, backup_master_local_ip = backups_get_status_hash_from_backupmaster(__method__.to_s)
+
+      full_backup_dir  = File.join(@config['cheftacular']['backup_config']['db_primary_backup_path'], status_hash['latest_backup']['file_dir'])
+      full_backup_path = File.join(full_backup_dir, status_hash['latest_backup']['filename'])
+
+      file_scp_execute(target_db_primary, 'scp', full_backup_dir, status_hash['latest_backup']['filename'])
+    end
+
+    private
+
     def backups_toggle_setting restore_backup, fetch_backup
       initial_fetch_backup   = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['fetch_backups']
       initial_restore_backup = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['restore_backups']
@@ -133,6 +114,52 @@ class Cheftacular
       @options['role'] = 'db_primary'
 
       @config['action'].deploy
+    end
+
+    def backups_get_status_hash_from_backupmaster mode='backups_load', status_hash={}
+      backup_env = @config['cheftacular']['backup_config']['global_backup_environ']
+
+      if backup_env != @options['env']
+        @config['initializer'].initialize_data_bags_for_environment(backup_env, false, ['addresses', 'server_passwords', 'logs'])
+        @config['initializer'].initialize_passwords backup_env
+      end
+
+      if mode == 'backups_load'
+        old_role, old_env = @options['role'], @options['env']
+
+        @options['role'] = @config['cheftacular']['backup_config']['global_backup_role_name']
+        @options['env']  = backup_env
+
+        puts "Deploying to backup master to force refresh of the ssh keys..." 
+        @config['action'].deploy
+
+        @options['role'] = old_role
+        @options['env']  = old_env
+      end
+
+      target_db_primary, nodes = @config['getter'].get_db_primary_node_and_nodes
+
+      args_config = [
+        { unless: "role[#{ @config['cheftacular']['backup_config']['global_backup_role_name'] }]" },
+        { if: { not_env: backup_env } }
+      ]
+
+      backup_master          = @config['parser'].exclude_nodes( nodes, args_config, true)
+      backup_master_local_ip = @config['getter'].get_address_hash(backup_master.first.name, true)[backup_master.first.name]['priv']
+
+      options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
+
+      on ( backup_master.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
+        n = get_node_from_address(nodes, host.hostname)
+
+        puts("Beginning latest db_fetch_and_check for #{ n.name } (#{ n.public_ipaddress }) for env #{ backup_env }") unless options['quiet']
+
+        status_hash['latest_backup'] = start_db_check_and_fetch( n.name, n.public_ipaddress, options, locs, cheftacular, passwords)
+      end
+
+      return [nil, nil, {}] unless status_hash['latest_backup']['file_check']
+
+      [target_db_primary, nodes, status_hash, backup_master_local_ip]
     end
   end
 end

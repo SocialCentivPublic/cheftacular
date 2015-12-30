@@ -1,3 +1,41 @@
+## 2.12.0
+
+* Rolling 2.11.2 into 2.12.0
+
+* Directory initialization now occurs when it should rather than later (after tmp dirs are already needed)
+
+* More tweaks to cheftacular diffing
+
+* Removing sshpass dependency
+
+* Fixed cheftacular not sending slack messages on erroring migrations and tasks
+
+* Fixed issue with the cookbook commands not correctly fetching cookbook data
+
+* Fixed issue with `cft run` not working
+
+## 2.11.2
+
+* Fix issue with `cft cheftacular_config sync | diff` on application clients. They are unable to run the command because of a malformed slack message
+
+    * Dramatically improved the process for detecting diffed cheftacular.ymls. Clients are now notified if they have a change and what they should run to sync it if there is a change.
+
+* Added documentation for new TheCheftacularCookbook key, *backup_gem_backup* on repo hashes. ([yaml documentation](https://github.com/SocialCentivPublic/cheftacular/blob/master/doc/cheftacular_yml_help.yml))
+
+* Fixed error on server creation for DigitalOcean environments
+
+* Fixed "timeout" that could occur in server creation due to the package "grub-pc" waiting for input when none could be given.
+
+* `cft backups fetch` is now implemented. This gives people an easy way to download a dump from a database without using a long `cft file` command.
+
+* `cft update_thecheftacularcookbook` has been reworked to `cft update_cookbook [COOKBOOK_NAME]`
+
+     * If no cookbook name is passed, it retains it's previous functionality.
+
+* Added 3 new flags, `-s|--search-node-name NODE_NAME`, `-S|--search-role-name ROLE_NAME`, and `-E|--search-env-name ENV_NAME`
+
+     * Updated `cft client_list` to support the new searching flags as well as returning ONLY nodes in a certain environment when an environment flag is passed. By default (no environment flags) it will still print all nodes for all environments
+
 ## 2.11.1
 
 * Removing httpclient version dependency
