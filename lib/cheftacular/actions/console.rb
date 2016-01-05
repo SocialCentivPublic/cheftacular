@@ -5,7 +5,9 @@ class Cheftacular
       @config['documentation']['action'][__method__]['long_description'] = [
         "`cft console` will create a console session on the first node found for a repository.",
         [
-          "    1. Attempts to setup a console for the unique stack, stacks currently supported for console is only Rails."
+          "    1. Attempts to setup a console for the unique stack, stacks currently supported for console is only Rails.",
+
+          "    2. If there is a node in the repository set that has the role `preferred_console`, this node will come before others."
         ]
       ]
 
@@ -18,13 +20,17 @@ class Cheftacular
       self.send("console_#{ @config['getter'].get_current_stack }")
     end
 
-    def console_ruby_on_rails
+    def console_ruby_on_rails node_args=[{unless: 'role[rails]'}]
       nodes = @config['getter'].get_true_node_objects
 
       #must have rails stack to run migrations and not be a db, only want ONE node
-      nodes = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @options['role'] }]" }, { unless: 'role[rails]' }], true )
+      node_args << { unless: "role[#{ @options['role'] }]" }
 
-      nodes.each do |n|
+      consolable_nodes = @config['parser'].exclude_nodes( nodes, (node_args + [{ unless: "role[preferred_console]" }]).flatten, true )
+
+      consolable_nodes = @config['parser'].exclude_nodes( nodes, node_args, true ) if consolable_nodes.empty?
+
+      consolable_nodes.each do |n|
         puts("Beginning console run for #{ n.name } (#{ n.public_ipaddress }) on role #{ @options['role'] }") unless @options['quiet']
 
         start_console_ruby_on_rails(n.public_ipaddress, n.run_list)
