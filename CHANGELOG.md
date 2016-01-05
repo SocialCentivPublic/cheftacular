@@ -1,3 +1,7 @@
+## 2.12.1
+
+* Introduced the preferred console feature where nodes that have a role "preferred_console" will have rails consoles connect to it before trying normal nodes
+
 ## 2.12.0
 
 * Rolling 2.11.2 into 2.12.0
