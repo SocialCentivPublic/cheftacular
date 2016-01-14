@@ -1,8 +1,12 @@
-## 2.12.2
+## 2.13.0
 
 * Fix minor bug in `cft compile_readme` where argument documentation is compiled twice
 
 * Minor fix to `cft migrate`
+
+* Implemented `cft cleanup_logs`
+
+* Implemented `cft get_active_ssh_connections`
 
 ## 2.12.1
 

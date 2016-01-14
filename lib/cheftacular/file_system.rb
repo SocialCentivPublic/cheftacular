@@ -4,6 +4,10 @@ class Cheftacular
       @options, @config  = options, config
     end
 
+    def log_directories
+      ['applog', 'deploy', 'failed-deploy', 'rolelog', 'rvm', 'server-setup', 'stashedlog']
+    end
+
     def write_version_file version
       File.open( current_version_file_path, "w") { |f| f.write(version) }
     end
@@ -212,6 +216,44 @@ class Cheftacular
       else
         puts "#{ __method__ } does not support this operating system at this time"
       end
+    end
+
+    def initialize_log_directories should_cleanup_file_caches=true
+      log_directories.each do |sub_log_directory|
+        FileUtils.mkdir_p File.join( @config['locs']['chef-log'], sub_log_directory )
+      end
+
+      FileUtils.mkdir_p File.join( @config['locs']['app-tmp'], @config['helper'].declassify)
+
+      FileUtils.mkdir_p @config['filesystem'].current_nodes_file_cache_path
+
+      cleanup_file_caches if should_cleanup_file_caches
+    end
+
+    def remove_log_directories directories_to_not_remove_array=[]
+      (log_directories - directories_to_not_remove_array).each do |log_directory|
+        FileUtils.rm_rf File.join( @config['locs']['chef-log'], log_directory.strip )
+      end
+    end
+
+    def generate_report_from_node_hash report_name, node_hash={}, out=[]
+      node_hash.each_pair do |serv_name, output|
+        out << "#{ serv_name }:"
+
+        output.join("\n").split("\n").each do |line|
+          out << " #{ line }"
+        end
+
+        out << "\n"
+      end
+
+      puts(out) if @options['no_logs'] || @options['verbose']
+
+      log_loc, timestamp = @config['helper'].set_log_loc_and_timestamp
+
+      puts("Generating log file for #{ report_name } at #{ log_loc }/#{ report_name.gsub(' ', '-') }-#{ timestamp }.txt") unless @options['quiet']
+
+      File.open("#{ log_loc }/#{ report_name.gsub(' ', '-') }-#{ timestamp }.txt", "w") { |f| f.write(out.join("\n").scrub_pretty_text) } unless @options['no_logs']
     end
 
     private

@@ -496,15 +496,7 @@ class Cheftacular
     end
 
     def initialize_directories
-      ['applog', 'deploy', 'failed-deploy', 'rolelog', 'rvm', 'server-setup', 'stashedlog'].each do |sub_log_directory|
-        FileUtils.mkdir_p File.join( @config['locs']['chef-log'], sub_log_directory )
-      end
-
-      FileUtils.mkdir_p File.join( @config['locs']['app-tmp'], @config['helper'].declassify)
-
-      FileUtils.mkdir_p @config['filesystem'].current_nodes_file_cache_path
-
-      @config['filesystem'].cleanup_file_caches
+      @config['filesystem'].initialize_log_directories
     end
 
     def initialize_cloud_checks exit_on_finish = false
