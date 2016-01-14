@@ -4,9 +4,11 @@
 
 * Minor fix to `cft migrate`
 
-* Implemented `cft cleanup_logs`
+* Implemented `cft cleanup_logs [DIRECTORIES_TO_NOT_DELETE]`, cleans up log directories
 
-* Implemented `cft get_active_ssh_connections`
+* Implemented `cft get_active_ssh_connections`, get all active ssh connections for all servers in the current environment
+
+* Removed `cft get_active_shorewall_connections` due to TheCheftacularCookbook removing shorewall and only using iptables
 
 ## 2.12.1
 
