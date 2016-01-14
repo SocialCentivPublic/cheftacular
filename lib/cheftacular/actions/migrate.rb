@@ -68,7 +68,7 @@ class Cheftacular
     end
 
     def migrate_ nodes=[]
-      puts "Migrate method tried to migrate the role \"#{ @options['role'] }\" but it doesn't appear to have a repository set! Skipping..."
+      puts("Migrate method tried to migrate the role \"#{ @options['role'] }\" but it doesn't appear to have a repository set! Skipping...") if @options['verbose']
 
       return false
     end

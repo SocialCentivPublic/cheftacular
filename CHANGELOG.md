@@ -1,3 +1,9 @@
+## 2.12.2
+
+* Fix minor bug in `cft compile_readme` where argument documentation is compiled twice
+
+* Minor fix to `cft migrate`
+
 ## 2.12.1
 
 * Introduced the preferred console feature where nodes that have a role "preferred_console" will have rails consoles connect to it before trying normal nodes
