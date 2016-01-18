@@ -52,13 +52,13 @@ class Cheftacular
     end
 
     def migrate_wordpress nodes=[]
-      puts "Method #{ __method__ } is not yet implemented"
+      puts("Method #{ __method__ } is not yet implemented") if @options['verbose']
 
       return false
     end
 
     def migrate_nodejs nodes=[]
-      puts "Method #{ __method__ } is not yet implemented"
+      puts("Method #{ __method__ } is not yet implemented") if @options['verbose']
 
       return false
     end
