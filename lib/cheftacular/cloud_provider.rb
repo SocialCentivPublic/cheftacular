@@ -23,6 +23,9 @@ class Cheftacular
       raise "CRITICAL! Unable to capture addresses for the server!" if ret_array[0].nil? || ret_array[1].nil?
 
       ret_array
+    rescue StandardError => e
+      puts "Encountered #{ e } for server hash:"
+      ap cloud_server_hash
     end
 
     def parse_server_root_password_from_server_create_hash server_hash, real_node_name

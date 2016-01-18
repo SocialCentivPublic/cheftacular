@@ -10,6 +10,13 @@
 
 * Removed `cft get_active_shorewall_connections` due to TheCheftacularCookbook removing shorewall and only using iptables
 
+* Fix issue in server creation process where the user is not notified of the failing server hash
+
+* New cheftacular.yml keys
+
+    * **pleasantries** (if true, a few nice comments will be made about various commands for certain days)
+
+
 ## 2.12.1
 
 * Introduced the preferred console feature where nodes that have a role "preferred_console" will have rails consoles connect to it before trying normal nodes

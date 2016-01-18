@@ -28,6 +28,7 @@ route_dns_changes_via:  rackspace                # tells cheftacular to send dns
 node_name_separator:    '.'                      # On rackspace, can be anything except a space, on most other hosting sites, it must be a valid url character
 pre_install_packages:   ''                       # space delimited list of packages to install during a  node's initial setup process
 self_update_repository: ''                       # repository cheftacular will try and self update itself in
+pleasantries:           true                     # if true, a few nice comments will be made about various commands for certain days
 
 git:
   check_remote_for_branch_existence: false       #checks the remote repository to see if the branch exists on -Z branch_name deploys, you must be authenticated LOCALLY to do this. This does not occur on remote servers

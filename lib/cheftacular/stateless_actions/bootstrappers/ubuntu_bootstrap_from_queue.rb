@@ -175,7 +175,7 @@ class Cheftacular
 
           if execution_hash.has_key?(:retries)
             execution_hash[:retries] = execution_hash[:retries] -= 1
-            puts "There are #{ execution_hash[:retries] } tries left to evaluate the command."
+            puts "#{ server_name_output(server_hash) }_@@@@@@@@@@@ There are #{ execution_hash[:retries] } tries left to evaluate the above command."
 
             sleep 60
 

@@ -15,6 +15,12 @@ class Cheftacular
   class StatelessAction
     def check_cheftacular_yml_keys out=[], exit_on_missing=false, warn_on_missing=false
       base_message = "Your cheftacular.yml is missing the key KEY, its default value is being set to DEFAULT for this run."
+      
+      #############################2.13.0################################################
+
+      unless @config['cheftacular'].has_key?('pleasantries')
+        @config['cheftacular']['pleasantries'] = true
+      end
 
       #############################2.11.0################################################
 

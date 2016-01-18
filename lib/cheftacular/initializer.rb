@@ -489,6 +489,7 @@ class Cheftacular
       @config['action_documentation']           = Cheftacular::ActionDocumentation.new(@options, @config)
       @config['stateless_action_documentation'] = Cheftacular::StatelessActionDocumentation.new(@options, @config)
       @config['error']                          = Cheftacular::Error.new(@options, @config)
+      @config['pleasantries']                   = Cheftacular::Pleasantries.new(@options, @config)
       @config['dummy_sshkit']                   = SSHKit::Backend::Netssh.new(SSHKit::Host.new('127.0.0.1'))
       @config['DNS']                            = Cheftacular::DNS.new(@options, @config)
       @config['queue_master']                   = Cheftacular::QueueMaster.new(@options, @config)
