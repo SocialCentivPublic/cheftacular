@@ -35,27 +35,7 @@ class Cheftacular
         disk_hash[n.name] = start_disk_report( n.name, n.public_ipaddress, options, locs, passwords)
       end
 
-      disk_hash.each_pair do |serv_name, output|
-        out << "#{ serv_name }:"
-
-        line_count = 1
-
-        output.join("\n").split("\n").each do |line|
-          out << line_count == 1 ? "               #{ line }" : "  #{ line }"
-
-          line_count += 1
-        end
-
-        out << "\n"
-      end
-
-      puts(out) if @options['no_logs'] || @options['verbose']
-
-      log_loc, timestamp = @config['helper'].set_log_loc_and_timestamp
-
-      puts("Generating log file for disk report at #{ log_loc }/disk-report-#{ timestamp }.txt") unless @options['quiet']
-
-      File.open("#{ log_loc }/disk-report-#{ timestamp }.txt", "w") { |f| f.write(out.join("\n").scrub_pretty_text) } unless @options['no_logs']
+      @config['filesystem'].generate_report_from_node_hash('disk report', disk_hash)
     end
   end
 end

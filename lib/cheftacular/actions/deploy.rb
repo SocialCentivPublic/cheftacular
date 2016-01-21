@@ -36,6 +36,8 @@ class Cheftacular
 
       deployment_args = { in: :groups, limit: 10, wait: 5 } if @options['env'] == 'production'
 
+      @config['pleasantries'].good_luck_fridays if @config['cheftacular']['pleasantries']
+
       #on is namespaced to SSHKit::Backend::Netssh.on 
       on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ), deployment_args do |host|
         n = get_node_from_address(nodes, host.hostname)

@@ -489,6 +489,7 @@ class Cheftacular
       @config['action_documentation']           = Cheftacular::ActionDocumentation.new(@options, @config)
       @config['stateless_action_documentation'] = Cheftacular::StatelessActionDocumentation.new(@options, @config)
       @config['error']                          = Cheftacular::Error.new(@options, @config)
+      @config['pleasantries']                   = Cheftacular::Pleasantries.new(@options, @config)
       @config['dummy_sshkit']                   = SSHKit::Backend::Netssh.new(SSHKit::Host.new('127.0.0.1'))
       @config['DNS']                            = Cheftacular::DNS.new(@options, @config)
       @config['queue_master']                   = Cheftacular::QueueMaster.new(@options, @config)
@@ -496,15 +497,7 @@ class Cheftacular
     end
 
     def initialize_directories
-      ['applog', 'deploy', 'failed-deploy', 'rolelog', 'rvm', 'server-setup', 'stashedlog'].each do |sub_log_directory|
-        FileUtils.mkdir_p File.join( @config['locs']['chef-log'], sub_log_directory )
-      end
-
-      FileUtils.mkdir_p File.join( @config['locs']['app-tmp'], @config['helper'].declassify)
-
-      FileUtils.mkdir_p @config['filesystem'].current_nodes_file_cache_path
-
-      @config['filesystem'].cleanup_file_caches
+      @config['filesystem'].initialize_log_directories
     end
 
     def initialize_cloud_checks exit_on_finish = false

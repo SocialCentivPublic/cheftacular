@@ -52,13 +52,13 @@ class Cheftacular
     end
 
     def migrate_wordpress nodes=[]
-      puts "Method #{ __method__ } is not yet implemented"
+      puts("Method #{ __method__ } is not yet implemented") if @options['verbose']
 
       return false
     end
 
     def migrate_nodejs nodes=[]
-      puts "Method #{ __method__ } is not yet implemented"
+      puts("Method #{ __method__ } is not yet implemented") if @options['verbose']
 
       return false
     end
@@ -68,7 +68,7 @@ class Cheftacular
     end
 
     def migrate_ nodes=[]
-      puts "Migrate method tried to migrate the role \"#{ @options['role'] }\" but it doesn't appear to have a repository set! Skipping..."
+      puts("Migrate method tried to migrate the role \"#{ @options['role'] }\" but it doesn't appear to have a repository set! Skipping...") if @options['verbose']
 
       return false
     end

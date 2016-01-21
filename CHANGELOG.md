@@ -1,3 +1,23 @@
+## 2.13.0
+
+* Fix minor bug in `cft compile_readme` where argument documentation is compiled twice
+
+* Minor fix to `cft migrate`
+
+* Implemented `cft cleanup_logs [DIRECTORIES_TO_NOT_DELETE]`, cleans up log directories
+
+* Implemented `cft get_active_ssh_connections`, get all active ssh connections for all servers in the current environment
+
+* Removed `cft get_active_shorewall_connections` due to TheCheftacularCookbook removing shorewall and only using iptables
+
+* Fix issue in server creation process where the user is not notified of the failing server hash
+
+* New cheftacular.yml keys
+
+    * **pleasantries** (if true, a few nice comments will be made about various commands for certain days)
+
+* The audit logs now store (and display) the current version of cheftacular that is being run by the client
+
 ## 2.12.1
 
 * Introduced the preferred console feature where nodes that have a role "preferred_console" will have rails consoles connect to it before trying normal nodes

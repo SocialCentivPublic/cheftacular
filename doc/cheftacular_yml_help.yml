@@ -25,6 +25,7 @@ git_based_deploys:      '[true|false] this initializes a key in your authenticat
 route_dns_changes_via:  '[rackspace|dnsimple] Tells cheftacular to send dns changes to this provider instead of the preferred_cloud_option'
 node_name_separator:    'On rackspace, can be anything except a space, on most other hosting sites, it must be a valid url character'
 pre_install_packages:   "Space delimited list of packages to install during a node's initial setup process"
+pleasantries:           '[true|false] If true, a few nice comments will be made about various commands for certain days'
 
 git:
   key_description:      'Stores various configs for interacting with git'

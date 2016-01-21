@@ -62,7 +62,7 @@ class Cheftacular
         "deploying from, your git user needs access to these forks / organization(s).",
 
         "    3.  The `-z|--unset-github-deploy-args` option will clear your current `-Z` and `-O` flags."
-      ]
+      ] if @config['documentation']['arguments'].empty?
     end
 
     alias_method :flags, :arguments
