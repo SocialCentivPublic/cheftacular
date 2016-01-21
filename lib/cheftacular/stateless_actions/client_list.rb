@@ -18,7 +18,9 @@ class Cheftacular
 
           "    4. `-S|--search-role-name ROLE_NAME` option will make this command return results that INCLUDE the ROLE_NAME.",
 
-          "    5. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment."
+          "    5. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment.",
+
+          "    6. This command is aliased to `cft clients` and `cft c`"
         ]
       ]
 
@@ -96,5 +98,8 @@ class Cheftacular
         end
       end
     end
+
+    alias_method :clients, :client_list
+    alias_method :c, :client_list
   end
 end

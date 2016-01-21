@@ -16,6 +16,7 @@
 
     * **pleasantries** (if true, a few nice comments will be made about various commands for certain days)
 
+* The audit logs now store (and display) the current version of cheftacular that is being run by the client
 
 ## 2.12.1
 

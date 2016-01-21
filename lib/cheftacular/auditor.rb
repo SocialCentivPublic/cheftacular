@@ -23,6 +23,7 @@ class Cheftacular
     def audit_run_as_hash ret_hash={}, options_to_ignore=[]
       ret_hash['hostname']  = Socket.gethostname
       ret_hash['directory'] = @config['locs']['root']
+      ret_hash['version']   = Cheftacular::VERSION
       ret_hash['command']   = @options['command']
       
       options_to_ignore << :preferred_cloud        if @options['preferred_cloud'] == @config['cheftacular']['preferred_cloud']
@@ -40,8 +41,9 @@ class Cheftacular
       ret_hash
     end
 
-    def compile_audit_hash_entry_as_array audit_hash, entry_number=0, ret_array=[], directory_content=''
+    def compile_audit_hash_entry_as_array audit_hash, entry_number=0, ret_array=[], directory_content='', version_content=''
       directory_content = " (#{ audit_hash['directory'] })" if audit_hash.has_key?('directory')
+      version_content   = "[#{ audit_hash['version'] }]"    if audit_hash.has_key?('version')
 
       ret_array << "#{ (entry_number.to_s + '. ') unless entry_number == 0 }#{ audit_hash['command'] }"
       ret_array << "  Hostname:  #{ audit_hash['hostname'] }#{ directory_content }"
