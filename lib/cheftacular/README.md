@@ -108,6 +108,8 @@
 
     3. `sync` will sync your local cheftacular yaml keys ONTO the server's keys. Will send a slack notification if slack is configured (the slack notification contains the diffed keys). The sync only occurs if there are CHANGES to the file.
 
+    4. This command is aliased to `cc`
+
 5. `cft cheftacular_yml_help KEY` this commandallows you to get help on the meaning of each key in your cheftacular.yml overall config.
 
     1. This command can also by run with `cft yaml_help`.
@@ -135,6 +137,8 @@
     4. `-S|--search-role-name ROLE_NAME` option will make this command return results that INCLUDE the ROLE_NAME.
 
     5. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment.
+
+    6. This command is aliased to `cft clients` and `cft c`
 
 9. `cft console` will create a console session on the first node found for a repository.
 
@@ -331,6 +335,8 @@
 
     3. `sync` will sync your local cheftacular yaml keys ONTO the server's keys. Will send a slack notification if slack is configured (the slack notification contains the diffed keys). The sync only occurs if there are CHANGES to the file.
 
+    4. This command is aliased to `cc`
+
 8. `cft cheftacular_yml_help KEY` this commandallows you to get help on the meaning of each key in your cheftacular.yml overall config.
 
     1. This command can also by run with `cft yaml_help`.
@@ -364,6 +370,8 @@
     4. `-S|--search-role-name ROLE_NAME` option will make this command return results that INCLUDE the ROLE_NAME.
 
     5. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment.
+
+    6. This command is aliased to `cft clients` and `cft c`
 
 13. `cft cloud <FIRST_LEVEL_ARG> [<SECOND_LEVEL_ARG>[:<SECOND_LEVEL_ARG_QUERY>]*] ` this command handles talking to various cloud APIs. If no args are passed nothing will happen.
 
