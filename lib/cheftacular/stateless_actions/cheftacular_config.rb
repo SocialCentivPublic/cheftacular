@@ -13,7 +13,9 @@ class Cheftacular
           "    2. `diff` will show the difference between your current cheftacular.yml and the server's. Run automatically on a sync.",
 
           "    3. `sync` will sync your local cheftacular yaml keys ONTO the server's keys. Will send a slack notification " +
-          "if slack is configured (the slack notification contains the diffed keys). The sync only occurs if there are CHANGES to the file."
+          "if slack is configured (the slack notification contains the diffed keys). The sync only occurs if there are CHANGES to the file.",
+
+          "    4. This command is aliased to `cc`"
         ]
       ]
 
@@ -31,6 +33,8 @@ class Cheftacular
 
       self.send("cheftacular_config_#{ command }")
     end
+
+    alias_method :cc, :cheftacular_config
 
     private
 

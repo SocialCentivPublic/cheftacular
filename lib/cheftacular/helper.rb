@@ -325,7 +325,8 @@ class Cheftacular
       diff_hash = @config['initial_cheftacular_yml'].deep_diff(@config['default']['cheftacular_bag_hash'], true).except('mode', 'default_repository').compact
 
       recursive_hash_scrub(diff_hash)
-      recursive_hash_scrub(diff_hash) #scrub out any leftover empty hashes
+
+      recursive_hash_scrub(diff_hash) unless diff_hash.empty? #scrub out any leftover empty hashes
 
       if diff_hash.empty?
         puts "No difference detected between your cheftacular.yml and the global environment."

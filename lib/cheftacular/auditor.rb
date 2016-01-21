@@ -43,7 +43,7 @@ class Cheftacular
 
     def compile_audit_hash_entry_as_array audit_hash, entry_number=0, ret_array=[], directory_content='', version_content=''
       directory_content = " (#{ audit_hash['directory'] })" if audit_hash.has_key?('directory')
-      version_content   = "[#{ audit_hash['version'] }]"    if audit_hash.has_key?('version')
+      version_content   = " [#{ audit_hash['version'] }]"   if audit_hash.has_key?('version')
 
       ret_array << "#{ (entry_number.to_s + '. ') unless entry_number == 0 }#{ audit_hash['command'] }"
       ret_array << "  Hostname:  #{ audit_hash['hostname'] }#{ directory_content }#{ version_content }"
