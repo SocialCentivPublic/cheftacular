@@ -46,7 +46,7 @@ class Cheftacular
       version_content   = "[#{ audit_hash['version'] }]"    if audit_hash.has_key?('version')
 
       ret_array << "#{ (entry_number.to_s + '. ') unless entry_number == 0 }#{ audit_hash['command'] }"
-      ret_array << "  Hostname:  #{ audit_hash['hostname'] }#{ directory_content }"
+      ret_array << "  Hostname:  #{ audit_hash['hostname'] }#{ directory_content }#{ version_content }"
       ret_array << "  Arguments: #{ audit_hash['arguments'] }"       if !audit_hash['arguments'].nil? && !audit_hash['arguments'].empty?
       ret_array << "  Options:   #{ audit_hash['options'].to_hash }" unless audit_hash['options'].empty?
       
