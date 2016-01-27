@@ -24,7 +24,7 @@ class Cheftacular
       ret_hash['hostname']  = Socket.gethostname
       ret_hash['directory'] = @config['locs']['root']
       ret_hash['version']   = Cheftacular::VERSION
-      ret_hash['command']   = @options['command']
+      ret_hash['command']   = return_true_command(@options['command'])
       
       options_to_ignore << :preferred_cloud        if @options['preferred_cloud'] == @config['cheftacular']['preferred_cloud']
       options_to_ignore << :preferred_cloud_image  if @options['preferred_cloud_image'] == @config['cheftacular']['preferred_cloud_image']
@@ -41,26 +41,67 @@ class Cheftacular
       ret_hash
     end
 
-    def compile_audit_hash_entry_as_array audit_hash, entry_number=0, ret_array=[], directory_content='', version_content=''
+    def compile_audit_hash_entry_as_array audit_hash, entry_number=0, mode='normal', ret_array=[], directory_content='', version_content=''
       directory_content = " (#{ audit_hash['directory'] })" if audit_hash.has_key?('directory')
       version_content   = " [#{ audit_hash['version'] }]"   if audit_hash.has_key?('version')
 
-      ret_array << "#{ (entry_number.to_s + '. ') unless entry_number == 0 }#{ audit_hash['command'] }"
+      ret_array << "#{ (entry_number.to_s + '. ') unless entry_number == 0 }#{ audit_hash['command'] }" if mode =~ /normal/
       ret_array << "  Hostname:  #{ audit_hash['hostname'] }#{ directory_content }#{ version_content }"
-      ret_array << "  Arguments: #{ audit_hash['arguments'] }"       if !audit_hash['arguments'].nil? && !audit_hash['arguments'].empty?
-      ret_array << "  Options:   #{ audit_hash['options'].to_hash }" unless audit_hash['options'].empty?
+
+      if mode =~ /normal/
+        ret_array << "  Arguments: #{ audit_hash['arguments'] }"       if !audit_hash['arguments'].nil? && !audit_hash['arguments'].empty?
+        ret_array << "  Options:   #{ audit_hash['options'].to_hash }" unless audit_hash['options'].empty?
+      end
       
       ret_array = ret_array.map { |entry| entry.prepend('    ')} unless entry_number == 0
 
       ret_array
     end
 
+    def notify_slack_on_completion msg
+      audit_command_to_slack_queue(audit_run_as_hash, 'short', msg)
+    end
+
+    def return_true_command command
+      final_command = command
+
+      if aliased_command_hash.values.flatten.include?(command)
+        aliased_command_hash.each_pair do |full_command, alias_array|
+
+          final_command = full_command if alias_array.include?(command)
+        end
+      end
+
+      final_command
+    end
+
     private
 
-    def audit_command_to_slack_queue audit_hash, msg=''
-      msg << compile_audit_hash_entry_as_array(audit_hash).join("\n")
+    def audit_command_to_slack_queue audit_hash, mode='normal', msg=''
+      msg << compile_audit_hash_entry_as_array(audit_hash, 0, mode).join("\n")
 
       @config['slack_queue'] << { message: msg.prepend('```').insert(-1, '```'), channel: @config['cheftacular']['slack']['notify_on_command_execute'] }
+    end
+
+    def aliased_command_hash
+      {
+        check:                ['cu'],
+        console:              ['co'],
+        deploy:               ['d'],
+        cheftacular_config:   ['cc'],
+        cheftacular_yml_help: ['yml_help'],
+        client_list:          ['cl'],
+        environment:          ['e'],
+        fix_known_hosts:      ['fkh'],
+        knife_upload:         ['ku'],
+        location_aliases:     ['la'],
+        remove_client:        ['rc'],
+        role_toggle:          ['rt'],
+        update_cookbook:      ['uc'],
+        upload_nodes:         ['un'],
+        upload_roles:         ['ur'],
+        version:              ['v']
+      }
     end
   end
 end

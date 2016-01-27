@@ -20,7 +20,7 @@ class Cheftacular
 
           "    5. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment.",
 
-          "    6. This command is aliased to `cft clients` and `cft c`"
+          "    6. This command is aliased to `cft clients` and `cft cl`"
         ]
       ]
 
@@ -100,6 +100,6 @@ class Cheftacular
     end
 
     alias_method :clients, :client_list
-    alias_method :c, :client_list
+    alias_method :cl, :client_list
   end
 end

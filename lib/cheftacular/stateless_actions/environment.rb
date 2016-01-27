@@ -19,7 +19,9 @@ class Cheftacular
           "    5. This command will prompt when attempting to destroy servers in staging or production. " + 
           "Additionally, only devops clients will be able to destroy servers in those environments.",
 
-          "    6. This command also accepts a *comma delimited list* of server names to boot / destroy instead of all the stored ones for an environment."
+          "    6. This command also accepts a *comma delimited list* of server names to boot / destroy instead of all the stored ones for an environment.",
+
+          "    7. Aliased to `cft e`"
         ]
       ]
 
@@ -137,8 +139,10 @@ class Cheftacular
 
           sleep 15
         end
-      end
+      end  
     end
+
+    alias_method :e, :environment
 
     private
 

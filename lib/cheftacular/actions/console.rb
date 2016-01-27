@@ -7,7 +7,9 @@ class Cheftacular
         [
           "    1. Attempts to setup a console for the unique stack, stacks currently supported for console is only Rails.",
 
-          "    2. If there is a node in the repository set that has the role `preferred_console`, this node will come before others."
+          "    2. If there is a node in the repository set that has the role `preferred_console`, this node will come before others.",
+
+          "    3. Aliased to `cft co`"
         ]
       ]
 
@@ -18,6 +20,8 @@ class Cheftacular
   class Action
     def console
       self.send("console_#{ @config['getter'].get_current_stack }")
+
+      @config['auditor'].notify_slack_on_completion("console run completed\n") if @config['cheftacular']['auditing']
     end
 
     def console_ruby_on_rails node_args=[{unless: 'role[rails]'}]
@@ -76,5 +80,7 @@ class Cheftacular
 
       return false
     end
+
+    alias_method :co, :console
   end
 end

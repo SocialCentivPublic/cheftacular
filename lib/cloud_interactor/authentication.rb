@@ -52,6 +52,13 @@ class CloudInteractor
 
     def parse_cloud_hash
       case @options['preferred_cloud']
+      when 'aws'
+        {
+          provider:              'AWS',
+          aws_access_key_id:     @auth_hash['cloud_authentication'][@options['preferred_cloud']]['access_key'],
+          aws_secret_access_key: @auth_hash['cloud_authentication'][@options['preferred_cloud']]['secret_access_key'],
+          region:                @options['preferred_cloud_region']
+        }
       when 'rackspace' 
         {
           provider:            'Rackspace',

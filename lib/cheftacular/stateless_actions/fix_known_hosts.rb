@@ -8,7 +8,9 @@ class Cheftacular
         "for all the servers that are in our system (ip addresses AND dns names)",
 
         [
-          "    1. Passing in a hostname will make the command only remove entries with that hostname / ip specifically"
+          "    1. Passing in a hostname will make the command only remove entries with that hostname / ip specifically",
+
+          "    2. Aliased to `cft fkh`"
         ]
       ]
 
@@ -48,5 +50,7 @@ class Cheftacular
         @config['filesystem'].scrub_from_known_hosts target
       end
     end
+
+    alias_method :fkh, :fix_known_hosts
   end
 end

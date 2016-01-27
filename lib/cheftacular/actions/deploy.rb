@@ -17,7 +17,9 @@ class Cheftacular
           "    4.  This command will also run migrations on both an role's normal servers and its split servers if certain " +
           "conditions are met (such as the role having a database, etc).",
 
-          "    5. The `-v|--verbose` option will cause failed deploys to output to the terminal window and to their normal log file. Useful for debugging."
+          "    5. The `-v|--verbose` option will cause failed deploys to output to the terminal window and to their normal log file. Useful for debugging.",
+
+          "    6. Aliased to `cft d`"
         ]
       ]
 
@@ -77,6 +79,8 @@ class Cheftacular
         end
       end
     end
+
+    alias_method :d, :deploy
   end
 end
 

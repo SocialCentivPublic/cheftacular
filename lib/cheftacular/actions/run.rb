@@ -26,12 +26,15 @@ class Cheftacular
 
   class Action
     def run
-      self.send("run_#{ @config['getter'].get_current_stack }")
+      command = @config['parser'].parse_runtime_arguments 0, 'range'
+
+      self.send("run_#{ @config['getter'].get_current_stack }", command)
+
+      @config['auditor'].notify_slack_on_completion("run #{ command } completed\n") if @config['cheftacular']['auditing']
     end
 
-    def run_ruby_on_rails
+    def run_ruby_on_rails command
       nodes   = @config['getter'].get_true_node_objects
-      command = @config['parser'].parse_runtime_arguments 0, 'range'
 
       #must have rails stack to run migrations and not be a db, only want ONE node
       nodes = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @options['role'] }]" }], !@options['run_on_all'] )
@@ -56,19 +59,19 @@ class Cheftacular
       @config['helper'].send_log_bag_hash_slack_notification(logs_bag_hash, __method__, 'Failing command detected, exiting...')
     end
 
-    def run_nodejs
+    def run_nodejs command
       raise "Not yet implemented"
     end
 
-    def run_wordpress
+    def run_wordpress command
       raise "Not yet implemented"
     end
 
-    def run_all
+    def run_all command
       raise "You attempted to run a command for the all role, this is not possible."
     end
 
-    def run_
+    def run_ command
       puts "Run method tried to run a command for the role \"#{ @options['role'] }\" but it doesn't appear to have a repository set! Skipping..."
 
       return false

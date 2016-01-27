@@ -23,7 +23,7 @@ class Cheftacular
           "        3. `edit:TEXT_EDITOR` will attempt to edit the file with the TEXT_EDITOR listed. NOTE! This editor must be installed " +
           "on the node you're accessing. If the editor is not present via a `which` command, the cft file command will say so.",
 
-          "        4. `fetch|scp` will attempt to fetch the FILE_NAME listed via SCP. This file is saved to #{ @config['locs']['app-tmp'] } " + 
+          "        4. `fetch|scp` will attempt to fetch the FILE_NAME listed via SCP. This file is saved to #{ @config['locs']['chef-log'] } " + 
           "(based on your directory structure) under the same FILE_NAME as the remote file.",
 
           "            1. The #{ @config['cheftacular']['deploy_user'] } must have access to said file without sudo!",

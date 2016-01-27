@@ -12,7 +12,7 @@ class Cheftacular
         [
           "    1. `destroy` deletes the server as well as removing it from the chef environment.",
 
-          "    2. This command is aliased to `cft remove_node`"
+          "    2. This command is aliased to `cft remove_node` and `cft rc`"
         ]
       ]
 
@@ -74,5 +74,6 @@ class Cheftacular
     end
 
     alias_method :remove_node, :remove_client
+    alias_method :rc, :remove_client
   end
 end

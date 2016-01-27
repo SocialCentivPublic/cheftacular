@@ -9,7 +9,9 @@ class Cheftacular
           "    1. If the node has special repository based keys from TheCheftacularCookbook, this command will also display information " +
           "about the branch and organization currently deployed to the node(s).",
 
-          "    2. If the all argument is provided, all repositories will be checked for the current environment"
+          "    2. If the all argument is provided, all repositories will be checked for the current environment",
+
+          "    3. Aliased to `cft ch`"
         ]
       ]
       @config['documentation']['action'][__method__]['short_description'] = "Checks the branches currently deployed to an env for your repo"
@@ -85,6 +87,8 @@ class Cheftacular
         end
       end
     end
+
+    alias_method :ch, :check
   end
 end
 

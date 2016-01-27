@@ -18,7 +18,9 @@ class Cheftacular
           "    3. When building new servers *in any mode*, this command will check the node_roles stored in the data bag only and update the " +
           "run lists of the nodes from that data, NOT from the node_roles data stored on disk in the nodes_dir.",
 
-          "        1. Due to this, only users running this against their chef-repo need to worry about having a nodes_dir, the way it should be."
+          "        1. Due to this, only users running this against their chef-repo need to worry about having a nodes_dir, the way it should be.",
+
+          "    4. Aliased to `cft un`"
         ]
       ]
 
@@ -133,5 +135,7 @@ class Cheftacular
 
       @config['filesystem'].cleanup_file_caches('current-nodes') if invalidate_file_node_cache
     end
+
+    alias_method :un, :upload_nodes
   end
 end

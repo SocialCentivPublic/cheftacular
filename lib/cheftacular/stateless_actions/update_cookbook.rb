@@ -7,7 +7,9 @@ class Cheftacular
         "`cft update_cookbook [COOKBOOK_NAME] [INSTALL_VERSION]` allows you to specifically update a single cookbook",
 
         [
-          "    1. This command passed with no arguments will update TheCheftacularCookbook"
+          "    1. This command passed with no arguments will update TheCheftacularCookbook",
+
+          "    2. Aliased to `cft uc`"
         ]
       ]
 
@@ -41,5 +43,7 @@ class Cheftacular
         break
       end
     end
+
+    alias_method :uc, :update_cookbook
   end
 end

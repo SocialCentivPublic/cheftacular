@@ -1,3 +1,43 @@
+## 2.13.1
+
+* Added several new aliases:
+
+    * `cft ch` -> `cft check`
+
+    * `cft co` -> `cft console`
+
+    * `cft d` -> `cft deploy`
+
+    * `cft cb` -> `cft cloud_bootstrap`
+
+    * `cft cl` -> `cft client_lists`
+
+    * `cft e` -> `cft environment`
+
+    * `cft ku` -> `cft knife_upload`
+
+    * `cft fkh` -> `cft fix_known_hosts`
+
+    * `cft la` -> `cft location_aliases`
+
+    * `cft rc` -> `cft remove_client`
+
+    * `cft rt` -> `cft role_toggle`
+
+    * `cft uc` -> `cft update_cookbook`
+
+    * `cft un` -> `cft upload_nodes`
+
+    * `cft ur` -> `cft upload_roles`
+
+* Added some vestigial code for setting up AWS cloud
+
+* `cft console` runs now notify slack when they are ended by any means other than `ctrl+c` when auditing is turned on
+
+* `cft run` now also notifies slack when it completes when auditing is turned on
+
+* `cft migrate` now also notifies slack when it comples when auditing is turned on _and the migrate isn't a default migrate_
+
 ## 2.13.0
 
 * Fix minor bug in `cft compile_readme` where argument documentation is compiled twice

@@ -4,7 +4,11 @@ class Cheftacular
     def upload_roles
       @config['documentation']['stateless_action'][__method__] ||= {}
       @config['documentation']['stateless_action'][__method__]['long_description'] = [
-        "`cft upload_roles` This command will resync the chef server's roles with the data in the chef-repo/roles."
+        "`cft upload_roles` This command will resync the chef server's roles with the data in the chef-repo/roles.",
+
+        [
+          "    1. Aliased to `cft ur`"
+        ]
       ]
 
       @config['documentation']['stateless_action'][__method__]['short_description'] = 'Updates all roles based on data in your roles dir'
@@ -23,5 +27,7 @@ class Cheftacular
         puts `knife role from file "#{ @config['locs']['roles'] }/#{ rd }"` 
       end
     end
+
+    alias_method :ur, :upload_roles
   end
 end

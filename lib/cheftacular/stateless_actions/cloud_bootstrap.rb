@@ -19,7 +19,9 @@ class Cheftacular
           "will match \"1GB Standard\" (for rackspace flavors)",
 
           "    4. DESCRIPTOR is used as an internal tag for the node, if left blank it will become the name of the node. " +
-          "It is recommended to enter a custom repository-dependent tag here to make nodes easier to load-balance like \"lb:[CODEBASE_NAME]\""
+          "It is recommended to enter a custom repository-dependent tag here to make nodes easier to load-balance like \"lb:[CODEBASE_NAME]\"",
+
+          "    5. Aliased to `cft cb`"
         ]
       ]
 
@@ -79,5 +81,7 @@ class Cheftacular
 
       @config['stateless_action'].full_bootstrap_from_queue unless @config['in_server_creation_queue'] #bootstrap server with ruby and attach it to the chef server
     end
+
+    alias_method :cb, :cloud_bootstrap
   end
 end
