@@ -48,7 +48,11 @@ class Cheftacular
       @options['run_migration_already'] = true
 
       #restart the servers again after a deploy with a migration just in case
-      deploy if !log_data.empty? && log_data != @config['cheftacular']['repositories'][@options['role']]['not_a_migration_message']
+      if !log_data.empty? && log_data != @config['cheftacular']['repositories'][@options['role']]['not_a_migration_message']
+        @config['auditor'].notify_slack_on_completion("migrate run completed\n") if @config['cheftacular']['auditing']
+
+        deploy
+      end
     end
 
     def migrate_wordpress nodes=[]

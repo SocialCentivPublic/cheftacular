@@ -5,6 +5,10 @@ class Cheftacular
       @config['documentation']['stateless_action'][__method__] ||= {}
       @config['documentation']['stateless_action'][__method__]['long_description'] = [
         "`cft version` this command prints out the current version of cheftacular.",
+
+        [
+          "    1. Aliased to `cft v`"
+        ]
       ]
 
       @config['documentation']['stateless_action'][__method__]['short_description'] = 'Displays the current version of cheftacular'
@@ -23,5 +27,7 @@ class Cheftacular
     def version
       @config['helper'].display_currently_installed_version
     end
+
+    alias_method :v, :version
   end
 end

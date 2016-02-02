@@ -77,6 +77,9 @@ cloud_authentication:
   #  email:
   #  password:
   #  token:
+  #aws:
+  #  access_key:
+  #  secret_access_key:
 
 # the first comma in the list of log_locs is what is tailable, the others are only loggable
 role_maps: # role maps for log tailing

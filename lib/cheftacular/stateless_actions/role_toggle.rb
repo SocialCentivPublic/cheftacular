@@ -25,7 +25,9 @@ class Cheftacular
           "    3. In case it isn't obvious, this command ONLY supports deactivation suffix roles like worker_deactivate or worker_off, with their" +
           "on counterpart just being the role itself, like \"worker\".",
 
-          "        1. Please run `cft list_toggleable_roles NODE_NAME` to get a list of your org's toggleable roles for a node."
+          "        1. Please run `cft list_toggleable_roles NODE_NAME` to get a list of your org's toggleable roles for a node.",
+
+          "    4. Aliased to `cft rt`"
         ]
       ]
 
@@ -144,5 +146,7 @@ class Cheftacular
         @config['action'].deploy
       end
     end
+
+    alias_method :rt, :role_toggle
   end
 end

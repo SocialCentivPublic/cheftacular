@@ -10,7 +10,9 @@ class Cheftacular
         [
           "    1. The force option will add the force option to knife upload.",
 
-          "    2. Utilize `knife cookbook upload -a -V --cookbook-path ./cookbooks` if this command gives you trouble"
+          "    2. Utilize `knife cookbook upload -a -V --cookbook-path ./cookbooks` if this command gives you trouble",
+
+          "    3. Aliased to `cft ku`"
         ]
       ]
 
@@ -35,5 +37,7 @@ class Cheftacular
 
       puts out
     end
+
+    alias_method :ku, :knife_upload
   end
 end
