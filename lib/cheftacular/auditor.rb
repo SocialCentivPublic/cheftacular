@@ -85,7 +85,7 @@ class Cheftacular
 
     def aliased_command_hash
       {
-        check:                ['cu'],
+        check:                ['ch'],
         console:              ['co'],
         deploy:               ['d'],
         cheftacular_config:   ['cc'],

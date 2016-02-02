@@ -88,6 +88,8 @@
 
     2. If the all argument is provided, all repositories will be checked for the current environment
 
+    3. Aliased to `cft ch`
+
 3. `cft chef_server [restart|processes|memory]` this command can be used to query the chef server for stats if the cheftacular.yml has the chef_server key filled out. Useful for low resource chef-servers.
 
     1. `restart` restarts all chef processes on the chef server which may alleviate slow cheftacular load times for some users. (NOTE) do not run this command while the chef-server is performing actions or instability may result! Not tested for high volume chef servers.
@@ -138,13 +140,15 @@
 
     5. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment.
 
-    6. This command is aliased to `cft clients` and `cft c`
+    6. This command is aliased to `cft clients` and `cft cl`
 
 9. `cft console` will create a console session on the first node found for a repository.
 
     1. Attempts to setup a console for the unique stack, stacks currently supported for console is only Rails.
 
     2. If there is a node in the repository set that has the role `preferred_console`, this node will come before others.
+
+    3. Aliased to `cft co`
 
 10. `cft db_console` will create a database console session on the first node found for a database stack in the current environment.
 
@@ -164,6 +168,8 @@
 
     5. The `-v|--verbose` option will cause failed deploys to output to the terminal window and to their normal log file. Useful for debugging.
 
+    6. Aliased to `cft d`
+
 12. `cft disk_report` will fetch useful statistics from every server for every environment and output it into your log directory.
 
 13. `cft environment boot|boot_without_deploy|destroy|destroy_raw_servers [SERVER_NAMES]` will boot / destroy the current environment
@@ -179,6 +185,8 @@
     5. This command will prompt when attempting to destroy servers in staging or production. Additionally, only devops clients will be able to destroy servers in those environments.
 
     6. This command also accepts a *comma delimited list* of server names to boot / destroy instead of all the stored ones for an environment.
+
+    7. Aliased to `cft e`
 
 14. `cft file NODE_NAME LOCATION_ALIAS MODE FILE_NAME` interacts with a file on the remote server
 
@@ -196,7 +204,7 @@
 
         3. `edit:TEXT_EDITOR` will attempt to edit the file with the TEXT_EDITOR listed. NOTE! This editor must be installed on the node you're accessing. If the editor is not present via a `which` command, the cft file command will say so.
 
-        4. `fetch|scp` will attempt to fetch the FILE_NAME listed via SCP. This file is saved to /Users/louis/Code/chef-repo/tmp (based on your directory structure) under the same FILE_NAME as the remote file.
+        4. `fetch|scp` will attempt to fetch the FILE_NAME listed via SCP. This file is saved to /Users/louis/Code/chef-repo/log (based on your directory structure) under the same FILE_NAME as the remote file.
 
             1. The deploy must have access to said file without sudo!
 
@@ -213,6 +221,8 @@
 15. `cft fix_known_hosts [HOSTNAME]` this command will delete entries in your known_hosts file for all the servers that are in our system (ip addresses AND dns names)
 
     1. Passing in a hostname will make the command only remove entries with that hostname / ip specifically
+
+    2. Aliased to `cft fkh`
 
 16. `cft get_active_ssh_connections` will fetch the active ssh connections from every server and output it into your log directory.
 
@@ -231,6 +241,8 @@
 21. `cft list_toggleable_roles NODE_NAME` This command will allow you to see all toggleable roles for a node
 
 22. `cft location_aliases` will list all location aliases listed in your cheftacular.yml. These aliases can be used in the `cft file` command.
+
+    1. This command is aliased to `cft la`
 
 23. `cft log` this command will output the last 500 lines of logs from every server set for the repository (can be given additional args to specify) to the log directory
 
@@ -262,6 +274,8 @@
 
         1. Please run `cft list_toggleable_roles NODE_NAME` to get a list of your org's toggleable roles for a node.
 
+    4. Aliased to `cft rt`
+
 27. `cft run COMMAND [--all]` will trigger the command on the first server in the role. Can be used to run rake commands or anything else.
 
     1. `--all` will make the command run against all servers in a role rather than the first server it comes across. Don't do this if you're modifying the database with the command.
@@ -287,6 +301,8 @@
 30. `cft update_cheftacular` this command attempts to update cheftacular to the latest version.
 
 31. `cft version` this command prints out the current version of cheftacular.
+
+    1. Aliased to `cft v`
 
 
 ## Commands that can ONLY be run in the devops context
@@ -371,7 +387,7 @@
 
     5. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment.
 
-    6. This command is aliased to `cft clients` and `cft c`
+    6. This command is aliased to `cft clients` and `cft cl`
 
 13. `cft cloud <FIRST_LEVEL_ARG> [<SECOND_LEVEL_ARG>[:<SECOND_LEVEL_ARG_QUERY>]*] ` this command handles talking to various cloud APIs. If no args are passed nothing will happen.
 
@@ -479,6 +495,8 @@
 
     4. DESCRIPTOR is used as an internal tag for the node, if left blank it will become the name of the node. It is recommended to enter a custom repository-dependent tag here to make nodes easier to load-balance like "lb:[CODEBASE_NAME]"
 
+    5. Aliased to `cft cb`
+
 15. `cft cloud_bootstrap_from_queue` uses a cloud api to create several servers. It is a wrapper around the cloud_bootstrap command that tries to queue server creation.
 
     1. This command cannot be called directly and can only be utilized from `cft environment boot`
@@ -511,6 +529,8 @@
 
     6. This command also accepts a *comma delimited list* of server names to boot / destroy instead of all the stored ones for an environment.
 
+    7. Aliased to `cft e`
+
 21. `cft file NODE_NAME LOCATION_ALIAS MODE FILE_NAME` interacts with a file on the remote server
 
     1. `LOCATION_ALIAS` will be parsed as a path if it has backslash characters. Otherwise it will be parsed from your location_aliases hash in your cheftacular.yml
@@ -527,7 +547,7 @@
 
         3. `edit:TEXT_EDITOR` will attempt to edit the file with the TEXT_EDITOR listed. NOTE! This editor must be installed on the node you're accessing. If the editor is not present via a `which` command, the cft file command will say so.
 
-        4. `fetch|scp` will attempt to fetch the FILE_NAME listed via SCP. This file is saved to /Users/louis/Code/chef-repo/tmp (based on your directory structure) under the same FILE_NAME as the remote file.
+        4. `fetch|scp` will attempt to fetch the FILE_NAME listed via SCP. This file is saved to /Users/louis/Code/chef-repo/log (based on your directory structure) under the same FILE_NAME as the remote file.
 
             1. The deploy must have access to said file without sudo!
 
@@ -544,6 +564,8 @@
 22. `cft fix_known_hosts [HOSTNAME]` this command will delete entries in your known_hosts file for all the servers that are in our system (ip addresses AND dns names)
 
     1. Passing in a hostname will make the command only remove entries with that hostname / ip specifically
+
+    2. Aliased to `cft fkh`
 
 23. `cft full_bootstrap_from_queue` This command performs both ubuntu_bootstrap and chef_bootstrap.
 
@@ -577,9 +599,13 @@
 
     2. Utilize `knife cookbook upload -a -V --cookbook-path ./cookbooks` if this command gives you trouble
 
+    3. Aliased to `cft ku`
+
 32. `cft list_toggleable_roles NODE_NAME` This command will allow you to see all toggleable roles for a node
 
 33. `cft location_aliases` will list all location aliases listed in your cheftacular.yml. These aliases can be used in the `cft file` command.
+
+    1. This command is aliased to `cft la`
 
 34. `cft pass NODE_NAME` will drop the server's sudo password into your clipboard. Useful for when you need to ssh into the server itself and try advanced linux commands
 
@@ -589,7 +615,7 @@
 
     1. `destroy` deletes the server as well as removing it from the chef environment.
 
-    2. This command is aliased to `cft remove_node`
+    2. This command is aliased to `cft remove_node` and `cft rc`
 
 37. `cft replication_status` will check the status of the database master and slaves in every environment. Also lists how far behind the slaves are from the master in milliseconds.
 
@@ -610,6 +636,8 @@
     3. In case it isn't obvious, this command ONLY supports deactivation suffix roles like worker_deactivate or worker_off, with theiron counterpart just being the role itself, like "worker".
 
         1. Please run `cft list_toggleable_roles NODE_NAME` to get a list of your org's toggleable roles for a node.
+
+    4. Aliased to `cft rt`
 
 41. `cft rvm [COMMAND] [ADDITIONAL_COMMANDS]*` will run rvm commands on the remote servers. Output from this command for each server will go into your rvm directory under the log directory. Please refer to [the rvm help page](https://rvm.io/rvm) for more information on rvm commands.
 
@@ -671,6 +699,8 @@
 
     1. This command passed with no arguments will update TheCheftacularCookbook
 
+    2. Aliased to `cft uc`
+
 50. `cft update_split_branches` will perform a series of git commands that will merge all the split branches for your split_branch enabled repositories with what is currently on master and push them.
 
     1. Repository must be set with `-R REPOSITORY_NAME` for this command to work.
@@ -695,6 +725,12 @@
 
         1. Due to this, only users running this against their chef-repo need to worry about having a nodes_dir, the way it should be.
 
+    4. Aliased to `cft un`
+
 53. `cft upload_roles` This command will resync the chef server's roles with the data in the chef-repo/roles.
 
+    1. Aliased to `cft ur`
+
 54. `cft version` this command prints out the current version of cheftacular.
+
+    1. Aliased to `cft v`
