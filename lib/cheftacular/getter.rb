@@ -91,6 +91,10 @@ class Cheftacular
       get_current_repo_config['stack']
     end
 
+    def get_current_sub_stack
+      get_current_repo_config['sub_stack']
+    end
+
     def get_current_database
       get_current_repo_config['database']
     end
@@ -172,6 +176,14 @@ class Cheftacular
       ret << ( other_node_name.blank? ? @options['node_name'] : other_node_name )
 
       ret
+    end
+
+    def get_current_role_nodes
+      nodes = @config['parser'].exclude_nodes( @config['getter'].get_true_node_objects, [{ unless: "role[#{ @options['role'] }]" }], !@options['run_on_all'] )
+
+      nodes = @config['parser'].exclude_nodes( nodes, [{ if: "role[#{ @options['negative_role'] }]" }]) if @options['negative_role']
+
+      nodes
     end
   end
 end

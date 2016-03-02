@@ -19,6 +19,16 @@ class CloudInteractor
       @main_obj['output']["records_for_#{ @main_obj["specific_#{ IDENTITY }"].last['domain'] }"] = @main_obj["specific_#{ IDENTITY }"].last['records']
 
       ap(@main_obj["specific_#{ IDENTITY }"].last['records']) if output
+    rescue Excon::Errors::Timeout => e
+      tries ||= 3
+      puts "Issue reading records for the domain #{ args['domain'] }! Error: #{e}. Trying #{tries} more times."
+      tries -= 1
+      if tries > 0
+        sleep(15)
+        retry
+      else
+        false
+      end
     end
   end
 end

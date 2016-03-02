@@ -1,3 +1,11 @@
+## 2.13.2
+
+* Minor Fix for Rackspace clients that have issues fetching domain record data from Rackspace's domain API
+
+* Added hooks for /var/log/syslog tailing and logging for meteor distributions
+
+* Can now run meteor commands with `cft run` or `cft meteor`
+
 ## 2.13.1
 
 * Added several new aliases:
@@ -10,7 +18,7 @@
 
     * `cft cb` -> `cft cloud_bootstrap`
 
-    * `cft cl` -> `cft client_lists`
+    * `cft cl` -> `cft client_list`
 
     * `cft e` -> `cft environment`
 

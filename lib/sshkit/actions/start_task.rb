@@ -1,7 +1,7 @@
 module SSHKit
   module Backend
     class Netssh
-      def start_task name, ip_address, run_list, command, options, locs, cheftacular, passwords, out=""
+      def start_task name, ip_address, run_list, command, options, locs, cheftacular, passwords, sudo=false, out=""
         log_loc, timestamp = set_log_loc_and_timestamp(locs)
         true_env = get_true_environment run_list, cheftacular['run_list_environments'][options['env']], options['env']
 
@@ -15,11 +15,12 @@ module SSHKit
           return ['', timestamp]
         end
 
-        capture_args = ["RAILS_ENV=#{ true_env }"]
+        capture_args =  []
+        capture_args << ["RAILS_ENV=#{ true_env }"] if cheftacular['repositories'][options['role']]['stack'] == 'ruby_on_rails'
         capture_args << command.split(' ')
 
         within target_loc do
-          out << capture( *capture_args.flatten )
+          out << (sudo ? sudo_capture(passwords[ip_address], *capture_args.flatten) : capture( *capture_args.flatten ))
         end
 
         ::File.open("#{ log_loc }/#{ name }-task-#{ timestamp }.txt", "w") {|f| f.write(out.scrub_pretty_text) } if options['debug']

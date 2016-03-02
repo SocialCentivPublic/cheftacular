@@ -19,6 +19,16 @@ class CloudInteractor
       @main_obj[identity] = JSON.parse(@classes['auth'].auth_service(resource).instance_eval(identity).to_json)
 
       ap(@main_obj[identity]) if output && !@options['in_scaling']
+    rescue Excon::Errors::Timeout => e
+      tries ||= 3
+      puts "Issue reading data for the #{ identity.capitalize }! Error: #{e}. Trying #{tries} more times."
+      tries -= 1
+      if tries > 0
+        sleep(15)
+        retry
+      else
+        false
+      end
     end
 
     def generic_read_parse args, identity, output=true, mode='name', search_key='name'
