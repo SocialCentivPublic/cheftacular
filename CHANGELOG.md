@@ -6,6 +6,10 @@
 
 * Can now run meteor commands with `cft run` or `cft meteor`
 
+* Added keepalives to all major ssh commands (and set the option to sshkit)
+
+* Added new command `cft backups status` to check the current state of backups being loaded
+
 ## 2.13.1
 
 * Added several new aliases:

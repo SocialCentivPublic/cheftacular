@@ -27,9 +27,17 @@ require 'csv'
 Dir["#{File.dirname(__FILE__)}/../**/*.rb"].each { |f| require f }
 
 class Cheftacular
+  SSH_INLINE_VARS = '-oStrictHostKeyChecking=no -oServerAliveInterval=60'
+
   def initialize options={'env'=>'staging'}, config={}
     @options, @config                = options, config
+    
     SSHKit.config.format             = :blackhole
+    SSHKit::Backend::Netssh.configure do |ssh|
+      ssh.connection_timeout = 30
+      ssh.ssh_options = { keepalive: true, keepalive_interval: 60 }
+    end
+
     Excon.defaults[:ssl_verify_peer] = false #https://github.com/excon/excon/issues/479 # issues with cert bundle chains
     #Fog::Logger[:warning]            = nil
     @config['start_time']            = Time.now

@@ -2,8 +2,8 @@
 class Cheftacular
   class StatelessActionDocumentation
     def backups
-      @config['documentation']['stateless_action'][__method__] ||= {}
-      @config['documentation']['stateless_action'][__method__]['long_description'] = [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
         "`cft backups [activate|deactivate|fetch|load|restore]` this command " +
         "sets the fetch_backups and restore_backups flags in your config data bag for an environment. " +
         "These can be used to give application developers a way to trigger / untrigger restores in an environment",
@@ -18,13 +18,15 @@ class Cheftacular
           "    4. `load` will fetch the latest backup from the production primary **if it doesn't already exist on " +
           "the server** and run the _backup loading command_ to load this backup into the env.",
 
-          "    5. `restore` will simply just run the _backup loading command_ to load the latest backup onto the server."
+          "    5. `restore` will simply just run the _backup loading command_ to load the latest backup onto the server.",
+
+          "    6. `status` will display the current state of the backups",
+
+          "    6. By default, the backups command will use the context of your current environment to trigger backup related commands."
         ]
       ]
 
-      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Runs various backup commands on your current environment'
-
-      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
+      @config['documentation']['action'][__method__]['short_description'] = 'Runs various backup commands on your current environment'
     end
   end
 
@@ -32,7 +34,7 @@ class Cheftacular
     def backups command=''
       command = ARGV[1] if command.blank?
 
-      raise "Unsupported command (#{ command }) for cft backups" unless command =~ /activate|deactivate|fetch|load|restore/
+      raise "Unsupported command (#{ command }) for cft backups" unless command =~ /activate|deactivate|fetch|load|restore|status/
 
       self.send("backups_#{ command }")
     end
@@ -66,9 +68,15 @@ class Cheftacular
     end
 
     def backups_restore
+      backup_mode = case @config['getter'].get_current_database
+                    when 'postgresql' then 'pg'
+                    when 'mongodb'    then 'mongo'
+                    end
+
       target_db_primary, nodes = @config['getter'].get_db_primary_node_and_nodes
-      applications_as_string   = @config['getter'].get_repo_names_for_repositories.keys.join(',')
-      env_pg_pass              = @config[@options['env']]['chef_passwords_bag_hash']['pg_pass']
+      applications_as_string   = @config['getter'].get_repo_names_for_repositories({ database: @config['getter'].get_current_database }).keys.join(',')
+      env_db_pass              = @config[@options['env']]['chef_passwords_bag_hash']["#{ backup_mode }_pass"]
+      env_db_mode              = @config['getter'].get_current_database
 
       options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
 
@@ -79,7 +87,7 @@ class Cheftacular
 
         puts("Beginning db_backup_run for #{ n.name } (#{ n.public_ipaddress }) for env #{ options['env'] }") unless options['quiet']
 
-        start_db_backup_restore( n.name, n.public_ipaddress, options, locs, cheftacular, passwords, applications_as_string, env_pg_pass, ruby_command )
+        start_db_backup_restore( n.name, n.public_ipaddress, options, locs, cheftacular, passwords, applications_as_string, env_db_pass, ruby_command, env_db_mode )
       end
     end
 
@@ -92,14 +100,12 @@ class Cheftacular
       file_scp_execute(target_db_primary, 'scp', full_backup_dir, status_hash['latest_backup']['filename'])
     end
 
-    private
+    def backups_status
+      backups_check_current_status
+    end
 
     def backups_toggle_setting restore_backup, fetch_backup
-      initial_fetch_backup   = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['fetch_backups']
-      initial_restore_backup = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['restore_backups']
-
-      puts "For #{ @options['env'] } (sub-env: #{ @options['sub_env'] }) fetch backups was set to " +
-        "#{ initial_fetch_backup ? 'on' : 'off' } and restoring backups was set to #{ initial_restore_backup ? 'on' : 'off' }"
+      backups_check_current_status
 
       puts "For #{ @options['env'] } (sub-env: #{ @options['sub_env'] }) fetch backups is now set to " +
         "#{ fetch_backup ? 'on' : 'off' } and restoring backups is now set to #{ restore_backup ? 'on' : 'off' }"
@@ -114,6 +120,14 @@ class Cheftacular
       @options['role'] = 'db_primary'
 
       @config['action'].deploy
+    end
+
+    def backups_check_current_status
+      initial_fetch_backup   = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['fetch_backups']
+      initial_restore_backup = @config[@options['env']]['config_bag_hash'][@options['sub_env']]['restore_backups']
+
+      puts "For #{ @options['env'] } (sub-env: #{ @options['sub_env'] }) fetch backups is currently set to " +
+        "#{ initial_fetch_backup ? 'on' : 'off' } and restoring backups is currently set to #{ initial_restore_backup ? 'on' : 'off' }"
     end
 
     def backups_get_status_hash_from_backupmaster mode='backups_load', status_hash={}
@@ -221,7 +235,7 @@ module SSHKit
         puts "Finished transferring #{ full_backup_path } to #{ name }(#{ ip_address })..."
       end
 
-      def start_db_backup_restore name, ip_address, options, locs, cheftacular, passwords, applications_as_string, env_pg_pass, ruby_command, out=''
+      def start_db_backup_restore name, ip_address, options, locs, cheftacular, passwords, applications_as_string, env_db_pass, ruby_command, env_db_mode, out=''
         log_loc, timestamp = set_log_loc_and_timestamp(locs)
 
         puts "Beginning backup run on #{ name } (#{ ip_address }), this command may take a while to complete..."
@@ -229,8 +243,8 @@ module SSHKit
         case cheftacular['backup_filesystem']
         when 'backup_gem'
           command = cheftacular['backup_config']['backup_load_command']
-          command = command.gsub('ENVIRONMENT', options['env']).gsub('APPLICATIONS', applications_as_string).gsub('PG_PASS', env_pg_pass)
-          command = command.gsub('RUBY_COMMAND', ruby_command )
+          command = command.gsub('ENVIRONMENT', options['env']).gsub('APPLICATIONS', applications_as_string).gsub('DB_PASS', env_db_pass)
+          command = command.gsub('RUBY_COMMAND', ruby_command ).gsub('MODE', env_db_mode)
 
           out << sudo_capture( passwords[ip_address], command )
         when 'raw'

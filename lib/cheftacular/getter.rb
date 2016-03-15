@@ -161,8 +161,17 @@ class Cheftacular
       ret
     end
 
-    def get_repo_names_for_repositories ret={}
+    def get_repo_names_for_repositories restrict_to={}, ret={}
       @config['cheftacular']['repositories'].each_pair do |name, repo_hash|
+        unless restrict_to.empty?
+          skip = false
+          restrict_to.each_pair do |key, val|
+            skip = true if repo_hash[key.to_s] == val
+          end
+
+          next if skip
+        end
+
         ret[repo_hash['repo_name']]         = repo_hash
         
         ret[repo_hash['repo_name']]['role'] = name

@@ -62,7 +62,7 @@ class Cheftacular
     def start_tail_nodejs ip_address, run_list, pattern_to_match
       log_loc = "/var/log/syslog"
 
-      `ssh -oStrictHostKeyChecking=no -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "#{ @config['helper'].sudo(ip_address) } tail -f #{ log_loc } #{ get_tail_grep_string(pattern_to_match) }" > /dev/tty`
+      `ssh #{ Cheftacular::SSH_INLINE_VARS } -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "#{ @config['helper'].sudo(ip_address) } tail -f #{ log_loc } #{ get_tail_grep_string(pattern_to_match) }" > /dev/tty`
     end
 
     def get_tail_grep_string pattern_to_match=''
