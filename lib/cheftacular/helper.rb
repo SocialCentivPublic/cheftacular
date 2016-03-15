@@ -259,7 +259,7 @@ class Cheftacular
     end
 
     def slack_current_deploy_arguments
-      msg  = "#{ Socket.gethostname } just set for the repository #{ @config['getter'].get_repository_from_role_name(@options['role']) }:\n"
+      msg  = "#{ Socket.gethostname }(#{ @config['locs']['root'] }) just set for the repository #{ @config['getter'].get_repository_from_role_name(@options['role']) }:\n"
       msg << "the organization to #{ @options['deploy_organization'] }\n" if @options['deploy_organization']
       msg << "the revision to #{ @options['target_revision'] }\n"         if @options['target_revision']
       msg << "In the environment: #{ @options['env'] }"

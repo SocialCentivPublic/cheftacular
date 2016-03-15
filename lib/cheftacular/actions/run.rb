@@ -16,7 +16,9 @@ class Cheftacular
           "It prepends bundle exec to your command for rails stack repositories",
 
           "    4. IMPORTANT NOTE: You cannot run `cft run rake -T` as is, you have to enclose any command that uses command line dash " +
-          'arguments in quotes like `cft run "rake -T"`'
+          'arguments in quotes like `cft run "rake -T"`',
+
+          "    5. Can also be used to run meteor commands and is aliased to `cft meteor`"
         ]
       ]
 
@@ -34,33 +36,15 @@ class Cheftacular
     end
 
     def run_ruby_on_rails command
-      nodes   = @config['getter'].get_true_node_objects
-
-      #must have rails stack to run migrations and not be a db, only want ONE node
-      nodes = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @options['role'] }]" }], !@options['run_on_all'] )
-
-      nodes = @config['parser'].exclude_nodes( nodes, [{ if: "role[#{ @options['negative_role'] }]" }]) if @options['negative_role']
-
-      #this must always precede on () calls so they have the instance variables they need
-      options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
-
-      on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
-        n = get_node_from_address(nodes, host.hostname)
-
-        puts("Beginning task run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']
-
-        log_data, timestamp, exit_status = start_task( n.name, n.public_ipaddress, n.run_list, "#{ bundle_command } exec #{ command }", options, locs, cheftacular, passwords)
-
-        logs_bag_hash["#{ n.name }-#{ __method__ }"] = { "text" => log_data.scrub_pretty_text, "timestamp" => timestamp, "exit_status" => exit_status }
-      end
-
-      @config['ChefDataBag'].save_logs_bag
-
-      @config['helper'].send_log_bag_hash_slack_notification(logs_bag_hash, __method__, 'Failing command detected, exiting...')
+      run_command(command, __method__.to_s, "#{ @config['bundle_command'] } exec")
     end
 
     def run_nodejs command
-      raise "Not yet implemented"
+      self.send("run_#{ @config['getter'].get_current_sub_stack }", command)
+    end
+
+    def run_meteor command
+      run_command(command, __method__.to_s, '/usr/local/bin/meteor', true)
     end
 
     def run_wordpress command
@@ -72,9 +56,34 @@ class Cheftacular
     end
 
     def run_ command
-      puts "Run method tried to run a command for the role \"#{ @options['role'] }\" but it doesn't appear to have a repository set! Skipping..."
+      puts "Run method tried to run a command for the role \"#{ @options['role'] }\" but it doesn't appear to have a repository or stack set! Skipping..."
 
       return false
+    end
+
+    alias_method :meteor, :run
+
+    private
+
+    def run_command command, descriptor, executable, sudo=false
+      nodes = @config['getter'].get_current_role_nodes
+
+      #this must always precede on () calls so they have the instance variables they need
+      options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
+
+      on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
+        n = get_node_from_address(nodes, host.hostname)
+
+        puts("Beginning #{ descriptor } run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']
+
+        log_data, timestamp, exit_status = start_task( n.name, n.public_ipaddress, n.run_list, "#{ executable } #{ command }", options, locs, cheftacular, passwords, sudo)
+
+        logs_bag_hash["#{ n.name }-#{ descriptor }"] = { "text" => log_data.scrub_pretty_text, "timestamp" => timestamp, "exit_status" => exit_status }
+      end
+
+      @config['ChefDataBag'].save_logs_bag
+
+      @config['helper'].send_log_bag_hash_slack_notification(logs_bag_hash, __method__, 'Failing command detected, exiting...')
     end
   end
 end

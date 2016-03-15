@@ -91,6 +91,10 @@ class Cheftacular
       get_current_repo_config['stack']
     end
 
+    def get_current_sub_stack
+      get_current_repo_config['sub_stack']
+    end
+
     def get_current_database
       get_current_repo_config['database']
     end
@@ -157,8 +161,17 @@ class Cheftacular
       ret
     end
 
-    def get_repo_names_for_repositories ret={}
+    def get_repo_names_for_repositories restrict_to={}, ret={}
       @config['cheftacular']['repositories'].each_pair do |name, repo_hash|
+        unless restrict_to.empty?
+          skip = false
+          restrict_to.each_pair do |key, val|
+            skip = true if repo_hash[key.to_s] == val
+          end
+
+          next if skip
+        end
+
         ret[repo_hash['repo_name']]         = repo_hash
         
         ret[repo_hash['repo_name']]['role'] = name
@@ -172,6 +185,14 @@ class Cheftacular
       ret << ( other_node_name.blank? ? @options['node_name'] : other_node_name )
 
       ret
+    end
+
+    def get_current_role_nodes
+      nodes = @config['parser'].exclude_nodes( @config['getter'].get_true_node_objects, [{ unless: "role[#{ @options['role'] }]" }], !@options['run_on_all'] )
+
+      nodes = @config['parser'].exclude_nodes( nodes, [{ if: "role[#{ @options['negative_role'] }]" }]) if @options['negative_role']
+
+      nodes
     end
   end
 end
