@@ -86,13 +86,15 @@
 
     6. By default, the backups command will use the context of your current environment to trigger backup related commands.
 
-2. `cft check [all]` Checks the commits for all servers for a repository (for an environment) and returns them in a simple chart. Also shows when these commits were deployed to the server.
+2. `cft check [all|verify]` Checks the commits for all servers for a repository (for an environment) and returns them in a simple chart. Also shows when these commits were deployed to the server.
 
     1. If the node has special repository based keys from TheCheftacularCookbook, this command will also display information about the branch and organization currently deployed to the node(s).
 
     2. If the all argument is provided, all repositories will be checked for the current environment
 
-    3. Aliased to `cft ch`
+    3. If the verify argument is provided, cft will attempt to see if the servers are using the latest commits
+
+    4. Aliased to `cft ch`
 
 3. `cft chef_server [restart|processes|memory]` this command can be used to query the chef server for stats if the cheftacular.yml has the chef_server key filled out. Useful for low resource chef-servers.
 
@@ -160,7 +162,7 @@
 
     2. This command is also aliased to mongo, typing `cft mongo` will drop you into a mongodb mongo session.
 
-11. `cft deploy` will do a simple chef-client run on the servers for a role. Logs of the run itself will be sent to the local log directory in the application (or chef-repo) where the run was conducted.
+11. `cft deploy [check|verify]` will do a simple chef-client run on the servers for a role. Logs of the run itself will be sent to the local log directory in the application (or chef-repo) where the run was conducted.
 
     1.  The `-Z REVISION` flag can be used with TheCheftacularCookbook to set a revision your app will run. 
 
@@ -172,7 +174,11 @@
 
     5. The `-v|--verbose` option will cause failed deploys to output to the terminal window and to their normal log file. Useful for debugging.
 
-    6. Aliased to `cft d`
+    6. The `cft deploy check` argument will force a check run under the same environment as the initial deploy.
+
+    7. The `cft deploy verify` argument will force a check AND verify run under the same environment as the initial deploy
+
+    8. Aliased to `cft d`
 
 12. `cft disk_report` will fetch useful statistics from every server for every environment and output it into your log directory.
 
@@ -296,7 +302,9 @@
 
     1. In the case of server creation, this command takes a great deal of time to execute. It will output what stage it is currently on to the terminal but <b>you must not kill this command while it is executing</b>.A failed build may require the server to be destroyed / examined by a DevOps engineer.
 
-29. `cft tail [PATTERN_TO_MATCH]` will tail the logs (return continuous output) of the first node if finds that has an application matching the repository running on it. Currently only supports rails stacks
+29. `cft ssh NODE_NAME` ssh you into the node name you are trying to access. It will also drop the server's sudo password into your clipboard. 
+
+30. `cft tail [PATTERN_TO_MATCH]` will tail the logs (return continuous output) of the first node if finds that has an application matching the repository running on it. Currently only supports rails stacks
 
     1. pass `-n NODE_NAME` to grab the output of a node other than the first.
 
@@ -304,9 +312,13 @@
 
     3. if the `PATTERN_TO_MATCH` argument exists, the tail will only return entries that have that pattern rather than everything written to the file.
 
-30. `cft update_cheftacular` this command attempts to update cheftacular to the latest version.
+31. `cft update_cheftacular` this command attempts to update cheftacular to the latest version.
 
-31. `cft version` this command prints out the current version of cheftacular.
+32. `cft verify` Checks to see if the servers for the current state are running the latest commits. 
+
+    1. This command is functionally the same as `cft check verify`.
+
+33. `cft version` this command prints out the current version of cheftacular.
 
     1. Aliased to `cft v`
 
@@ -667,7 +679,9 @@
 
     2. Remember, if you have auditing turned on in your cheftacular.yml, you can track who sends what to slack.
 
-44. `cft test_env [TARGET_ENV] boot|destroy` will create (or destroy) the test nodes for a particular environment (defaults to staging, prod split-envs can be set with `-p`). Please read below for how TARGET_ENV works
+44. `cft ssh NODE_NAME` ssh you into the node name you are trying to access. It will also drop the server's sudo password into your clipboard. 
+
+45. `cft test_env [TARGET_ENV] boot|destroy` will create (or destroy) the test nodes for a particular environment (defaults to staging, prod split-envs can be set with `-p`). Please read below for how TARGET_ENV works
 
     1. TARGET_ENV changes functionality depending on the overall (like staging / production) environment
 
@@ -677,11 +691,11 @@
 
         3. The default tld used should change depending on which environment you are booting / destroying. This is set in the environment's config data bag under the tld key
 
-45. `cft ubuntu_bootstrap_from_queue` This command will bring a fresh server to a state where chef-client can be run on it via `cft chef-bootstrap`. It should be noted that it is in this step where a server's randomized deploy_user sudo password is generated.
+46. `cft ubuntu_bootstrap_from_queue` This command will bring a fresh server to a state where chef-client can be run on it via `cft chef-bootstrap`. It should be noted that it is in this step where a server's randomized deploy_user sudo password is generated.
 
-46. `cft update_cheftacular` this command attempts to update cheftacular to the latest version.
+47. `cft update_cheftacular` this command attempts to update cheftacular to the latest version.
 
-47. `cft update_cloudflare_dns_from_cloud [skip_update_tld]` command will force a full dns update for cloudflare. 
+48. `cft update_cloudflare_dns_from_cloud [skip_update_tld]` command will force a full dns update for cloudflare. 
 
     1. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address for an environment.
 
@@ -689,13 +703,13 @@
 
     3. The argument `skip_update_tld` will stop the long process of checking and updating all the server domains _before_ cloudflare is updated. Only skip if you believe your domain info on your cloud is accurate.
 
-48. `cft update_cookbook [COOKBOOK_NAME] [INSTALL_VERSION]` allows you to specifically update a single cookbook
+49. `cft update_cookbook [COOKBOOK_NAME] [INSTALL_VERSION]` allows you to specifically update a single cookbook
 
     1. This command passed with no arguments will update TheCheftacularCookbook
 
     2. Aliased to `cft uc`
 
-49. `cft update_split_branches` will perform a series of git commands that will merge all the split branches for your split_branch enabled repositories with what is currently on master and push them.
+50. `cft update_split_branches` will perform a series of git commands that will merge all the split branches for your split_branch enabled repositories with what is currently on master and push them.
 
     1. Repository must be set with `-R REPOSITORY_NAME` for this command to work.
 
@@ -705,9 +719,9 @@
 
     4. This command will return a helpful error statement if you attempt to run the command with changes to your current working directory. You must commit these changes before running this command.
 
-50. `cft update_tld TLD` command will force a full dns update for a tld in the preferred cloud. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address.
+51. `cft update_tld TLD` command will force a full dns update for a tld in the preferred cloud. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address.
 
-51. `cft upload_nodes` This command will resync the chef server's nodes with the data in our chef-repo/node_roles. 
+52. `cft upload_nodes` This command will resync the chef server's nodes with the data in our chef-repo/node_roles. 
 
     1. This command changes behavior depending on several factors about both your mode and the state of your environment
 
@@ -721,10 +735,10 @@
 
     4. Aliased to `cft un`
 
-52. `cft upload_roles` This command will resync the chef server's roles with the data in the chef-repo/roles.
+53. `cft upload_roles` This command will resync the chef server's roles with the data in the chef-repo/roles.
 
     1. Aliased to `cft ur`
 
-53. `cft version` this command prints out the current version of cheftacular.
+54. `cft version` this command prints out the current version of cheftacular.
 
     1. Aliased to `cft v`
