@@ -15,8 +15,9 @@ class Cheftacular
   end
 
   class StatelessAction
-    def pass
-      @options['node_name'] = ARGV[1] unless @options['node_name']
+    def pass node_name=''
+      @options['node_name'] = ARGV[1] if !@options['node_name'] && node_name.blank?
+      @options['node_name'] = node_name if !@options['node_name'] && !node_name.blank?
 
       nodes = @config['error'].is_valid_node_name_option?
 

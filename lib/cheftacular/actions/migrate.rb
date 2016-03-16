@@ -51,7 +51,7 @@ class Cheftacular
       if !log_data.empty? && log_data != @config['cheftacular']['repositories'][@options['role']]['not_a_migration_message']
         @config['auditor'].notify_slack_on_completion("migrate run completed\n") if @config['cheftacular']['auditing']
 
-        deploy
+        @config['action'].deploy
       end
     end
 

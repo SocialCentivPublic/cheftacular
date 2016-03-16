@@ -39,16 +39,22 @@ class Cheftacular
       end
     end
 
-    def db_console_mongodb
+    def db_console_mongodb private_database_host_address=nil
       nodes = @config['getter'].get_true_node_objects(true)
 
       #must have mongo db, only want ONE node
+      if @config['getter'].get_current_repo_config.has_key?('db_primary_host_role')
+        mongo_host  = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @config['getter'].get_current_repo_config['db_primary_host_role'] }]"}, { if: { not_env: @options['env'] } }], true).first
+
+        private_database_host_address = @config['getter'].get_address_hash(mongo_host.name)[mongo_host.name]['priv']
+      end
+
       mongoable_nodes = @config['parser'].exclude_nodes( nodes, [{ unless: "role[#{ @options['role'] }]" }, { if: { not_env: @options['env'] } }], true )
 
       mongoable_nodes.each do |n|
         puts("Beginning database console run for #{ n.name } (#{ n.public_ipaddress }) on role #{ @options['role'] }") unless @options['quiet']
 
-        start_console_mongodb(n.public_ipaddress)
+        start_console_mongodb(n.public_ipaddress, private_database_host_address)
       end
     end
 
@@ -81,13 +87,28 @@ class Cheftacular
                   end
 
       #the >/dev/tty after the ssh block redirects the full output to stdout, not /dev/null where it normally goes  
-      `ssh -oStrictHostKeyChecking=no -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "PGPASSWORD=#{ pg_pass } psql -U #{ db_user } -h #{ database_host } -d #{ db_name }" > /dev/tty`
+      `ssh #{ Cheftacular::SSH_INLINE_VARS } -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "PGPASSWORD=#{ pg_pass } psql -U #{ db_user } -h #{ database_host } -d #{ db_name }" > /dev/tty`
     end
 
-    def start_console_mongodb ip_address
+    def start_console_mongodb ip_address, database_host
+      unless database_host.nil?
+        mongo_pass   = @config[@options['env']]['chef_passwords_bag_hash'][@options['repository']]['mongo_pass'] if @config[@options['env']]['chef_passwords_bag_hash'][@options['repository']].has_key?('mongo_pass')
+        mongo_pass ||= @config[@options['env']]['chef_passwords_bag_hash']['mongo_pass']
+        db_user      = @config['getter'].get_current_repo_config['application_database_user']
+        db_name   = if @config['getter'].get_current_repo_config.has_key?('custom_database_name')
+                      @config['getter'].get_current_repo_config['custom_database_name']
+                    else
+                      "#{ @config['getter'].get_current_repo_config['repo_name'] }_#{ @options['env'] }"
+                    end
+      end
+
       #the >/dev/tty after the ssh block redirects the full output to stdout, not /dev/null where it normally goes
       #TODO refactor to more general solution (path / port)
-      `ssh -oStrictHostKeyChecking=no -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "mongo localhost:27017/mongodb" > /dev/tty`
+      if database_host.nil?
+        `ssh #{ Cheftacular::SSH_INLINE_VARS } -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "mongo localhost:27017/mongodb" > /dev/tty`
+      else
+        `ssh #{ Cheftacular::SSH_INLINE_VARS } -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "mongo #{ @options['repository'] } --username #{ db_user } --password #{ mongo_pass } --host #{ database_host } --port 27017" > /dev/tty`
+      end
     end
 
     def start_console_mysql

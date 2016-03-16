@@ -287,7 +287,7 @@ class Cheftacular
       return_hash
     end
 
-    def check_if_possible_repo_state repo_state_hash, git_output=''
+    def check_if_possible_repo_state repo_state_hash, output_mode='silent', git_output=''
       revision_to_check = repo_state_hash.has_key?('revision')            ? repo_state_hash['revision']            : nil
       org_name_to_check = repo_state_hash.has_key?('deploy_organization') ? repo_state_hash['deploy_organization'] : @config['cheftacular']['TheCheftacularCookbook']['organization_name']
      
@@ -318,6 +318,8 @@ class Cheftacular
         puts "Please verify the correct revision / branch and run this command again."
         
         exit
+      elsif git_output.include?(revision_to_check) && output_mode == 'display_for_check'
+        puts "\nSuccessfully verified that the commit #{ repo_state_hash['revision'] } is the latest for the branch #{ repo_state_hash['branch'] } in organization #{ repo_state_hash['deploy_organization'] }.\n"
       end
     end
 

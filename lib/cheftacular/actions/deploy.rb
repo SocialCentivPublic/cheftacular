@@ -3,7 +3,7 @@ class Cheftacular
     def deploy
       @config['documentation']['action'][__method__] ||= {}
       @config['documentation']['action'][__method__]['long_description'] = [
-        "`cft deploy` will do a simple chef-client run on the servers for a role. " + 
+        "`cft deploy [check|verify]` will do a simple chef-client run on the servers for a role. " + 
         "Logs of the run itself will be sent to the local log directory in the application (or chef-repo) where the run was conducted.",
         
         [
@@ -19,7 +19,11 @@ class Cheftacular
 
           "    5. The `-v|--verbose` option will cause failed deploys to output to the terminal window and to their normal log file. Useful for debugging.",
 
-          "    6. Aliased to `cft d`"
+          "    6. The `cft deploy check` argument will force a check run under the same environment as the initial deploy.",
+
+          "    7. The `cft deploy verify` argument will force a check AND verify run under the same environment as the initial deploy",
+
+          "    8. Aliased to `cft d`"
         ]
       ]
 
@@ -29,6 +33,9 @@ class Cheftacular
 
   class Action
     def deploy deployment_args={ in: :groups, limit: 6, wait: 5 }
+      run_check  = ARGV[1] == 'check'
+      run_verify = ARGV[1] == 'verify'
+
       nodes = @config['getter'].get_true_node_objects(false) #when this is run in scaling we'll need to make sure we deploy to new nodes
 
       nodes = @config['parser'].exclude_nodes( nodes, [{ if: "role[#{ @options['negative_role'] }]" }]) if @options['negative_role']
@@ -55,7 +62,11 @@ class Cheftacular
       
       @config['ChefDataBag'].save_logs_bag unless @options['debug'] #We don't really need to store entire chef runs in the logs bag
 
-      migrate(nodes) if @config['getter'].get_current_repo_config['database'] != 'none' && !@options['run_migration_already']
+      @config['action'].check if run_check && !@options['run_migration_already']
+
+      @config['action'].check('verify') if run_verify && !@options['run_migration_already']
+
+      @config['action'].migrate(nodes) if @config['getter'].get_current_repo_config['database'] != 'none' && !@options['run_migration_already']
 
       split_nodes_hash = {}
 

@@ -237,5 +237,23 @@ class Cheftacular
 
       "#{ domain.trd }.#{ domain.domain }"
     end
+
+    def parse_repo_state_hash_from_commit_hash commit_hash, repo_state_hash={'revision' => [], 'deploy_organization' => [], 'branch' => []}
+      commit_hash.each_value do |repo_hash|        
+        repo_hash.each_value do |state_hash|
+          next if state_hash.nil?
+
+          repo_state_hash['revision']            << state_hash['name']
+          repo_state_hash['branch']              << state_hash['branch']
+          repo_state_hash['deploy_organization'] << state_hash['organization']
+        end
+      end
+
+      repo_state_hash['revision']            = repo_state_hash['revision'].compact.uniq.first
+      repo_state_hash['branch']              = repo_state_hash['branch'].compact.uniq.first
+      repo_state_hash['deploy_organization'] = repo_state_hash['deploy_organization'].compact.uniq.first
+
+      repo_state_hash
+    end
   end
 end

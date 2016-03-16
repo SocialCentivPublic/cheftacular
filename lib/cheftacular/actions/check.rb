@@ -3,7 +3,7 @@ class Cheftacular
     def check
       @config['documentation']['action'][__method__] ||= {}
       @config['documentation']['action'][__method__]['long_description']  = [
-        "`cft check [all]` Checks the commits for all servers for a repository (for an environment) and returns them in a simple chart. " +
+        "`cft check [all|verify]` Checks the commits for all servers for a repository (for an environment) and returns them in a simple chart. " +
         "Also shows when these commits were deployed to the server.",
         [
           "    1. If the node has special repository based keys from TheCheftacularCookbook, this command will also display information " +
@@ -11,7 +11,9 @@ class Cheftacular
 
           "    2. If the all argument is provided, all repositories will be checked for the current environment",
 
-          "    3. Aliased to `cft ch`"
+          "    3. If the verify argument is provided, cft will attempt to see if the servers are using the latest commits",
+
+          "    4. Aliased to `cft ch`"
         ]
       ]
       @config['documentation']['action'][__method__]['short_description'] = "Checks the branches currently deployed to an env for your repo"
@@ -19,10 +21,12 @@ class Cheftacular
   end
 
   class Action
-    def check commit_hash={}, have_revisions=false, have_changed_orgs=false, fetch_all_repository_data=false, headers=[], deployment_args={ in: :parallel }
+    def check mode='', commit_hash={}, have_revisions=false, have_changed_orgs=false, fetch_all_repository_data=false, headers=[], deployment_args={ in: :parallel }
       @config['filesystem'].cleanup_file_caches('current-nodes')
 
       fetch_all_repository_data = ARGV[1] == 'all'
+      verify_state_is_latest    = ARGV[1] == 'verify'
+      verify_state_is_latest    = mode    == 'verify' if ARGV[1] != 'verify'
       
       nodes = @config['getter'].get_true_node_objects(fetch_all_repository_data)
 
@@ -86,6 +90,8 @@ class Cheftacular
           end
         end
       end
+
+      @config['helper'].check_if_possible_repo_state(@config['parser'].parse_repo_state_hash_from_commit_hash(commit_hash), 'display_for_check') if verify_state_is_latest
     end
 
     alias_method :ch, :check
