@@ -1,3 +1,19 @@
+## 2.14.0
+
+* Update `cft psql` and `cft mongo` to use the new keepalive
+
+* Fix issue with SSHKit 1.9.0 and above not adding the on() method to namespacing
+
+* Fix issue with `cft mongo` not checking for single server mongo infrastructure
+
+* Added new cft command `cft ssh [NODE_NAME]`
+
+* Added new options for command `cft check [all|verify]`, verify will attempt to check if the servers running the role are using the latest code.
+
+* Added new options for command `cft deploy [check|verify]`, check will run check afterwards and verify will run verify afterwards
+
+* Added a new command `cft verify` that will behave like `cft check` but simply forces the verify state. 
+
 ## 2.13.2
 
 * Minor Fix for Rackspace clients that have issues fetching domain record data from Rackspace's domain API
