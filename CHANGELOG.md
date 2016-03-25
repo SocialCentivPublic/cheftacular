@@ -1,3 +1,25 @@
+## 2.14.1
+
+* Add a case for when `cft verify` detects a bad commit on the server and not return the generic "this commit does not exist" message
+
+* Added new aliases:
+
+    * `cft ve` -> `cft verify`
+
+    * `cft d ve` -> `cft deploy verify`
+
+    * `cft d ch` -> `cft deploy check`
+
+    * `cft ch ve` -> `cft check verify`
+
+* Fixed bug with `cft backups` command not namespacing to the correct type
+
+* Added more auditing notifiers
+
+* Added new development command `cft update_the_cheftacular_cookbook_and_knife_upload`
+
+* Fix issue with `cft backups restore` not hooking into backup_gem backup settings
+
 ## 2.14.0
 
 * Update `cft psql` and `cft mongo` to use the new keepalive

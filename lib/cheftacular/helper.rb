@@ -304,6 +304,12 @@ class Cheftacular
         puts "! The remote organization #{ org_name_to_check } does not have the repository: #{ @options['repository'] }! Please verify your repositories and try again"
 
         exit
+      elsif !git_output.include?(revision_to_check) && output_mode == 'display_for_check'
+        puts "WARNING! The commit #{ repo_state_hash['revision'] } is NOT the latest for the branch #{ repo_state_hash['branch'] } in organization #{ repo_state_hash['deploy_organization'] }!"
+
+        puts "Please re-run your deploy again and if this continues to not work, check with your DevOps personel!"
+
+        exit
       elsif !git_output.include?(revision_to_check)
         puts "! The remote organization #{ org_name_to_check } does not have a revision / branch #{ revision_to_check } for repository: #{ @options['repository'] } !"
 

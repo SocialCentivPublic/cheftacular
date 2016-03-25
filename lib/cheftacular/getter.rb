@@ -161,12 +161,17 @@ class Cheftacular
       ret
     end
 
-    def get_repo_names_for_repositories restrict_to={}, ret={}
+    def get_repo_names_for_repositories restrict_to=[{}], ret={}
       @config['cheftacular']['repositories'].each_pair do |name, repo_hash|
         unless restrict_to.empty?
           skip = false
-          restrict_to.each_pair do |key, val|
-            skip = true if repo_hash[key.to_s] == val
+          restrict_to.each do |restrict_hash|
+            restrict_hash.each_pair do |key, val|
+              skip = true if repo_hash[key.to_s] != val && restrict_hash.has_key?(:ignore_value)
+              skip = true if val == 'NOT NIL' && repo_hash[key.to_s].nil?
+              skip = true if val == 'NIL'     && !repo_hash[key.to_s].nil?
+              puts "#{ name } => k:#{ key }::v:#{ val }:::#{ skip }:[#{ repo_hash[key.to_s] }]"
+            end
           end
 
           next if skip

@@ -85,22 +85,25 @@ class Cheftacular
 
     def aliased_command_hash
       {
-        check:                ['ch'],
-        console:              ['co'],
-        deploy:               ['d'],
-        cheftacular_config:   ['cc'],
-        cheftacular_yml_help: ['yml_help'],
-        client_list:          ['cl'],
-        environment:          ['e'],
-        fix_known_hosts:      ['fkh'],
-        knife_upload:         ['ku'],
-        location_aliases:     ['la'],
-        remove_client:        ['rc'],
-        role_toggle:          ['rt'],
-        update_cookbook:      ['uc'],
-        upload_nodes:         ['un'],
-        upload_roles:         ['ur'],
-        version:              ['v']
+        check:                                            ['ch'],
+        console:                                          ['co'],
+        deploy:                                           ['d'],
+        cheftacular_config:                               ['cc'],
+        cheftacular_yml_help:                             ['yml_help'],
+        client_list:                                      ['cl'],
+        cloud_bootstrap:                                  ['cb'],
+        environment:                                      ['e'],
+        fix_known_hosts:                                  ['fkh'],
+        knife_upload:                                     ['ku'],
+        location_aliases:                                 ['la'],
+        remove_client:                                    ['rc'],
+        role_toggle:                                      ['rt'],
+        update_cookbook:                                  ['uc'],
+        update_the_cheftacular_cookbook_and_knife_upload: ['utcc', 'utccaku'],
+        upload_nodes:                                     ['un'],
+        upload_roles:                                     ['ur'],
+        verify:                                           ['ve'],
+        version:                                          ['v']
       }
     end
   end
