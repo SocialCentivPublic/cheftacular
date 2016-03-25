@@ -1,6 +1,6 @@
 
 class Cheftacular
-  class StatelessActionDocumentation
+  class ActionDocumentation
     def backups
       @config['documentation']['action'][__method__] ||= {}
       @config['documentation']['action'][__method__]['long_description'] = [
@@ -18,7 +18,8 @@ class Cheftacular
           "    4. `load` will fetch the latest backup from the production primary **if it doesn't already exist on " +
           "the server** and run the _backup loading command_ to load this backup into the env.",
 
-          "    5. `restore` will simply just run the _backup loading command_ to load the latest backup onto the server.",
+          "    5. `restore` will simply just run the _backup loading command_ to load the latest backup onto the server. This " +
+          "command is REPOSITORY SENSITIVE, to restore a repo other than default, you must use the -R REPOSITORY flag.",
 
           "    6. `status` will display the current state of the backups",
 
@@ -30,7 +31,7 @@ class Cheftacular
     end
   end
 
-  class StatelessAction
+  class Action
     def backups command=''
       command = ARGV[1] if command.blank?
 
@@ -74,8 +75,9 @@ class Cheftacular
                     end
 
       target_db_primary, nodes = @config['getter'].get_db_primary_node_and_nodes
-      applications_as_string   = @config['getter'].get_repo_names_for_repositories({ database: @config['getter'].get_current_database }).keys.join(',')
+      applications_as_string   = @config['getter'].get_repo_names_for_repositories([{ database: @config['getter'].get_current_database }, { restore_backup_file_name: 'NOT NIL' , ignore_val: true}]).keys.join(',')
       env_db_pass              = @config[@options['env']]['chef_passwords_bag_hash']["#{ backup_mode }_pass"]
+      env_db_user              = @config['getter'].get_current_repo_config['application_database_user']
       env_db_mode              = @config['getter'].get_current_database
 
       options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
@@ -87,7 +89,7 @@ class Cheftacular
 
         puts("Beginning db_backup_run for #{ n.name } (#{ n.public_ipaddress }) for env #{ options['env'] }") unless options['quiet']
 
-        start_db_backup_restore( n.name, n.public_ipaddress, options, locs, cheftacular, passwords, applications_as_string, env_db_pass, ruby_command, env_db_mode )
+        start_db_backup_restore( n.name, n.public_ipaddress, options, locs, cheftacular, passwords, applications_as_string, env_db_pass, ruby_command, env_db_mode, env_db_user )
       end
     end
 
@@ -235,7 +237,7 @@ module SSHKit
         puts "Finished transferring #{ full_backup_path } to #{ name }(#{ ip_address })..."
       end
 
-      def start_db_backup_restore name, ip_address, options, locs, cheftacular, passwords, applications_as_string, env_db_pass, ruby_command, env_db_mode, out=''
+      def start_db_backup_restore name, ip_address, options, locs, cheftacular, passwords, applications_as_string, env_db_pass, ruby_command, env_db_mode, env_db_user, out=''
         log_loc, timestamp = set_log_loc_and_timestamp(locs)
 
         puts "Beginning backup run on #{ name } (#{ ip_address }), this command may take a while to complete..."
@@ -244,7 +246,7 @@ module SSHKit
         when 'backup_gem'
           command = cheftacular['backup_config']['backup_load_command']
           command = command.gsub('ENVIRONMENT', options['env']).gsub('APPLICATIONS', applications_as_string).gsub('DB_PASS', env_db_pass)
-          command = command.gsub('RUBY_COMMAND', ruby_command ).gsub('MODE', env_db_mode)
+          command = command.gsub('RUBY_COMMAND', ruby_command ).gsub('MODE', env_db_mode).gsub('DATABASE_USER', env_db_user)
 
           out << sudo_capture( passwords[ip_address], command )
         when 'raw'

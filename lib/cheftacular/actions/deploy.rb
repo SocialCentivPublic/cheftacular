@@ -19,9 +19,9 @@ class Cheftacular
 
           "    5. The `-v|--verbose` option will cause failed deploys to output to the terminal window and to their normal log file. Useful for debugging.",
 
-          "    6. The `cft deploy check` argument will force a check run under the same environment as the initial deploy.",
+          "    6. The `cft deploy check` argument will force a check run under the same environment as the initial deploy. This is also aliased to `cft d ch`",
 
-          "    7. The `cft deploy verify` argument will force a check AND verify run under the same environment as the initial deploy",
+          "    7. The `cft deploy verify` argument will force a check AND verify run under the same environment as the initial deploy. This is also aliased to `cft d ve`",
 
           "    8. Aliased to `cft d`"
         ]
@@ -33,8 +33,8 @@ class Cheftacular
 
   class Action
     def deploy deployment_args={ in: :groups, limit: 6, wait: 5 }
-      run_check  = ARGV[1] == 'check'
-      run_verify = ARGV[1] == 'verify'
+      run_check  = ARGV[1] == 'check' || ARGV[1] == 'ch'
+      run_verify = ARGV[1] == 'verify' || ARGV[1] == 've'
 
       nodes = @config['getter'].get_true_node_objects(false) #when this is run in scaling we'll need to make sure we deploy to new nodes
 
@@ -65,6 +65,8 @@ class Cheftacular
       @config['action'].check if run_check && !@options['run_migration_already']
 
       @config['action'].check('verify') if run_verify && !@options['run_migration_already']
+
+      @config['auditor'].notify_slack_on_completion("deploy run completed on #{ nodes.map {|n| n.name }.join(', ') }\n") if @config['cheftacular']['auditing'] && !@options['run_migration_already']
 
       @config['action'].migrate(nodes) if @config['getter'].get_current_repo_config['database'] != 'none' && !@options['run_migration_already']
 

@@ -330,6 +330,7 @@ class Cheftacular
       end
 
       locs['chef-repo']             = Dir.getwd
+      locs['true-root']             = File.expand_path("#{ locs['chef-repo'] }/..")
       locs['roles']                 = File.expand_path("#{ locs['chef-repo'] }/roles")
       locs['nodes']                 = File.expand_path("#{ locs['chef-repo'] }/nodes_dir") #DO NOT RENAME THIS TO NODES
       locs['root']                  = locs['chef-repo']                                    unless locs['root']

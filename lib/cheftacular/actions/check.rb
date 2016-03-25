@@ -11,7 +11,7 @@ class Cheftacular
 
           "    2. If the all argument is provided, all repositories will be checked for the current environment",
 
-          "    3. If the verify argument is provided, cft will attempt to see if the servers are using the latest commits",
+          "    3. If the verify argument is provided, cft will attempt to see if the servers are using the latest commits. This is also aliased to `cft ch ve`",
 
           "    4. Aliased to `cft ch`"
         ]
@@ -25,7 +25,7 @@ class Cheftacular
       @config['filesystem'].cleanup_file_caches('current-nodes')
 
       fetch_all_repository_data = ARGV[1] == 'all'
-      verify_state_is_latest    = ARGV[1] == 'verify'
+      verify_state_is_latest    = ARGV[1] == 'verify' || ARGV[1] == 've'
       verify_state_is_latest    = mode    == 'verify' if ARGV[1] != 'verify'
       
       nodes = @config['getter'].get_true_node_objects(fetch_all_repository_data)

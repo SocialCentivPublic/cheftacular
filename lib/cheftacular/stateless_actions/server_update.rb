@@ -48,7 +48,7 @@ class Cheftacular
 
         log_data, timestamp = start_apt_updater( n.name, n.public_ipaddress, options, locs, passwords)
 
-        logs_bag_hash["#{ n.name }-upgrade"] = { text: log_data.scrub_pretty_text, timestamp: timestamp }
+        #logs_bag_hash["#{ n.name }-upgrade"] = { text: log_data.scrub_pretty_text, timestamp: timestamp }
       end
 
       on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ), in: :groups, limit: 5, wait: 120 do |host|
@@ -59,7 +59,7 @@ class Cheftacular
         start_sys_restarter( n.name, n.public_ipaddress, options, locs, passwords)
       end if @options['rolling_restart']
 
-      @config['ChefDataBag'].save_logs_bag
+      #@config['ChefDataBag'].save_logs_bag
     end
   end
 end
