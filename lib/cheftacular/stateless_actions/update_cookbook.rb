@@ -37,7 +37,7 @@ class Cheftacular
           `rm -Rf #{ @config['locs']['cookbooks'] }/#{ cookbook }` if File.exists?(File.expand_path("#{ @config['locs']['cookbooks'] }/#{ cookbook }"))
           `cp -Rf #{ @config['locs']['true-root'] }/#{ cookbook } #{ @config['locs']['cookbooks'] }/#{ cookbook }`
 
-          `rm -Rf #{ @config['locs']['true-root'] }/#{ cookbook }/.git`
+          `rm -Rf #{ @config['locs']['cookbooks'] }/#{ cookbook }/.git`
         else
           puts "You do not have #{ cookbook } under the #{ @config['locs']['true-root'] } directory!"
         end

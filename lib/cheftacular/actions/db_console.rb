@@ -19,7 +19,7 @@ class Cheftacular
 
   class Action
     def db_console
-      self.send("db_console_#{ @config['getter'].get_current_database }")
+      nodes = self.send("db_console_#{ @config['getter'].get_current_database }")
     end
 
     def db_console_postgresql

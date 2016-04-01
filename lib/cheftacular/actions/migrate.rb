@@ -49,7 +49,7 @@ class Cheftacular
 
       #restart the servers again after a deploy with a migration just in case
       if !log_data.empty? && log_data != @config['cheftacular']['repositories'][@options['role']]['not_a_migration_message']
-        @config['auditor'].notify_slack_on_completion("migrate run completed\n") if @config['cheftacular']['auditing']
+        @config['auditor'].notify_slack_on_completion("migrate run completed on #{ nodes.map { |node| node.name }.join(', ') }\n") if @config['cheftacular']['auditing']
 
         @config['action'].deploy
       end

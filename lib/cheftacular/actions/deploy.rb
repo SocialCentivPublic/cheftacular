@@ -66,7 +66,7 @@ class Cheftacular
 
       @config['action'].check('verify') if run_verify && !@options['run_migration_already']
 
-      @config['auditor'].notify_slack_on_completion("deploy run completed on #{ nodes.map {|n| n.name }.join(', ') }\n") if @config['cheftacular']['auditing'] && !@options['run_migration_already']
+      @config['auditor'].notify_slack_on_completion_for_deploy(nodes.map {|n| n.name }, logs_bag_hash) if @config['cheftacular']['auditing'] && !@options['run_migration_already']
 
       @config['action'].migrate(nodes) if @config['getter'].get_current_repo_config['database'] != 'none' && !@options['run_migration_already']
 

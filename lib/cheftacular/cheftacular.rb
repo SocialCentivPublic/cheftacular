@@ -55,6 +55,8 @@ class Cheftacular
 
       @config['parser'].parse_context
 
+      @config['helper'].unset_repository_if_role_has_no_repository
+
       puts("Preparing to run command \"#{ @options['command'] }\"...") if @options['verbose']
 
       @config['auditor'].audit_run if @config['cheftacular']['auditing']

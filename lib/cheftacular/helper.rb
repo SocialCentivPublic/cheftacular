@@ -364,6 +364,10 @@ class Cheftacular
         end
       end
     end
+
+    def unset_repository_if_role_has_no_repository #at this point, we should of already verified that the role exists so the repository key is useless data
+      @options.delete('repository') if @config['getter'].get_repository_from_role_name(@options['role'], 'do_not_raise_on_unknown').nil?
+    end
   end
 end
 

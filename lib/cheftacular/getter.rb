@@ -170,7 +170,6 @@ class Cheftacular
               skip = true if repo_hash[key.to_s] != val && restrict_hash.has_key?(:ignore_value)
               skip = true if val == 'NOT NIL' && repo_hash[key.to_s].nil?
               skip = true if val == 'NIL'     && !repo_hash[key.to_s].nil?
-              puts "#{ name } => k:#{ key }::v:#{ val }:::#{ skip }:[#{ repo_hash[key.to_s] }]"
             end
           end
 
