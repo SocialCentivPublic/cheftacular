@@ -21,7 +21,9 @@ class Cheftacular
 
           "    6. This command also accepts a *comma delimited list* of server names to boot / destroy instead of all the stored ones for an environment.",
 
-          "    7. Aliased to `cft e`"
+          "    7. This command works with all the flags that `cft deploy` works with, like -Z -z -O and so on.",
+
+          "    8. Aliased to `cft e`"
         ]
       ]
 

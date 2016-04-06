@@ -23,7 +23,9 @@ class Cheftacular
 
           "    7. The `cft deploy verify` argument will force a check AND verify run under the same environment as the initial deploy. This is also aliased to `cft d ve`",
 
-          "    8. Aliased to `cft d`"
+          "    8. Deploy locks (if set in the cheftacular.yml for the repo(s)) can be bypassed with the `--override-deploy-locks` flag",
+
+          "    9. Aliased to `cft d`"
         ]
       ]
 

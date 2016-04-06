@@ -8,6 +8,8 @@ class Cheftacular
 
       initialize_yaml_configuration
 
+      initialize_override_yaml_configuration
+
       initialize_default_cheftacular_options
 
       initialize_locations
@@ -92,6 +94,10 @@ class Cheftacular
           @options['env'] = 'staging'
         end
 
+        #opts.on('-S', '--split-staging', "Set the sub-environment to split_staging") do
+        #  @options['sub_env'] = 'split-staging'
+        #end
+
         opts.on('--split-env SPLIT_ENV_NAME', "Set the sub-environment to the specified split_env") do |sub_env|
           @options['sub_env'] = sub_env
         end
@@ -131,11 +137,11 @@ class Cheftacular
           @options['repository'] = name
         end
 
-        opts.on('-s', '--search-node-name NODE_NAME', 'For commands that support searching, return results with NODE_NAME in them') do |name|
+        opts.on('-N', '--search-node-name NODE_NAME', 'For commands that support searching, return results with NODE_NAME in them') do |name|
           @options['search_node_name'] = name
         end
 
-        opts.on('-S', '--search-role-name ROLE_NAME', 'For commands that support searching, return results with ROLE_NAME in them') do |name|
+        opts.on('-L', '--search-role-name ROLE_NAME', 'For commands that support searching, return results with ROLE_NAME in them') do |name|
           @options['search_role_name'] = name
         end
 
@@ -263,6 +269,17 @@ class Cheftacular
       @config['cheftacular'] = @config['helper'].get_cheftacular_yml_as_hash
     end
 
+    def initialize_override_yaml_configuration
+      @config['cheftacular_overrides'] = @config['helper'].get_cheftacular_yml_override
+
+      @config['cheftacular'] = @config['cheftacular'].merge(@config['cheftacular_overrides'])
+    end    
+
+    def initialize_default_cheftacular_options
+      @options['env']        = @config['cheftacular']['default_environment'] if @config['cheftacular'].has_key?('default_environment')
+      @options['repository'] = @config['cheftacular']['default_repository']  if @config['cheftacular'].has_key?('default_repository')
+    end
+
     def initialize_data_bag_cheftacular_hash
       initialize_ridley
 
@@ -283,11 +300,6 @@ class Cheftacular
       puts "Creating file cache for #{ Time.now.strftime("%Y%m%d") }'s local cheftacular.yml."
 
       @config['filesystem'].write_local_cheftacular_cache_file parsed_cheftacular
-    end
-
-    def initialize_default_cheftacular_options
-      @options['env']        = @config['cheftacular']['default_environment'] if @config['cheftacular'].has_key?('default_environment')
-      @options['repository'] = @config['cheftacular']['default_repository']  if @config['cheftacular'].has_key?('default_repository')
     end
 
     def initialize_monkeypatches

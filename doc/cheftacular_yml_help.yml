@@ -127,6 +127,12 @@ repositories:
     custom_nginx_configs:            'Array of nginx configurations to load for the repository {TheCheftacularCookbook}'
     server_socket_type:              '[puma|unicorn] For rails apps, can be used to choose unicorn over puma (if this key does not exist it defaults to puma) {TheCheftacularCookbook}'
     route_wildcard_requests_for_tld: '[true|false] This triggers special behaviors for server creation (cloud_bootstrap). If a server is a load balancer for this repo, server creation will route wildcard requests to it'
+    db_env_node_bypass:
+      key_description:               'Signals to TheCheftacularCookbook that nodes with the ENVIRONMENT => IP_ADDRESS should bypass their normal env configs and use those as defaults (supports local.db.TLD)'
+      STAR_MATCHER:
+        key_description:             'The original environment that you want to bypass out of'
+        environment_to_bypass_into:  'This key refers to the environment you want to bypass INTO'
+        environment_db_role:         'The primary db role of the server you want to bypass into'
     application_services:
       key_description:               'Hash of services the application can load {TheCheftacularCookbook}'
       STAR_MATCHER:
@@ -292,7 +298,7 @@ TheCheftacularCookbook:
     additional_sensu_server_checks:
       key_description:       'A hash containing all of the additional sensu recipes you would like to define and utilize on your sensu_server, use this for heavy business logic checks'
       STAR_MATCHER:
-        key_dewscription:           'Information about the individual sensu recipe'
+        key_description:           'Information about the individual sensu recipe'
         cookbook:                   'The cookbook your sensu recipe resides in'
         filename_without_extension: 'The filename without extension of your sensu recipe'
     slack_handlers: 

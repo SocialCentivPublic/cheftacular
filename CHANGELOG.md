@@ -1,4 +1,4 @@
-## 2.14.2
+## 2.15.0
 
 * Remove debug statement in 2.14.1 (getter.rb)
 
@@ -13,6 +13,8 @@
   * It also no longer logs the role and repository if the command is a stateless command (almost all stateless commands only care about the environment)
 
   * The auditor also now lists what servers migrates and runs completed on
+
+* Now supports override.cheftacular.yml. Any keys placed in this file will be read in and merged on top of your current keys. Ideal for checking out of github and giving devs specific env and repo defaults
 
 ## 2.14.1
 
