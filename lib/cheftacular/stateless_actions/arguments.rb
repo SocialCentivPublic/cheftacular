@@ -16,6 +16,8 @@ class Cheftacular
 
         '5.  `-s|--staging` toggles on staging mode. Commands passed to cft will hit the staging server(s) instead of the default server(s)',
 
+        #'6.  `-S|--split-staging` toggles on split-staging as a sub environment.',
+
         '6.  `--split-env SPLIT_ENV_NAME` sets the sub-environment to SPLIT_ENV_NAME. This only slightly affects certain commands.',
 
         '7.  `-t|--test` toggles on test mode. Commands passed to cft will hit the test server(s) instead of the default server(s)',
@@ -36,9 +38,9 @@ class Cheftacular
 
         '7.  `-R|--repository NAME` will make the command run against a specific repository or context (automatically set for application mode)',
 
-        '8.  `-s|--search-node-name NODE_NAME` option will make this command return results that INCLUDE the NODE_NAME.',
+        '8.  `-N|--search-node-name NODE_NAME` option will make this command return results that INCLUDE the NODE_NAME.',
 
-        '9.  `-S|--search-role-name ROLE_NAME` option will make this command return results that INCLUDE the ROLE_NAME.',
+        '9.  `-L|--search-role-name ROLE_NAME` option will make this command return results that INCLUDE the ROLE_NAME.',
 
         '10. `-E|--search-env-name ENV_NAME` option will make this command return results that have this environment.',
 

@@ -31,6 +31,9 @@ class Cheftacular
       options_to_ignore << :preferred_cloud_region if @options['preferred_cloud_region'] == @config['cheftacular']['preferred_cloud_region']
       options_to_ignore << :virtualization_mode    if @options['virtualization_mode'] == @config['cheftacular']['virtualization_mode']
       options_to_ignore << :route_dns_changes_via  if @options['route_dns_changes_via'] == @config['cheftacular']['route_dns_changes_via']
+      options_to_ignore << :role                   unless @options['repository'].nil?
+      options_to_ignore << :role                   if @config['helper'].is_stateless_command?(@options['command'])
+      options_to_ignore << :repository             if @config['helper'].is_stateless_command?(@options['command'])
       options_to_ignore << :sub_env
       options_to_ignore << :command
 
@@ -49,8 +52,10 @@ class Cheftacular
       ret_array << "  Hostname:  #{ audit_hash['hostname'] }#{ directory_content }#{ version_content }"
 
       if mode =~ /normal/
-        ret_array << "  Arguments: #{ audit_hash['arguments'] }"       if !audit_hash['arguments'].nil? && !audit_hash['arguments'].empty?
-        ret_array << "  Options:   #{ audit_hash['options'].to_hash }" unless audit_hash['options'].empty?
+        arg_opts_string = ''
+        arg_opts_string << "  Arguments: #{ audit_hash['arguments'] }".ljust(38) if !audit_hash['arguments'].nil? && !audit_hash['arguments'].empty?
+        arg_opts_string << "  Options:   #{ audit_hash['options'].to_hash }" unless audit_hash['options'].empty?
+        ret_array       << arg_opts_string
       end
       
       ret_array = ret_array.map { |entry| entry.prepend('    ')} unless entry_number == 0
@@ -59,6 +64,20 @@ class Cheftacular
     end
 
     def notify_slack_on_completion msg
+      audit_command_to_slack_queue(audit_run_as_hash, 'short', msg)
+    end
+
+    def notify_slack_on_completion_for_deploy node_name_array, logs_bag_hash, msg='', failed_node_names=[]
+      node_name_array.each do |node_name|
+        if logs_bag_hash.has_key?("#{ node_name }-deploy") && logs_bag_hash["#{ node_name }-deploy"]['exit_status'] == 1
+          failed_node_names << node_name_array.delete(node_name)
+        end
+      end
+
+      msg << "deploy run succeeded on #{ node_name_array.join(', ') }\n" unless node_name_array.empty?
+
+      msg << "#{ 'and ' unless msg.blank? }deploy run FAILED on #{ failed_node_names.join(', ') }\n" unless failed_node_names.empty?
+
       audit_command_to_slack_queue(audit_run_as_hash, 'short', msg)
     end
 

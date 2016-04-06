@@ -6,7 +6,9 @@ class Cheftacular
         "`cft get_active_ssh_connections` will fetch the active ssh connections from every server and output it into your log directory.",
 
         [
-          "    1. This command runs on all servers in an environment by default"
+          "    1. This command runs on all servers in an environment by default",
+          
+          "    2. Packets can be examined more closely with `tcpdump src port PORT`"
         ]
       ]
 

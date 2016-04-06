@@ -23,7 +23,9 @@ class Cheftacular
 
           "    7. The `cft deploy verify` argument will force a check AND verify run under the same environment as the initial deploy. This is also aliased to `cft d ve`",
 
-          "    8. Aliased to `cft d`"
+          "    8. Deploy locks (if set in the cheftacular.yml for the repo(s)) can be bypassed with the `--override-deploy-locks` flag",
+
+          "    9. Aliased to `cft d`"
         ]
       ]
 
@@ -66,7 +68,7 @@ class Cheftacular
 
       @config['action'].check('verify') if run_verify && !@options['run_migration_already']
 
-      @config['auditor'].notify_slack_on_completion("deploy run completed on #{ nodes.map {|n| n.name }.join(', ') }\n") if @config['cheftacular']['auditing'] && !@options['run_migration_already']
+      @config['auditor'].notify_slack_on_completion_for_deploy(nodes.map {|n| n.name }, logs_bag_hash) if @config['cheftacular']['auditing'] && !@options['run_migration_already']
 
       @config['action'].migrate(nodes) if @config['getter'].get_current_repo_config['database'] != 'none' && !@options['run_migration_already']
 

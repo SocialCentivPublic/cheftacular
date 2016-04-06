@@ -19,9 +19,9 @@ class Cheftacular
 
   class Action
     def console
-      self.send("console_#{ @config['getter'].get_current_stack }")
+      nodes = self.send("console_#{ @config['getter'].get_current_stack }")
 
-      @config['auditor'].notify_slack_on_completion("console run completed\n") if @config['cheftacular']['auditing']
+      @config['auditor'].notify_slack_on_completion("console run completed on #{ nodes.map { |node| node.name }.join(', ') }\n") if @config['cheftacular']['auditing']
     end
 
     def console_ruby_on_rails node_args=[{unless: 'role[rails]'}]
@@ -39,6 +39,8 @@ class Cheftacular
 
         start_console_ruby_on_rails(n.public_ipaddress, n.run_list)
       end
+
+      consolable_nodes
     end
 
     def console_nodejs

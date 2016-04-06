@@ -9,11 +9,9 @@ class Cheftacular
     def parse_context
       return if @config['repository'] && @config['command'] && @config['role']
 
-      roles ||= []
-
-      @config['chef_roles'].each {|r| roles << r.name }
-
       @options['command'] = ARGV[0] unless @options['command']
+
+      parse_role(@options['role']) unless @options['role'].nil?
 
       parse_repository(@options['repository'])
 

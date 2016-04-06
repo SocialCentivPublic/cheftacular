@@ -213,14 +213,20 @@ class Cheftacular
       end
     end
 
+    def get_cheftacular_yml_override filename='override.cheftacular.yml', ret_hash={}
+      ret_hash = get_cheftacular_yml_as_hash(filename) if File.exist?(File.join( Dir.getwd, 'config', filename ))
+
+      ret_hash
+    end
+
     #this must be in helpers because getter class is not yet loaded at the time this method is needed.
-    def get_cheftacular_yml_as_hash
-      config_location = if File.exist?(File.join( Dir.getwd, 'config', 'cheftacular.yml' ))
-                          File.join( Dir.getwd, 'config', 'cheftacular.yml' )
-                        elsif File.exist?('/root/cheftacular.yml')
-                          '/root/cheftacular.yml'
+    def get_cheftacular_yml_as_hash filename='cheftacular.yml'
+      config_location = if File.exist?(File.join( Dir.getwd, 'config', filename ))
+                          File.join( Dir.getwd, 'config', filename )
+                        elsif File.exist?("/root/#{ filename }")
+                          "/root/#{ filename }"
                         else
-                          raise "cheftacular.yml configuration file could not be found in either #{ File.join( Dir.getwd, 'config', 'cheftacular.yml' ) } or /root/cheftacular.yml"
+                          raise "cheftacular.yml configuration file could not be found in either #{ File.join( Dir.getwd, 'config', filename ) } or /root/#{ filename }"
                         end
 
       YAML::load(ERB.new(IO.read(File.open(config_location))).result)
@@ -330,7 +336,7 @@ class Cheftacular
     end
 
     def display_cheftacular_config_diff
-      diff_hash = @config['initial_cheftacular_yml'].deep_diff(@config['default']['cheftacular_bag_hash'], true).except('mode', 'default_repository').compact
+      diff_hash = @config['initial_cheftacular_yml'].deep_diff(@config['default']['cheftacular_bag_hash'], true).except('mode', 'default_repository', 'default_environment').compact
 
       recursive_hash_scrub(diff_hash)
 
@@ -363,6 +369,10 @@ class Cheftacular
           recursive_hash_scrub(hash[key])
         end
       end
+    end
+
+    def unset_repository_if_role_has_no_repository #at this point, we should of already verified that the role exists so the repository key is useless data
+      @options.delete('repository') if @config['getter'].get_repository_from_role_name(@options['role'], 'do_not_raise_on_unknown').nil?
     end
   end
 end

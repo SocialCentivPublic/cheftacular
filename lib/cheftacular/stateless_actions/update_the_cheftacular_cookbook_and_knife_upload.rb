@@ -12,7 +12,7 @@ class Cheftacular
         ]
       ]
 
-      @config['documentation']['stateless_action']['utccaku']['short_description'] = 'Runs `update_cookbook` and `knife_upload` for the cheftacular cookbook'
+      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Runs `update_cookbook` and `knife_upload` for the cheftacular cookbook'
     end
   end
 

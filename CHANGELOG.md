@@ -1,3 +1,21 @@
+## 2.15.0
+
+* Remove debug statement in 2.14.1 (getter.rb)
+
+* Added new arguments to cft ssh (`cft ssh NODE_NAME [exec] [command]`)
+
+* Auditor Additions
+
+  * `cft deploy` now also notifies the audit stream if a deploy failed and if so, what servers the deploy succeeded or failed on
+
+  * The auditor no longer logs the default repository if the role being used for an action does not have a repository.
+
+  * It also no longer logs the role and repository if the command is a stateless command (almost all stateless commands only care about the environment)
+
+  * The auditor also now lists what servers migrates and runs completed on
+
+* Now supports override.cheftacular.yml. Any keys placed in this file will be read in and merged on top of your current keys. Ideal for checking out of github and giving devs specific env and repo defaults
+
 ## 2.14.1
 
 * Add a case for when `cft verify` detects a bad commit on the server and not return the generic "this commit does not exist" message

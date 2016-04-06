@@ -30,9 +30,9 @@ class Cheftacular
     def run
       command = @config['parser'].parse_runtime_arguments 0, 'range'
 
-      self.send("run_#{ @config['getter'].get_current_stack }", command)
+      nodes = self.send("run_#{ @config['getter'].get_current_stack }", command)
 
-      @config['auditor'].notify_slack_on_completion("run #{ command } completed\n") if @config['cheftacular']['auditing']
+      @config['auditor'].notify_slack_on_completion("run #{ command } completed on #{ nodes.map { |node| node.name }.join(', ') }\n") if @config['cheftacular']['auditing']
     end
 
     def run_ruby_on_rails command
@@ -84,6 +84,8 @@ class Cheftacular
       @config['ChefDataBag'].save_logs_bag
 
       @config['helper'].send_log_bag_hash_slack_notification(logs_bag_hash, __method__, 'Failing command detected, exiting...')
+
+      nodes
     end
   end
 end

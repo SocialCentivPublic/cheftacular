@@ -8,9 +8,9 @@ module SSHKit
 
         repositories.each_pair { |key, repo_hash| repo_role_name = key if repo_hash['repo_name'] == name }
 
-        if repositories.has_key?(name) && args.empty?
+        if repositories.has_key?(name) && ( args.empty? || args.include?('do_not_raise_on_unknown') )
           return repositories[name]['repo_name']
-        elsif !repo_role_name.empty? && args.empty?
+        elsif !repo_role_name.empty? && ( args.empty? || args.include?('do_not_raise_on_unknown') )
           return repo_role_name
         end
 
@@ -20,7 +20,9 @@ module SSHKit
           return !repo_role_name.empty?
         end
 
-        raise "Unknown repository or rolename for #{ name }"
+        raise "Unknown repository or rolename for #{ name }" unless args.include?('do_not_raise_on_unknown')
+
+        nil
       end
 
       def get_node_from_address nodes, address, ret_node=nil
