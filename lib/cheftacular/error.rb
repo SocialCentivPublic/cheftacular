@@ -15,7 +15,7 @@ class Cheftacular
 
       nodes = @config['parser'].exclude_nodes( nodes, exclusion_args, true )
 
-      raise "Node not found for #{ @options['node_name'] }" if nodes.empty?
+      raise "Node not found for node name: #{ @options['node_name'] }" if nodes.empty?
 
       nodes
     end

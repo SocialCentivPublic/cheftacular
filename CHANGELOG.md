@@ -1,3 +1,11 @@
+## 2.15.1
+
+* Fixed bypasses by ruby_on_rails servers not being able to run tasks / migrations
+
+* Fixed `cft environment` to not deploy to backupmaster if the environment has no database host.
+
+* Minor readability tweaks in several methods.
+
 ## 2.15.0
 
 * Remove debug statement in 2.14.1 (getter.rb)

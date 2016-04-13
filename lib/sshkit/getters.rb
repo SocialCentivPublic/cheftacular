@@ -74,6 +74,18 @@ module SSHKit
 
         ret_hash
       end
+
+      def get_override_environment repo_hash, default_env
+        repo_hash['db_env_node_bypass'].each_pair do |original_env, original_env_hash|
+          next if default_env != original_env
+
+          default_env = original_env_hash['environment_to_bypass_into']
+
+          break
+        end
+
+        default_env
+      end
     end
   end
 end

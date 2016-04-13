@@ -315,7 +315,7 @@ class Cheftacular
 
         puts "Please re-run your deploy again and if this continues to not work, check with your DevOps personel!"
 
-        exit
+        @options['skip_further_deploy_steps'] = true
       elsif !git_output.include?(revision_to_check)
         puts "! The remote organization #{ org_name_to_check } does not have a revision / branch #{ revision_to_check } for repository: #{ @options['repository'] } !"
 
