@@ -20,11 +20,11 @@ class Cheftacular
     def cloud_bootstrap_from_queue
       raise "This action is not meant to be called directly!" unless @options['in_scaling']
 
-      puts("Preparing to boot server #{ @options['node_name'] } for #{ @options['env'] }!") unless @options['quiet']
-
       @config['in_server_creation_queue'] = true
 
       @config['server_creation_queue'].each do |server_hash|
+        puts("Preparing to boot server #{ server_hash['node_name'] } for #{ @options['env'] }!") unless @options['quiet']
+
         puts("Creating server #{ server_hash['node_name'] } with arguments:") unless @options['quiet']
         ap(server_hash.except('node_name'))                                   unless @options['quiet']
 

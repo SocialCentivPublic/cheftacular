@@ -77,7 +77,7 @@ module SSHKit
 
         puts(out) if options['output'] || options['verbose']
 
-        ::File.open("#{ log_loc }/#{ name }-apt-update-#{ timestamp }.txt", "w") { |f| f.write(out.scrub_pretty_text) } unless options['no_logs']
+        ::File.open("#{ log_loc }/server-update/#{ name }-apt-update-#{ timestamp }.txt", "w") { |f| f.write(out.scrub_pretty_text) } unless options['no_logs']
 
         puts "Succeeded upgrade of #{ name } (#{ ip_address })"
 
@@ -89,7 +89,7 @@ module SSHKit
 
         out << sudo_capture( passwords[ip_address], 'shutdown', '1', '-r' )
 
-        ::File.open("#{ log_loc }/#{ name }-upgrade-#{ timestamp }.txt", "w") { |f| f.write(out.scrub_pretty_text) }
+        ::File.open("#{ log_loc }/server-update/#{ name }-upgrade-#{ timestamp }.txt", "w") { |f| f.write(out.scrub_pretty_text) }
 
         puts(out) if options['output'] || options['verbose']
 

@@ -100,15 +100,21 @@ class Cheftacular
 
           @options['unset_address_and_node_name'] = true
 
-          @config['action'].deploy
+          database_host = @config['parser'].exclude_nodes( @config['getter'].get_true_node_objects(true), [{ unless: "role[#{ @options['role'] }]"}, { if: { not_env: @options['env'] } }], true).first
 
-          backup_pid = Process.spawn("cft backups load --env=#{ @options['env'] }")
+          unless database_host.nil?
+            @config['action'].deploy
+
+            backup_pid = Process.spawn("cft backups load --env=#{ @options['env'] }")
+          end
+
+          puts("NOTE! This command is not finished until your terminal returns to an input state!") unless database_host.nil?
 
           @options['role'] = 'all'
 
           @config['action'].deploy
 
-          Process.wait backup_pid
+          Process.wait(backup_pid) unless database_host.nil?
 
           puts "Done loading data and setting up #{ @options['env'] }!"
         end
@@ -141,7 +147,9 @@ class Cheftacular
 
           sleep 15
         end
-      end  
+      end
+
+      @config['auditor'].notify_slack_on_completion("environment #{ type } command completed for env: #{ @options['env'] }\n") if @config['cheftacular']['auditing']
     end
 
     alias_method :e, :environment

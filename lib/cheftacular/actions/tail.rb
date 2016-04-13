@@ -52,6 +52,7 @@ class Cheftacular
 
     def start_tail_ruby_on_rails ip_address, run_list, pattern_to_match
       true_env = @config['dummy_sshkit'].get_true_environment run_list, @config['cheftacular']['run_list_environments'][@options['env']], @options['env']
+      true_env = @config['dummy_sshkit'].get_override_environment @config['cheftacular']['repositories'][@options['role']], @options['env']
 
       #special servers should be listed first as most of them will have web role
       log_loc = "#{ @config['cheftacular']['base_file_path'] }/#{ @options['repository'] }/current/log/#{ true_env }.log"

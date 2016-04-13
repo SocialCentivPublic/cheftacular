@@ -70,6 +70,8 @@ class Cheftacular
 
       @config['auditor'].notify_slack_on_completion_for_deploy(nodes.map {|n| n.name }, logs_bag_hash) if @config['cheftacular']['auditing'] && !@options['run_migration_already']
 
+      return false if @options['skip_further_deploy_steps']
+
       @config['action'].migrate(nodes) if @config['getter'].get_current_repo_config['database'] != 'none' && !@options['run_migration_already']
 
       split_nodes_hash = {}
