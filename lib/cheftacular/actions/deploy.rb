@@ -57,7 +57,7 @@ class Cheftacular
 
         log_data, timestamp, exit_status = start_deploy( n.name, n.public_ipaddress, options, locs, passwords)
 
-        logs_bag_hash["#{ n.name }-#{ __method__ }"] = { "text" => log_data.scrub_pretty_text, "timestamp" => timestamp, "exit_status" => exit_status }
+        logs_bag_hash["#{ n.name }-#{ __method__ }"] = { "text" => log_data.scrub_pretty_text.force_encoding('UTF-8'), "timestamp" => timestamp, "exit_status" => exit_status }
       end
 
       @config['helper'].send_log_bag_hash_slack_notification(logs_bag_hash, __method__)

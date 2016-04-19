@@ -82,7 +82,7 @@ module SSHKit
           default_env = original_env_hash['environment_to_bypass_into']
 
           break
-        end
+        end if repo_hash.has_key?('db_env_node_bypass')
 
         default_env
       end

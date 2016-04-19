@@ -74,9 +74,11 @@ class Cheftacular
         end
       end
 
-      msg << "deploy run succeeded on #{ node_name_array.join(', ') }\n" unless node_name_array.empty?
+      msg << "deploy run succeeded on #{ node_name_array.join(', ') }" unless node_name_array.empty?
 
-      msg << "#{ 'and ' unless msg.blank? }deploy run FAILED on #{ failed_node_names.join(', ') }\n" unless failed_node_names.empty?
+      msg << "#{ 'and ' unless msg.blank? }deploy run FAILED on #{ failed_node_names.join(', ') }" unless failed_node_names.empty?
+
+      msg << "\n"
 
       audit_command_to_slack_queue(audit_run_as_hash, 'short', msg)
     end
@@ -111,7 +113,7 @@ class Cheftacular
         cheftacular_yml_help:                             ['yml_help'],
         client_list:                                      ['cl'],
         cloud_bootstrap:                                  ['cb'],
-        environment:                                      ['e'],
+        environment:                                      ['e', 'env'],
         fix_known_hosts:                                  ['fkh'],
         knife_upload:                                     ['ku'],
         location_aliases:                                 ['la'],

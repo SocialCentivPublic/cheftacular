@@ -78,7 +78,7 @@ class Cheftacular
 
         log_data, timestamp, exit_status = start_task( n.name, n.public_ipaddress, n.run_list, "#{ executable } #{ command }", options, locs, cheftacular, passwords, sudo)
 
-        logs_bag_hash["#{ n.name }-#{ descriptor }"] = { "text" => log_data.scrub_pretty_text, "timestamp" => timestamp, "exit_status" => exit_status }
+        logs_bag_hash["#{ n.name }-#{ descriptor }"] = { "text" => log_data.scrub_pretty_text.force_encoding('UTF-8'), "timestamp" => timestamp, "exit_status" => exit_status }
       end
 
       @config['ChefDataBag'].save_logs_bag

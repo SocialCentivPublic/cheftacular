@@ -1,3 +1,17 @@
+## 2.15.2
+
+* Added new command `cft env_ssh_exec COMMAND` to run an ssh command on every node in an environment
+
+* Fix issue with deploys to repos that do NOT have the db_env_node_bypass cheftacular key
+
+* Fix issue with `cft ssh NODE_NAME exec COMMAND` not working on nodes outside of the current env
+
+* Fix some instances where attempts to save non UTF-8 encoded strings in the logs bag resulted in failed runs.
+
+* Added `cft env` alias to `cft environment`
+
+* Cheftacular now reverse parses your role name set with `-r ROLE_NAME`. If this role matches a repository key, it will set the global repository variable so stateful commands work as expected.
+
 ## 2.15.1
 
 * Fixed bypasses by ruby_on_rails servers not being able to run tasks / migrations

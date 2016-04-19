@@ -23,7 +23,7 @@ class Cheftacular
 
           "    7. This command works with all the flags that `cft deploy` works with, like -Z -z -O and so on.",
 
-          "    8. Aliased to `cft e`"
+          "    8. Aliased to `cft e` and `cft env`"
         ]
       ]
 
@@ -153,6 +153,7 @@ class Cheftacular
     end
 
     alias_method :e, :environment
+    alias_method :env, :environment
 
     private
 

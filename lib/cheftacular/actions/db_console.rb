@@ -59,7 +59,7 @@ class Cheftacular
         start_console_mongodb(n.public_ipaddress, private_database_host_address)
       end
 
-      @config['auditor'].notify_slack_on_completion("mongo run completed on #{ nodes.first.name } (#{ nodes.first.public_ipaddress })\n") if @config['cheftacular']['auditing']
+      @config['auditor'].notify_slack_on_completion("mongo run completed on #{ mongoable_nodes.first.name } (#{ mongoable_nodes.first.public_ipaddress })\n") if @config['cheftacular']['auditing']
     end
 
     def db_console_mysql

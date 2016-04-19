@@ -5,7 +5,7 @@ class Cheftacular
     end
 
     def log_directories
-      ['applog', 'deploy', 'failed-deploy', 'rolelog', 'rvm', 'server-setup', 'stashedlog', 'server-update']
+      ['applog', 'deploy', 'failed-deploy', 'rolelog', 'rvm', 'server-setup', 'stashedlog', 'server-update', 'ssh-exec']
     end
 
     def write_version_file version
