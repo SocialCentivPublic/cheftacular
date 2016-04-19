@@ -184,7 +184,11 @@
 
 12. `cft disk_report` will fetch useful statistics from every server for every environment and output it into your log directory.
 
-13. `cft environment boot|boot_without_deploy|destroy|destroy_raw_servers [SERVER_NAMES]` will boot / destroy the current environment
+13. `cft env_ssh_exec [command]` will ssh into each server in an environment and run the command as sudo. 
+
+    1. To deactivate logstash: `cft env_ssh_exec sv stop logstash_agent`
+
+14. `cft environment boot|boot_without_deploy|destroy|destroy_raw_servers [SERVER_NAMES]` will boot / destroy the current environment
 
     1. `boot` will spin up servers and bring them to a stable state. This includes setting up their subdomains for the target environment.
 
@@ -200,9 +204,9 @@
 
     7. This command works with all the flags that `cft deploy` works with, like -Z -z -O and so on.
 
-    8. Aliased to `cft e`
+    8. Aliased to `cft e` and `cft env`
 
-14. `cft file NODE_NAME LOCATION_ALIAS MODE FILE_NAME` interacts with a file on the remote server
+15. `cft file NODE_NAME LOCATION_ALIAS MODE FILE_NAME` interacts with a file on the remote server
 
     1. `LOCATION_ALIAS` will be parsed as a path if it has backslash characters. Otherwise it will be parsed from your location_aliases hash in your cheftacular.yml
 
@@ -232,35 +236,35 @@
 
         1. `--save-to-file FILE_PATH` can also be used in the `fetch` context to specify where exactly to save the file and what to name it as.
 
-15. `cft fix_known_hosts [HOSTNAME]` this command will delete entries in your known_hosts file for all the servers that are in our system (ip addresses AND dns names)
+16. `cft fix_known_hosts [HOSTNAME]` this command will delete entries in your known_hosts file for all the servers that are in our system (ip addresses AND dns names)
 
     1. Passing in a hostname will make the command only remove entries with that hostname / ip specifically
 
     2. Aliased to `cft fkh`
 
-16. `cft get_active_ssh_connections` will fetch the active ssh connections from every server and output it into your log directory.
+17. `cft get_active_ssh_connections` will fetch the active ssh connections from every server and output it into your log directory.
 
     1. This command runs on all servers in an environment by default
 
     2. Packets can be examined more closely with `tcpdump src port PORT`
 
-17. `cft get_haproxy_log` this command will generate a haproxy html file for the load balancer(s) associated with a repository in the log directory. Opening this log file in the browser will show the status of that haproxy at the time of the log. 
+18. `cft get_haproxy_log` this command will generate a haproxy html file for the load balancer(s) associated with a repository in the log directory. Opening this log file in the browser will show the status of that haproxy at the time of the log. 
 
     1. In devops mode, this command will not do anything without the -R repository passed.
 
-18. `cft get_log_from_bag <NODE_NAME-COMMAND_TYPE>` this command grabs the latest command run log from the data bags and saves it to your log directory. There are different types of logs saved per server depending on command.
+19. `cft get_log_from_bag <NODE_NAME-COMMAND_TYPE>` this command grabs the latest command run log from the data bags and saves it to your log directory. There are different types of logs saved per server depending on command.
 
-19. `cft get_pg_pass ['clip']` command will output the current environment's pg_password to your terminal. Optionally you can pass in clip like `cft get_pg_pass clip` to have it also copy the pass to your clipboard.
+20. `cft get_pg_pass ['clip']` command will output the current environment's pg_password to your terminal. Optionally you can pass in clip like `cft get_pg_pass clip` to have it also copy the pass to your clipboard.
 
-20. `cft help COMMAND|MODE` this command returns the documentation for a specific command if COMMAND matches the name of a command. Alternatively, it can be passed `action|arguments|application|current|devops|stateless_action` to fetch the commands for a specific mode.Misspellings of commands will display near hits.
+21. `cft help COMMAND|MODE` this command returns the documentation for a specific command if COMMAND matches the name of a command. Alternatively, it can be passed `action|arguments|application|current|devops|stateless_action` to fetch the commands for a specific mode.Misspellings of commands will display near hits.
 
-21. `cft list_toggleable_roles NODE_NAME` This command will allow you to see all toggleable roles for a node
+22. `cft list_toggleable_roles NODE_NAME` This command will allow you to see all toggleable roles for a node
 
-22. `cft location_aliases` will list all location aliases listed in your cheftacular.yml. These aliases can be used in the `cft file` command.
+23. `cft location_aliases` will list all location aliases listed in your cheftacular.yml. These aliases can be used in the `cft file` command.
 
     1. This command is aliased to `cft la`
 
-23. `cft log` this command will output the last 500 lines of logs from every server set for the repository (can be given additional args to specify) to the log directory
+24. `cft log` this command will output the last 500 lines of logs from every server set for the repository (can be given additional args to specify) to the log directory
 
     1.  `--nginx` will fetch the nginx logs as well as the application logs
 
@@ -272,13 +276,13 @@
 
     4. `--fetch-backup` If doing a pg_data log, this will fetch the latest logs from the pg_data log directory for each database.
 
-24. `cft migrate` this command will grab the first alphabetical node for a repository and run a migration that will hit the database primary server.
+25. `cft migrate` this command will grab the first alphabetical node for a repository and run a migration that will hit the database primary server.
 
     1. Currently only supports rails stacks.
 
-25. `cft pass NODE_NAME` will drop the server's sudo password into your clipboard. Useful for when you need to ssh into the server itself and try advanced linux commands
+26. `cft pass NODE_NAME` will drop the server's sudo password into your clipboard. Useful for when you need to ssh into the server itself and try advanced linux commands
 
-26. `cft role_toggle NODE_NAME ROLE_NAME activate|deactivate` This command will allow you to **toggle** roles on nodes without using `cft upload_nodes`
+27. `cft role_toggle NODE_NAME ROLE_NAME activate|deactivate` This command will allow you to **toggle** roles on nodes without using `cft upload_nodes`
 
     1. This command uses your *role_toggling:deactivated_role_suffix* attribute set in your cheftacular.yml to toggle the role, it checks to see if the toggled name exists then sets the node's run_list to include the toggled role
 
@@ -292,7 +296,7 @@
 
     4. Aliased to `cft rt`
 
-27. `cft run COMMAND [--all]` will trigger the command on the first server in the role. Can be used to run rake commands or anything else.
+28. `cft run COMMAND [--all]` will trigger the command on the first server in the role. Can be used to run rake commands or anything else.
 
     1. `--all` will make the command run against all servers in a role rather than the first server it comes across. Don't do this if you're modifying the database with the command.
 
@@ -304,15 +308,15 @@
 
     5. Can also be used to run meteor commands and is aliased to `cft meteor`
 
-28. `cft scale up|down [NUM_TO_SCALE]` will add (or remove) NUM_TO_SCALE servers from the server array. This command will not let you scale down below 1 server.
+29. `cft scale up|down [NUM_TO_SCALE]` will add (or remove) NUM_TO_SCALE servers from the server array. This command will not let you scale down below 1 server.
 
     1. In the case of server creation, this command takes a great deal of time to execute. It will output what stage it is currently on to the terminal but <b>you must not kill this command while it is executing</b>.A failed build may require the server to be destroyed / examined by a DevOps engineer.
 
-29. `cft ssh NODE_NAME [exec] [command]` ssh you into the node name you are trying to access. It will also drop the server's sudo password into your clipboard. 
+30. `cft ssh NODE_NAME [exec] [command]` ssh you into the node name you are trying to access. It will also drop the server's sudo password into your clipboard. 
 
     1. `cft ssh NODE_NAME exec COMMAND` will execute a command on the server as root
 
-30. `cft tail [PATTERN_TO_MATCH]` will tail the logs (return continuous output) of the first node if finds that has an application matching the repository running on it. Currently only supports rails stacks
+31. `cft tail [PATTERN_TO_MATCH]` will tail the logs (return continuous output) of the first node if finds that has an application matching the repository running on it. Currently only supports rails stacks
 
     1. pass `-n NODE_NAME` to grab the output of a node other than the first.
 
@@ -320,15 +324,15 @@
 
     3. if the `PATTERN_TO_MATCH` argument exists, the tail will only return entries that have that pattern rather than everything written to the file.
 
-31. `cft update_cheftacular` this command attempts to update cheftacular to the latest version.
+32. `cft update_cheftacular` this command attempts to update cheftacular to the latest version.
 
-32. `cft verify` Checks to see if the servers for the current state are running the latest commits. 
+33. `cft verify` Checks to see if the servers for the current state are running the latest commits. 
 
     1. This command is functionally the same as `cft check verify`.
 
     2. This command is aliased to `cft ve`
 
-33. `cft version` this command prints out the current version of cheftacular.
+34. `cft version` this command prints out the current version of cheftacular.
 
     1. Aliased to `cft v`
 
@@ -531,7 +535,11 @@
 
 18. `cft disk_report` will fetch useful statistics from every server for every environment and output it into your log directory.
 
-19. `cft environment boot|boot_without_deploy|destroy|destroy_raw_servers [SERVER_NAMES]` will boot / destroy the current environment
+19. `cft env_ssh_exec [command]` will ssh into each server in an environment and run the command as sudo. 
+
+    1. To deactivate logstash: `cft env_ssh_exec sv stop logstash_agent`
+
+20. `cft environment boot|boot_without_deploy|destroy|destroy_raw_servers [SERVER_NAMES]` will boot / destroy the current environment
 
     1. `boot` will spin up servers and bring them to a stable state. This includes setting up their subdomains for the target environment.
 
@@ -547,9 +555,9 @@
 
     7. This command works with all the flags that `cft deploy` works with, like -Z -z -O and so on.
 
-    8. Aliased to `cft e`
+    8. Aliased to `cft e` and `cft env`
 
-20. `cft file NODE_NAME LOCATION_ALIAS MODE FILE_NAME` interacts with a file on the remote server
+21. `cft file NODE_NAME LOCATION_ALIAS MODE FILE_NAME` interacts with a file on the remote server
 
     1. `LOCATION_ALIAS` will be parsed as a path if it has backslash characters. Otherwise it will be parsed from your location_aliases hash in your cheftacular.yml
 
@@ -579,41 +587,41 @@
 
         1. `--save-to-file FILE_PATH` can also be used in the `fetch` context to specify where exactly to save the file and what to name it as.
 
-21. `cft fix_known_hosts [HOSTNAME]` this command will delete entries in your known_hosts file for all the servers that are in our system (ip addresses AND dns names)
+22. `cft fix_known_hosts [HOSTNAME]` this command will delete entries in your known_hosts file for all the servers that are in our system (ip addresses AND dns names)
 
     1. Passing in a hostname will make the command only remove entries with that hostname / ip specifically
 
     2. Aliased to `cft fkh`
 
-22. `cft full_bootstrap_from_queue` This command performs both ubuntu_bootstrap and chef_bootstrap.
+23. `cft full_bootstrap_from_queue` This command performs both ubuntu_bootstrap and chef_bootstrap.
 
     1. This command is run by `cft cloud_bootstrap` and should not be run on its own.
 
-23. `cft get_active_ssh_connections` will fetch the active ssh connections from every server and output it into your log directory.
+24. `cft get_active_ssh_connections` will fetch the active ssh connections from every server and output it into your log directory.
 
     1. This command runs on all servers in an environment by default
 
     2. Packets can be examined more closely with `tcpdump src port PORT`
 
-24. `cft get_haproxy_log` this command will generate a haproxy html file for the load balancer(s) associated with a repository in the log directory. Opening this log file in the browser will show the status of that haproxy at the time of the log. 
+25. `cft get_haproxy_log` this command will generate a haproxy html file for the load balancer(s) associated with a repository in the log directory. Opening this log file in the browser will show the status of that haproxy at the time of the log. 
 
     1. In devops mode, this command will not do anything without the -R repository passed.
 
-25. `cft get_log_from_bag <NODE_NAME-COMMAND_TYPE>` this command grabs the latest command run log from the data bags and saves it to your log directory. There are different types of logs saved per server depending on command.
+26. `cft get_log_from_bag <NODE_NAME-COMMAND_TYPE>` this command grabs the latest command run log from the data bags and saves it to your log directory. There are different types of logs saved per server depending on command.
 
-26. `cft get_pg_pass ['clip']` command will output the current environment's pg_password to your terminal. Optionally you can pass in clip like `cft get_pg_pass clip` to have it also copy the pass to your clipboard.
+27. `cft get_pg_pass ['clip']` command will output the current environment's pg_password to your terminal. Optionally you can pass in clip like `cft get_pg_pass clip` to have it also copy the pass to your clipboard.
 
-27. `cft help COMMAND|MODE` this command returns the documentation for a specific command if COMMAND matches the name of a command. Alternatively, it can be passed `action|arguments|application|current|devops|stateless_action` to fetch the commands for a specific mode.Misspellings of commands will display near hits.
+28. `cft help COMMAND|MODE` this command returns the documentation for a specific command if COMMAND matches the name of a command. Alternatively, it can be passed `action|arguments|application|current|devops|stateless_action` to fetch the commands for a specific mode.Misspellings of commands will display near hits.
 
-28. `cft initialize_cheftacular_yml [application|TheCheftacularCookbook]` will create a cheftacular.yml file in your config folder (and create the config folder if it does not exist). If you already have a cheftacular.yml file in the config folder, it will create a cheftacular.example.yml file that will contain the new changes / keys in the latest cheftacular version.
+29. `cft initialize_cheftacular_yml [application|TheCheftacularCookbook]` will create a cheftacular.yml file in your config folder (and create the config folder if it does not exist). If you already have a cheftacular.yml file in the config folder, it will create a cheftacular.example.yml file that will contain the new changes / keys in the latest cheftacular version.
 
     1. If `TheCheftacularCookbook` is passed, the generated cheftacular.yml file will include the additional TheCheftacularCookbook keys.
 
     2. If `application` is passed, the generated cheftacular.yml file will look like one you could use in an application directory.
 
-29. `cft initialize_data_bag_contents ENVIRONMENT_NAME` will ensure the data bags always have the correct structure before each run. This command is run every time the gem is started and if called directly, will exit after completion.
+30. `cft initialize_data_bag_contents ENVIRONMENT_NAME` will ensure the data bags always have the correct structure before each run. This command is run every time the gem is started and if called directly, will exit after completion.
 
-30. `cft knife_upload [force]` will resync the chef-server with the local chef-repo code. This command is analog for `knife upload /`
+31. `cft knife_upload [force]` will resync the chef-server with the local chef-repo code. This command is analog for `knife upload /`
 
     1. The force option will add the force option to knife upload.
 
@@ -621,31 +629,31 @@
 
     3. Aliased to `cft ku`
 
-31. `cft list_toggleable_roles NODE_NAME` This command will allow you to see all toggleable roles for a node
+32. `cft list_toggleable_roles NODE_NAME` This command will allow you to see all toggleable roles for a node
 
-32. `cft location_aliases` will list all location aliases listed in your cheftacular.yml. These aliases can be used in the `cft file` command.
+33. `cft location_aliases` will list all location aliases listed in your cheftacular.yml. These aliases can be used in the `cft file` command.
 
     1. This command is aliased to `cft la`
 
-33. `cft pass NODE_NAME` will drop the server's sudo password into your clipboard. Useful for when you need to ssh into the server itself and try advanced linux commands
+34. `cft pass NODE_NAME` will drop the server's sudo password into your clipboard. Useful for when you need to ssh into the server itself and try advanced linux commands
 
-34. `cft reinitialize IP_ADDRESS NODE_NAME` will reconnect a server previously managed by chef to a new chef server. The node name MUST MATCH THE NODE'S ORIGINAL NODE NAME for the roles to be setup correctly.
+35. `cft reinitialize IP_ADDRESS NODE_NAME` will reconnect a server previously managed by chef to a new chef server. The node name MUST MATCH THE NODE'S ORIGINAL NODE NAME for the roles to be setup correctly.
 
-35. `cft remove_client NODE_NAME [destroy]` removes a client (and its node data) from the chef-server. It also removes its dns records from the cloud service (if possible). This should not be done lightly as you will have to wipe the server and trigger another chef-client run to get it to register again. Alternatively, you can run `cft reinitialize IP_ADDRESS NODE_NAME as well.
+36. `cft remove_client NODE_NAME [destroy]` removes a client (and its node data) from the chef-server. It also removes its dns records from the cloud service (if possible). This should not be done lightly as you will have to wipe the server and trigger another chef-client run to get it to register again. Alternatively, you can run `cft reinitialize IP_ADDRESS NODE_NAME as well.
 
     1. `destroy` deletes the server as well as removing it from the chef environment.
 
     2. This command is aliased to `cft remove_node` and `cft rc`
 
-36. `cft replication_status` will check the status of the database master and slaves in every environment. Also lists how far behind the slaves are from the master in milliseconds.
+37. `cft replication_status` will check the status of the database master and slaves in every environment. Also lists how far behind the slaves are from the master in milliseconds.
 
-37. `cft reset_bag BAG_NAME` this command allows you to reset a data bag item to an empty state. Run this on full data bags to clear them out. 
+38. `cft reset_bag BAG_NAME` this command allows you to reset a data bag item to an empty state. Run this on full data bags to clear them out. 
 
-38. `cft restart_swap` will restart the swap on every server that doesn't have swap currently on. Useful if you notice servers with no swap activated from `cft disk_report`
+39. `cft restart_swap` will restart the swap on every server that doesn't have swap currently on. Useful if you notice servers with no swap activated from `cft disk_report`
 
     1. There is no risk in running this command. Sometimes swap doesnt reactivate if the server was rebooted and this command fixes that.
 
-39. `cft role_toggle NODE_NAME ROLE_NAME activate|deactivate` This command will allow you to **toggle** roles on nodes without using `cft upload_nodes`
+40. `cft role_toggle NODE_NAME ROLE_NAME activate|deactivate` This command will allow you to **toggle** roles on nodes without using `cft upload_nodes`
 
     1. This command uses your *role_toggling:deactivated_role_suffix* attribute set in your cheftacular.yml to toggle the role, it checks to see if the toggled name exists then sets the node's run_list to include the toggled role
 
@@ -659,7 +667,7 @@
 
     4. Aliased to `cft rt`
 
-40. `cft rvm [COMMAND] [ADDITIONAL_COMMANDS]*` will run rvm commands on the remote servers. Output from this command for each server will go into your rvm directory under the log directory. Please refer to [the rvm help page](https://rvm.io/rvm) for more information on rvm commands.
+41. `cft rvm [COMMAND] [ADDITIONAL_COMMANDS]*` will run rvm commands on the remote servers. Output from this command for each server will go into your rvm directory under the log directory. Please refer to [the rvm help page](https://rvm.io/rvm) for more information on rvm commands.
 
     1. When no commands are passed, rvm will just run `rvm list` on each server on all servers in the current environment.
 
@@ -675,11 +683,11 @@
 
     7. `upgrade_rvm` will run `rvm get stable --auth-dotfiles` on all servers for the current environment. It will also check and attempt to upgrade pre 1.25 installations of RVM to 1.26+ (which requires a GPG key).
 
-41. `cft server_update [restart]` allows you to force update all nodes' packages for a specific environment. This should be done with caution as this *might* break something.
+42. `cft server_update [restart]` allows you to force update all nodes' packages for a specific environment. This should be done with caution as this *might* break something.
 
     1. `cft server_update restart` will prompt to ask if you also want to restart all servers in a rolling restart. This should be done with extreme caution and only in a worst-case scenario.
 
-42. `cft service [COMMAND] [SERVICE]` will run service commands on remote servers. This command only runs on the first server it comes across. Specify others with -n NODE_NAME.
+43. `cft service [COMMAND] [SERVICE]` will run service commands on remote servers. This command only runs on the first server it comes across. Specify others with -n NODE_NAME.
 
     1. When no commands are passed, the command will list all the services in the /etc/init directory
 
@@ -687,17 +695,17 @@
 
     3. When `restart|stop|start SERVICE` is passed, the command will attempt to restart|stop|start the service if it has a .conf file on the remote server in the /etc/init directory.
 
-43. `cft slack "MESSAGE" [CHANNEL]` will attempt to post the message to the webhook set in your cheftacular.yml. Slack posts to your default channel by default but if the CHANNEL argument is supplied the message will post there.
+44. `cft slack "MESSAGE" [CHANNEL]` will attempt to post the message to the webhook set in your cheftacular.yml. Slack posts to your default channel by default but if the CHANNEL argument is supplied the message will post there.
 
     1. NOTE: To prevent confusing spam from many possible sources, the username posted to slack will always be *Cheftacular*. This can be overloaded in the StatelessAction method "slack" but this is not recommended.
 
     2. Remember, if you have auditing turned on in your cheftacular.yml, you can track who sends what to slack.
 
-44. `cft ssh NODE_NAME [exec] [command]` ssh you into the node name you are trying to access. It will also drop the server's sudo password into your clipboard. 
+45. `cft ssh NODE_NAME [exec] [command]` ssh you into the node name you are trying to access. It will also drop the server's sudo password into your clipboard. 
 
     1. `cft ssh NODE_NAME exec COMMAND` will execute a command on the server as root
 
-45. `cft test_env [TARGET_ENV] boot|destroy` will create (or destroy) the test nodes for a particular environment (defaults to staging, prod split-envs can be set with `-p`). Please read below for how TARGET_ENV works
+46. `cft test_env [TARGET_ENV] boot|destroy` will create (or destroy) the test nodes for a particular environment (defaults to staging, prod split-envs can be set with `-p`). Please read below for how TARGET_ENV works
 
     1. TARGET_ENV changes functionality depending on the overall (like staging / production) environment
 
@@ -707,11 +715,11 @@
 
         3. The default tld used should change depending on which environment you are booting / destroying. This is set in the environment's config data bag under the tld key
 
-46. `cft ubuntu_bootstrap_from_queue` This command will bring a fresh server to a state where chef-client can be run on it via `cft chef-bootstrap`. It should be noted that it is in this step where a server's randomized deploy_user sudo password is generated.
+47. `cft ubuntu_bootstrap_from_queue` This command will bring a fresh server to a state where chef-client can be run on it via `cft chef-bootstrap`. It should be noted that it is in this step where a server's randomized deploy_user sudo password is generated.
 
-47. `cft update_cheftacular` this command attempts to update cheftacular to the latest version.
+48. `cft update_cheftacular` this command attempts to update cheftacular to the latest version.
 
-48. `cft update_cloudflare_dns_from_cloud [skip_update_tld]` command will force a full dns update for cloudflare. 
+49. `cft update_cloudflare_dns_from_cloud [skip_update_tld]` command will force a full dns update for cloudflare. 
 
     1. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address for an environment.
 
@@ -719,7 +727,7 @@
 
     3. The argument `skip_update_tld` will stop the long process of checking and updating all the server domains _before_ cloudflare is updated. Only skip if you believe your domain info on your cloud is accurate.
 
-49. `cft update_cookbook [COOKBOOK_NAME] [INSTALL_VERSION|local]` allows you to specifically update a single cookbook
+50. `cft update_cookbook [COOKBOOK_NAME] [INSTALL_VERSION|local]` allows you to specifically update a single cookbook
 
     1. This command passed with no arguments will update TheCheftacularCookbook
 
@@ -727,7 +735,7 @@
 
     3. Aliased to `cft uc`
 
-50. `cft update_split_branches` will perform a series of git commands that will merge all the split branches for your split_branch enabled repositories with what is currently on master and push them.
+51. `cft update_split_branches` will perform a series of git commands that will merge all the split branches for your split_branch enabled repositories with what is currently on master and push them.
 
     1. Repository must be set with `-R REPOSITORY_NAME` for this command to work.
 
@@ -737,13 +745,13 @@
 
     4. This command will return a helpful error statement if you attempt to run the command with changes to your current working directory. You must commit these changes before running this command.
 
-51. `cft update_the_cheftacular_cookbook_and_knife_upload` update your local cheftacular cookbook with your local (out of chef-repo) cheftacular cookbook and knife_upload afterwards.
+52. `cft update_the_cheftacular_cookbook_and_knife_upload` update your local cheftacular cookbook with your local (out of chef-repo) cheftacular cookbook and knife_upload afterwards.
 
     1. This method is aliased to `cft utccaku` and `cft utcc`.
 
-52. `cft update_tld TLD` command will force a full dns update for a tld in the preferred cloud. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address.
+53. `cft update_tld TLD` command will force a full dns update for a tld in the preferred cloud. It will ensure all the subdomain entries are correct (based on the contents of the addresses data bag) and update them if they are not. It will also create the local subdomain for the entry as well if it does exist and point it to the correct private address.
 
-53. `cft upload_nodes` This command will resync the chef server's nodes with the data in our chef-repo/node_roles. 
+54. `cft upload_nodes` This command will resync the chef server's nodes with the data in our chef-repo/node_roles. 
 
     1. This command changes behavior depending on several factors about both your mode and the state of your environment
 
@@ -757,10 +765,10 @@
 
     4. Aliased to `cft un`
 
-54. `cft upload_roles` This command will resync the chef server's roles with the data in the chef-repo/roles.
+55. `cft upload_roles` This command will resync the chef server's roles with the data in the chef-repo/roles.
 
     1. Aliased to `cft ur`
 
-55. `cft version` this command prints out the current version of cheftacular.
+56. `cft version` this command prints out the current version of cheftacular.
 
     1. Aliased to `cft v`
