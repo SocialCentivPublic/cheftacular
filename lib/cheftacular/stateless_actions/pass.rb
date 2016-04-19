@@ -15,7 +15,7 @@ class Cheftacular
   end
 
   class StatelessAction
-    def pass node_name=''
+    def pass node_name='', mode='normal'
       @options['node_name'] = ARGV[1] if !@options['node_name'] && node_name.blank?
       @options['node_name'] = node_name if !@options['node_name'] && !node_name.blank?
 
@@ -25,8 +25,10 @@ class Cheftacular
         @config['initializer'].initialize_data_bags_for_environment nodes.first.chef_environment, false, ['server_passwords']
       end
 
-      puts "The password for #{ nodes.first.name }(#{ nodes.first.public_ipaddress }) for env #{ nodes.first.chef_environment }" +
-      " is #{ @config[nodes.first.chef_environment]['server_passwords_bag_hash']["#{ nodes.first.public_ipaddress }-deploy-pass"] }"
+      if mode =~ /normal/
+        puts "The password for #{ nodes.first.name }(#{ nodes.first.public_ipaddress }) for env #{ nodes.first.chef_environment }" +
+        " is #{ @config[nodes.first.chef_environment]['server_passwords_bag_hash']["#{ nodes.first.public_ipaddress }-deploy-pass"] }"
+      end
 
       case CONFIG['host_os']
       when /mswin|windows/i
@@ -41,7 +43,7 @@ class Cheftacular
         `echo '#{ @config[nodes.first.chef_environment]['server_passwords_bag_hash']["#{ nodes.first.public_ipaddress }-deploy-pass"] }' | pbcopy`
       else
         #raise "#{ __method__ } does not support this operating system at this time"
-      end
+      end if mode =~ /normal/
     end
   end
 end

@@ -70,7 +70,7 @@ module SSHKit
       def start_apt_updater name, ip_address, options, locs, passwords, out=""
         log_loc, timestamp = set_log_loc_and_timestamp(locs)
 
-        puts("Generating apt-get log file for #{ name } (#{ ip_address }) at #{ log_loc }/#{ name }-upgrade-#{ timestamp }.txt") unless options['quiet']
+        puts("Generating apt-get log file for #{ name } (#{ ip_address }) at #{ log_loc }/server-update/#{ name }-upgrade-#{ timestamp }.txt") unless options['quiet']
 
         out << sudo_capture( passwords[ip_address], 'apt-get', 'update' )
         out << sudo_capture( passwords[ip_address], 'apt-get', 'upgrade', '-y', '-o' 'Dpkg::Options::="--force-confnew"' )

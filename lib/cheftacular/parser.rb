@@ -13,6 +13,8 @@ class Cheftacular
 
       parse_role(@options['role']) unless @options['role'].nil?
 
+      @options['repository'] = reverse_parse_role_to_repository(@options['role']) unless @options['role'].nil?
+
       parse_repository(@options['repository'])
 
       parse_node_name(@options['node_name']) if @options['node_name']
@@ -252,6 +254,14 @@ class Cheftacular
       repo_state_hash['deploy_organization'] = repo_state_hash['deploy_organization'].compact.uniq.first
 
       repo_state_hash
+    end
+
+    def reverse_parse_role_to_repository role
+      @config['cheftacular']['repositories'].each_pair do |repo_role_name, repo_hash|
+        return repo_hash['repo_name'] if role == repo_role_name
+      end if @config['cheftacular']['repositories'].keys.include?(role)
+
+      ''
     end
   end
 end

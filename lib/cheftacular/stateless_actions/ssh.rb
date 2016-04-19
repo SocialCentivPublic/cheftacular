@@ -28,6 +28,12 @@ class Cheftacular
 
       nodes = @config['error'].is_valid_node_name_option?
 
+      if !command.blank? && nodes.first.chef_environment != @options['env']
+        @config['initializer'].initialize_data_bags_for_environment nodes.first.chef_environment, false, ['addresses', 'server_passwords']
+
+        @config['initializer'].initialize_passwords nodes.first.chef_environment
+      end
+
       nodes.each do |n|
         puts("Beginning ssh run for #{ n.name } (#{ n.public_ipaddress })") unless @options['quiet']
 
@@ -39,8 +45,12 @@ class Cheftacular
 
     private
 
-    def start_ssh_session ip_address, command
-      puts(`ssh #{ Cheftacular::SSH_INLINE_VARS } -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "#{ @config['helper'].sudo(ip_address) } #{ command }" > /dev/tty`) unless command.blank?
+    def start_ssh_session ip_address, command, out=""
+      unless command.blank?
+        out << (`ssh #{ Cheftacular::SSH_INLINE_VARS } -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "#{ @config['helper'].sudo(ip_address) } #{ command }" > /dev/tty`)
+
+        puts out
+      end
 
       `ssh #{ Cheftacular::SSH_INLINE_VARS } -t #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } > /dev/tty` if command.blank?
     end

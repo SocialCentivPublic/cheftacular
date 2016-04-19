@@ -408,7 +408,7 @@ end
 
 class String
   def scrub_pretty_text
-    self.gsub("",'').gsub(/\[0m|\[1m|\[32m|\[35m|\[36m/,'')
+    self.gsub("",'').gsub(/\[0m|\[1m|\[32m|\[35m|\[36m|\\u001B/,'').gsub("\\\"",'"')
   end
 end
 
