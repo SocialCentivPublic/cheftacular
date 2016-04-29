@@ -63,7 +63,9 @@ class Cheftacular
         "4.  The `-O ORGANIZATION` flag can be used with TheCheftacularCookbook to set an *organization* your app can try " +
         "deploying from, your git user needs access to these forks / organization(s).",
 
-        "    3.  The `-z|--unset-github-deploy-args` option will clear your current `-Z` and `-O` flags."
+        "    3.  The `-z|--unset-github-deploy-args` option will clear your current `-Z` and `-O` flags.",
+
+        "5.  `--nginx` will fetch logs for various logging commands from nginx instead of the default location."
       ] if @config['documentation']['arguments'].empty?
     end
 

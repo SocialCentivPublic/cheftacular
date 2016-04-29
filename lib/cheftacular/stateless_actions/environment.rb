@@ -34,7 +34,7 @@ class Cheftacular
   end
 
   class StatelessAction
-    def environment type="boot", ask_on_destroy=false, remove=true, servers_to_interact_with=[], threads=[]
+    def environment type="boot", treat_as_stateful=false, servers_to_interact_with=[], ask_on_destroy=false, remove=true, threads=[]
       ask_on_destroy = case @options['env']
                        when 'staging'    then true
                        when 'production' then true
@@ -49,7 +49,7 @@ class Cheftacular
         raise "Unknown type: #{ type }, can only be 'boot'/'boot_without_deploy'/'destroy'/'destroy_raw_servers'"
       end
 
-      nodes = @config['getter'].get_true_node_objects(true)
+      nodes = @config['getter'].get_true_node_objects(!treat_as_stateful)
 
       nodes = @config['parser'].exclude_nodes( nodes, [{ unless: { env: @options['env'] }}])
 
@@ -60,6 +60,12 @@ class Cheftacular
 
       unless servers_to_interact_with.empty?
         initial_servers = initial_servers.delete_if {|name, config_hash| !servers_to_interact_with.include?(name)}
+      end
+
+      if treat_as_stateful
+        initial_servers = initial_servers.delete_if { |name, config_hash| config_hash.nil? || !config_hash.has_key?('descriptor') }
+
+        initial_servers = initial_servers.delete_if { |name, config_hash| !config_hash['descriptor'].include?(@options['repository']) if !config_hash.nil? && config_hash.has_key?('descriptor') }
       end
 
       if initial_servers.empty?

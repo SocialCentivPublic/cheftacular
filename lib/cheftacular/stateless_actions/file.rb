@@ -131,7 +131,7 @@ class Cheftacular
 
         download_location = @options['save_to_file'] ? @options['save_to_file'] : "#{ @config['locs']['chef-log'] }/#{ file_name.split('/').last }"
 
-        `scp -oStrictHostKeyChecking=no #{ @config['cheftacular']['deploy_user'] }@#{ n.public_ipaddress }:#{ location }/#{ file_name } #{ download_location } > /dev/tty`
+        `scp ssh #{ Cheftacular::SSH_INLINE_VARS } #{ @config['cheftacular']['deploy_user'] }@#{ n.public_ipaddress }:#{ location }/#{ file_name } #{ download_location } > /dev/tty`
 
         puts "Finished downloading #{ file_name } to #{ download_location }!"
       end

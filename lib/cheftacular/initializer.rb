@@ -212,6 +212,11 @@ class Cheftacular
           @options['run_on_all'] = true
         end
 
+        #cft service
+        opts.on('--sv', "On cft service calls, utilize the runsv syntax instead of the service syntax (can restart sv programs)") do
+          @options['runsv'] = true
+        end
+
         #cloud_bootstrap
 
         opts.on('--with-dn DOMAIN_NAME', "On hip rax_bootstrap allows you to specify a domain structure other than the default environment one") do |domain|
