@@ -7,7 +7,9 @@ class Cheftacular
         "`cft env_ssh_exec [command]` will ssh into each server in an environment and run the command as sudo. ",
 
         [
-          "    1. To deactivate logstash: `cft env_ssh_exec sv stop logstash_agent`"
+          "    1. To deactivate logstash: `cft env_ssh_exec sv stop logstash_agent`",
+
+          "    2. To view a tree of all processes running on each server, run pstree -g"
         ]
       ]
 

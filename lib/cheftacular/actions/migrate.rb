@@ -26,22 +26,13 @@ class Cheftacular
       #must have rails stack to run migrations, only want ONE node
       nodes = @config['parser'].exclude_nodes(nodes, [{ unless: "role[#{ @options['role'] }]" }, { unless: 'role[rails]' }], true)
 
-      log_data = ""
+      logs_bag_hash = run_ruby_on_rails('rake db:migrate', __method__.to_s, ['return_logs_bag_hash'], nodes)
 
-      #this must always precede on () calls so they have the instance variables they need
-      options, locs, ridley, logs_bag_hash, pass_bag_hash, bundle_command, cheftacular, passwords = @config['helper'].set_local_instance_vars
+      if logs_bag_hash["#{ nodes.first.name }-#{ __method__ }"]['text'].empty? || 
+        ( cheftacular['repositories'][options['role']].has_key?('not_a_migration_message') && logs_bag_hash["#{ nodes.first.name }-#{ __method__ }"]['text'] == cheftacular['repositories'][options['role']]['not_a_migration_message'] )
 
-      on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
-        n = get_node_from_address(nodes, host.hostname)
-
-        puts("Beginning migration run for #{ n.name } (#{ n.public_ipaddress }) on role #{ options['role'] }") unless options['quiet']
-
-        log_data, timestamp, exit_status = start_task( n.name, n.public_ipaddress, n.run_list, "#{ bundle_command } exec rake db:migrate", options, locs, cheftacular, passwords)
-
-        logs_bag_hash["#{ n.name }-#{ __method__ }"] = { "text" => log_data.scrub_pretty_text.force_encoding('UTF-8'), "timestamp" => timestamp, "exit_status" => exit_status }
+        puts("Nothing to migrate for #{ options['role'] }...")
       end
-
-      @config['ChefDataBag'].save_logs_bag
 
       @config['helper'].send_log_bag_hash_slack_notification(logs_bag_hash, __method__, 'Failing migration detected, please fix this and deploy again, exiting...')
 

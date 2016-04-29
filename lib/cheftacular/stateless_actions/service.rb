@@ -13,7 +13,9 @@ class Cheftacular
           "    2. When `list` is passed, the above behavior is performed ",
 
           "    3. When `restart|stop|start SERVICE` is passed, the command will attempt to restart|stop|start the " + 
-          "service if it has a .conf file on the remote server in the /etc/init directory."
+          "service if it has a .conf file on the remote server in the /etc/init directory.",
+
+          "    4. `--sv` will use sv syntax for processes that use runsv instead of the older service paradigm."
         ]
       ]
 
@@ -23,21 +25,29 @@ class Cheftacular
 
   class StatelessAction
     def service
-      raise "This action can only be performed if the mode is set to devops" unless @config['helper'].running_in_mode?('devops')
+      #raise "This action can only be performed if the mode is set to devops" unless @config['helper'].running_in_mode?('devops')
 
       command = case ARGV[1]
-                when nil                then 'list'
-                when /list/             then 'list'
-                when 'restart'          then "#{ ARGV[2] } restart"
-                when 'stop'             then "#{ ARGV[2] } stop"
-                when 'start'            then "#{ ARGV[2] } start"
-                else                         'list'
+                when nil                then 'ls /etc/init'
+                when /list/             then 'ls /etc/init'
+                when 'restart'          then "service #{ ARGV[2] } restart"
+                when 'stop'             then "service #{ ARGV[2] } stop"
+                when 'start'            then "service #{ ARGV[2] } start"
+                else                         'ls /etc/init'
                 end
+
+      command = case ARGV[1]
+                when nil                then 'ls /etc/init.d'
+                when /list/             then 'ls /etc/init.d'
+                when 'restart'          then "sv restart #{ ARGV[2] }"
+                when 'stop'             then "sv stop #{ ARGV[2] }"
+                when 'start'            then "sv start #{ ARGV[2] }"
+                else                         'ls /etc/init.d'
+                end if @options['runsv']
 
       raise "You did not pass a service to #{ ARGV[1] }" if ARGV[1] =~ /restart|stop|start/ && ARGV[2].nil?
 
-      service_location = "#{ ARGV[2] }.conf"
-
+      #initctl list | awk '{ print $1 }' | xargs -n1 initctl show-config
       nodes = @config['getter'].get_true_node_objects
 
       nodes = @config['parser'].exclude_nodes( nodes, [{ unless: { env: @options['env'] }}], true )
@@ -47,9 +57,9 @@ class Cheftacular
       on ( nodes.map { |n| @config['cheftacular']['deploy_user'] + "@" + n.public_ipaddress } ) do |host|
         n = get_node_from_address(nodes, host.hostname)
 
-        puts "Beginning run of \"service #{ command }\" for #{ n.name } (#{ n.public_ipaddress })"
+        puts "Beginning run of \"#{ command }\" for #{ n.name } (#{ n.public_ipaddress })"
 
-        start_service_run( n.name, n.public_ipaddress, options, locs, passwords, command, cheftacular, service_location )
+        start_service_run( n.name, n.public_ipaddress, options, locs, passwords, command, cheftacular)
       end
     end
   end
@@ -58,26 +68,10 @@ end
 module SSHKit
   module Backend
     class Netssh
-      def start_service_run name, ip_address, options, locs, passwords, command, cheftacular, service_location, out=""
+      def start_service_run name, ip_address, options, locs, passwords, command, cheftacular, out=""
         log_loc, timestamp = set_log_loc_and_timestamp(locs)
-        run_list_command   = command == 'list'
 
-        #puts "Generating service run log file for #{ name } (#{ ip_address }) at #{ log_loc }/rolelog/#{ name }-service-#{ timestamp }.txt"
-
-        #TODO check other locations for services!
-        if !run_list_command && !sudo_test( passwords[ip_address], "/etc/init/#{ service_location }" ) #true if file exists
-          puts "#{ name } (#{ ip_address }) cannot run #{ command } as it's .conf file does not exist! Running list instead..."
-
-          run_list_command = true
-        end
-
-        if run_list_command
-          out << capture( :ls, '-al', '/etc/init' ) 
-        else
-          out << sudo_capture( passwords[ip_address], 'service', command)
-        end
-
-        #::File.open("#{ log_loc }/rolelog/#{ name }-service-#{ timestamp }.txt", "w") { |f| f.write(out.scrub_pretty_text) } unless options['no_logs']
+        out << sudo_capture( passwords[ip_address], command)
 
         puts out.scrub_pretty_text
 

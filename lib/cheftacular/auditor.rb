@@ -106,6 +106,7 @@ class Cheftacular
 
     def aliased_command_hash
       {
+        application:                                      ['a', 'app'],
         check:                                            ['ch'],
         console:                                          ['co'],
         deploy:                                           ['d'],

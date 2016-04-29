@@ -1,3 +1,15 @@
+## 2.15.3
+
+* Added a hook into `cft tail` that allows it to tail nginx logs instead of the default role's logs with `--nginx`. Much like `cft log`.
+
+* `cft service` now supports restarting sv services with `--sv`
+
+* Rearchitected `cft run` (and `cft migrate`) to output as they are running and not only when they finish.
+
+* Added new command `cft application boot|boot_without_deploy|destroy|destroy_raw_servers [SERVER_NAMES]` which behaves very similarly to `cft environment` but instead only affects the current repository nodes rather than the whole env
+
+    * Aliased to `cft a` and `cft app`
+
 ## 2.15.2
 
 * Added new command `cft env_ssh_exec COMMAND` to run an ssh command on every node in an environment

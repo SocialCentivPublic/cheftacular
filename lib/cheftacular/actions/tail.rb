@@ -13,7 +13,9 @@ class Cheftacular
           "Worker and job servers should tail their log to the master log (/var/log/syslog) where <b>all</b> of the major processes on the server output to. " +
           "While the vast majority of this syslog will be relevant to application developers, some will not (usually firewall blocks and the like).",
 
-          "    3. if the `PATTERN_TO_MATCH` argument exists, the tail will only return entries that have that pattern rather than everything written to the file."
+          "    3. if the `PATTERN_TO_MATCH` argument exists, the tail will only return entries that have that pattern rather than everything written to the file.",
+
+          "    4. If `--nginx` is specified, the tail will instead try and fetch data from the nginx instance on the matching node rather than the default."
         ]
       ]
 
@@ -36,6 +38,8 @@ class Cheftacular
 
         if @config['dummy_sshkit'].has_run_list_in_role_map?(n.run_list, @config['cheftacular']['role_maps'])
           start_tail_role_map( n.public_ipaddress, n.run_list, pattern_to_match )
+        elsif @options['get_nginx_logs']
+          start_tail_role_map( n.public_ipaddress, n.run_list, pattern_to_match, "/var/log/nginx/#{ @options['repository'] }_access.log")
         else
           self.send("start_tail_#{ @config['getter'].get_current_stack }", n.public_ipaddress, n.run_list, pattern_to_match )
         end
@@ -44,8 +48,8 @@ class Cheftacular
 
     private
 
-    def start_tail_role_map ip_address, run_list, pattern_to_match
-      log_loc = @config['getter'].get_current_role_map(run_list)['log_location'].split(',').first.gsub('|current_repo_location|', "#{ @config['cheftacular']['base_file_path'] }/#{ @options['repository'] }/current")
+    def start_tail_role_map ip_address, run_list, pattern_to_match, log_loc='default'
+      log_loc = @config['getter'].get_current_role_map(run_list)['log_location'].split(',').first.gsub('|current_repo_location|', "#{ @config['cheftacular']['base_file_path'] }/#{ @options['repository'] }/current") if log_loc == 'default'
 
       `ssh #{ Cheftacular::SSH_INLINE_VARS } -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "#{ @config['helper'].sudo(ip_address) } tail -f #{ log_loc } #{ get_tail_grep_string(pattern_to_match) }" > /dev/tty`
     end
