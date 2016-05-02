@@ -1,3 +1,7 @@
+## 2.15.5
+
+* Fix issue with `cft migrate` and `cft run` not working correctly.
+
 ## 2.15.4
 
 * Fix minor issue with `cft application` not being a stateful command

@@ -35,8 +35,8 @@ class Cheftacular
       @config['auditor'].notify_slack_on_completion("run #{ command } completed on #{ nodes.map { |node| node.name }.join(', ') }\n") if @config['cheftacular']['auditing']
     end
 
-    def run_ruby_on_rails command, modes=['normal_output'], nodes=[]
-      run_command(command, __method__.to_s, "RAILS_ENV=TRUE_ENVIRONMENT #{ @config['bundle_command'] } exec", modes, nodes)
+    def run_ruby_on_rails command, descriptor='run_ruby_on_rails', modes=['normal_output'], nodes=[]
+      run_command(command, descriptor, "RAILS_ENV=TRUE_ENVIRONMENT #{ @config['bundle_command'] } exec", modes, nodes)
     end
 
     def run_nodejs command
@@ -81,8 +81,6 @@ class Cheftacular
         final_command  = ["cd #{ @config['cheftacular']['base_file_path'] }/#{ @options['repository'] }/current"]
         final_command << @config['helper'].sudo(ip_address) if modes.include?('sudo')
         final_command << ( executable.gsub('TRUE_ENVIRONMENT', true_env) + ' ' + command )
-
-        puts "#{ base_exec } \"#{ final_command.join(' && ') }\" > /dev/tty"
 
         log_output = `#{ base_exec } "#{ final_command.join(' && ') }" > /dev/tty`
 
