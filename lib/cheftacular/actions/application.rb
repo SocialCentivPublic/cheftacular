@@ -1,9 +1,9 @@
 
 class Cheftacular
-  class StatelessActionDocumentation
+  class ActionDocumentation
     def application
-      @config['documentation']['stateless_action'][__method__] ||= {}
-      @config['documentation']['stateless_action'][__method__]['long_description'] = [
+      @config['documentation']['action'][__method__] ||= {}
+      @config['documentation']['action'][__method__]['long_description'] = [
         "`cft application boot|boot_without_deploy|destroy|destroy_raw_servers [SERVER_NAMES]` will boot / destroy the servers for current repository you are connected to",
 
         [
@@ -27,13 +27,13 @@ class Cheftacular
         ]
       ]
 
-      @config['documentation']['stateless_action'][__method__]['short_description'] = 'Boots (or destroys) an application based on data stored in cheftacular.yml'
+      @config['documentation']['action'][__method__]['short_description'] = 'Boots (or destroys) an application based on data stored in cheftacular.yml'
 
       @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 
-  class StatelessAction
+  class Action
     def application type='boot'
       type = ARGV[1] if ARGV[1]
 

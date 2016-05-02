@@ -155,7 +155,7 @@ class Cheftacular
         end
       end
 
-      @config['auditor'].notify_slack_on_completion("environment #{ type } command completed for env: #{ @options['env'] }\n") if @config['cheftacular']['auditing']
+      @config['auditor'].notify_slack_on_completion("environment #{ type } command completed for env: #{ @options['env'] } (#{ initial_servers.keys.join(' ,') })\n") if @config['cheftacular']['auditing']
     end
 
     alias_method :e, :environment
