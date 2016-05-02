@@ -31,7 +31,7 @@ class Cheftacular
       if logs_bag_hash["#{ nodes.first.name }-#{ __method__ }"]['text'].empty? || 
         ( cheftacular['repositories'][options['role']].has_key?('not_a_migration_message') && logs_bag_hash["#{ nodes.first.name }-#{ __method__ }"]['text'] == cheftacular['repositories'][options['role']]['not_a_migration_message'] )
 
-        puts("Nothing to migrate for #{ options['role'] }...")
+        puts("Nothing to migrate for #{ @options['role'] }...")
       end
 
       @config['helper'].send_log_bag_hash_slack_notification(logs_bag_hash, __method__, 'Failing migration detected, please fix this and deploy again, exiting...')
@@ -39,7 +39,7 @@ class Cheftacular
       @options['run_migration_already'] = true
 
       #restart the servers again after a deploy with a migration just in case
-      if !log_data.empty? && log_data != @config['cheftacular']['repositories'][@options['role']]['not_a_migration_message']
+      if !logs_bag_hash["#{ nodes.first.name }-#{ __method__ }"]['text'].empty? && log_data != @config['cheftacular']['repositories'][@options['role']]['not_a_migration_message']
         @config['auditor'].notify_slack_on_completion("migrate run completed on #{ nodes.map { |node| node.name }.join(', ') }\n") if @config['cheftacular']['auditing']
 
         @config['action'].deploy
