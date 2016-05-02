@@ -1,3 +1,7 @@
+## 2.15.4
+
+* Fix minor issue with `cft application` not being a stateful command
+
 ## 2.15.3
 
 * Added a hook into `cft tail` that allows it to tail nginx logs instead of the default role's logs with `--nginx`. Much like `cft log`.

@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency "chef", ">= 11.12"
   s.add_dependency "httpclient"
   s.add_dependency "ridley"
+  s.add_dependency "chef-zero", '< 4.6.0' # chef-zero 4.6.0 requires ruby_v > 2.1.0
   s.add_dependency "berkshelf", '>= 4.0'
   s.add_dependency "berkshelf-api-client", '>= 2.0'
   s.add_dependency "highline"
