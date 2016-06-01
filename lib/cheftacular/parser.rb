@@ -187,7 +187,8 @@ class Cheftacular
         when 1      then ARGV[num_of_args-1]
         when 2..100 then ARGV[0..(num_of_args-1)]
         end
-      when 'range'  then ARGV[1..ARGV.length-1].join(' ')
+      when 'range'               then ARGV[1..ARGV.length-1].join(' ')
+      when 'range_starting_at_x' then ARGV[num_of_args..ARGV.length-1].join(' ')
       else  raise "You passed #{ mode }. This is not yet implemented for #{ __method__ }"
       end
     end
