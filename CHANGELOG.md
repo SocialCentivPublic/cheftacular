@@ -6,6 +6,8 @@
 
     * You must still use quotes to run something like `cft ssh NODE_NAME exec "ls -al"`
 
+* Fix issue with running just `cft` returning an error instead of a list of commands with short descriptions
+
 ## 2.15.5
 
 * Fix issue with `cft migrate` and `cft run` not working correctly.

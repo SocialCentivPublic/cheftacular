@@ -150,7 +150,7 @@ class Cheftacular
     end
 
     def compile_short_context_descriptions documentation_hash, padding_length=25, out=[]
-      out << documentation_hash.to_a.map { |doc| "#{ doc[0].to_s.ljust(padding_length, '_') }_#{ doc[1]['short_description'] }" }
+      out << documentation_hash.to_a.map { |doc| puts "TESTING::#{ doc[0] }::#{ doc[1].nil? }" ; (doc[0].nil? || doc[1].nil?) ? '' : "#{ doc[0].to_s.ljust(padding_length, '_') }_#{ doc[1]['short_description'] }" }
 
       out.flatten.sort {|a, b| a[0] <=> b[0]}.join("\n\n")
     end

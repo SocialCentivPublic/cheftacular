@@ -28,8 +28,6 @@ class Cheftacular
       ]
 
       @config['documentation']['action'][__method__]['short_description'] = 'Boots (or destroys) an application based on data stored in cheftacular.yml'
-
-      @config['documentation']['application'][__method__] = @config['documentation']['stateless_action'][__method__]
     end
   end
 
