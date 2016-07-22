@@ -99,7 +99,7 @@ class Cheftacular
       full_backup_dir  = File.join(@config['cheftacular']['backup_config']['db_primary_backup_path'], status_hash['latest_backup']['file_dir'])
       full_backup_path = File.join(full_backup_dir, status_hash['latest_backup']['filename'])
 
-      file_scp_execute(target_db_primary, 'scp', full_backup_dir, status_hash['latest_backup']['filename'])
+      @config['stateless_action'].file_scp_execute(target_db_primary, 'scp', full_backup_dir, status_hash['latest_backup']['filename'])
     end
 
     def backups_status
