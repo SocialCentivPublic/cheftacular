@@ -84,6 +84,25 @@ class Cheftacular
       end
     end
 
+    def file_scp_execute nodes, command, location, file_name
+      unless file_sshkit_execute( nodes, 'check_existence', location, file_name)
+        puts "Not executing #{ command } due to failing exit status..."
+
+        return false
+      end
+
+      nodes.each do |n|
+        target_loc = "#{ location }/#{ file_name }"
+        puts("Beginning #{ command } run on #{ target_loc } for #{ n.name } (#{ n.public_ipaddress })") unless @options['quiet']
+
+        download_location = @options['save_to_file'] ? @options['save_to_file'] : "#{ @config['locs']['chef-log'] }/#{ file_name.split('/').last }"
+
+        `scp #{ Cheftacular::SSH_INLINE_VARS } #{ @config['cheftacular']['deploy_user'] }@#{ n.public_ipaddress }:#{ location }/#{ file_name } #{ download_location } > /dev/tty`
+
+        puts "Finished downloading #{ file_name } to #{ download_location }!"
+      end
+    end
+
     private
 
     def file_sshkit_execute nodes, command, location, file_name, exit_status=true
@@ -114,26 +133,7 @@ class Cheftacular
         sudo_mode = "#{ @config['helper'].sudo(n.public_ipaddress) }"
         sudo_mode = '' if mode.split(':').first == 'edit'
 
-        `ssh -oStrictHostKeyChecking=no -tt #{ @config['cheftacular']['deploy_user'] }@#{ n.public_ipaddress } "#{ sudo_mode } #{ command } #{ target_loc }" > /dev/tty`
-      end
-    end
-
-    def file_scp_execute nodes, command, location, file_name
-      unless file_sshkit_execute( nodes, 'check_existence', location, file_name)
-        puts "Not executing #{ command } due to failing exit status..."
-
-        return false
-      end
-
-      nodes.each do |n|
-        target_loc = "#{ location }/#{ file_name }"
-        puts("Beginning #{ command } run on #{ target_loc } for #{ n.name } (#{ n.public_ipaddress })") unless @options['quiet']
-
-        download_location = @options['save_to_file'] ? @options['save_to_file'] : "#{ @config['locs']['chef-log'] }/#{ file_name.split('/').last }"
-
-        `scp ssh #{ Cheftacular::SSH_INLINE_VARS } #{ @config['cheftacular']['deploy_user'] }@#{ n.public_ipaddress }:#{ location }/#{ file_name } #{ download_location } > /dev/tty`
-
-        puts "Finished downloading #{ file_name } to #{ download_location }!"
+        `ssh #{ Cheftacular::SSH_INLINE_VARS } -tt #{ @config['cheftacular']['deploy_user'] }@#{ n.public_ipaddress } "#{ sudo_mode } #{ command } #{ target_loc }" > /dev/tty`
       end
     end
   end

@@ -111,6 +111,7 @@ class Cheftacular
       if database_host.nil?
         `ssh #{ Cheftacular::SSH_INLINE_VARS } -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "mongo localhost:27017/mongodb" > /dev/tty`
       else
+        puts "ssh #{ Cheftacular::SSH_INLINE_VARS } -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } \"mongo #{ @options['repository'] } --username #{ db_user } --password #{ mongo_pass } --host #{ database_host } --port 27017\" > /dev/tty"
         `ssh #{ Cheftacular::SSH_INLINE_VARS } -tt #{ @config['cheftacular']['deploy_user'] }@#{ ip_address } "mongo #{ @options['repository'] } --username #{ db_user } --password #{ mongo_pass } --host #{ database_host } --port 27017" > /dev/tty`
       end
     end

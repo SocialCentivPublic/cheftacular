@@ -22,7 +22,7 @@ class Cheftacular
     def ssh node_name='', command=''
       @options['node_name'] = ARGV[1] unless @options['node_name']
 
-      command = ARGV[3] if command.blank? && ARGV[2] == 'exec' 
+      command = @config['parser'].parse_runtime_arguments 3, 'range_starting_at_x' if command.blank? && ARGV[2] == 'exec'
 
       @config['stateless_action'].pass(@options['node_name']) if command.blank?
 

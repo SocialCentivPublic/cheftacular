@@ -1,3 +1,15 @@
+## 2.15.6
+
+* Fix issue with `cft file fetch`
+
+* `cft ssh [NODE_NAME] exec COMMAND` now supports not putting the COMMAND in quotes
+
+    * You must still use quotes to run something like `cft ssh NODE_NAME exec "ls -al"`
+
+* Fix issue with running just `cft` returning an error instead of a list of commands with short descriptions
+
+* Added a new alias for `cft cheftacular_yml_help` to `cft cyh`.
+
 ## 2.15.5
 
 * Fix issue with `cft migrate` and `cft run` not working correctly.

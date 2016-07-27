@@ -8,9 +8,11 @@ class Cheftacular
         "allows you to get help on the meaning of each key in your cheftacular.yml overall config.",
 
         [
-          "    1. This command can also by run with `cft yaml_help`.",
+          "    1. This command can also by run with `cft yaml_help` and `cft cyh`.",
 
-          "    2. To examine nested keys, you can use colons inbetween the keys like cloud_authentication:rackspace:email"
+          "    2. To examine nested keys, you can use colons inbetween the keys like cloud_authentication:rackspace:email",
+
+          "    3. To list keys BENEATH the key you are currently looking at, `cft cyh [KEY] check`"
         ]
       ]
 
@@ -20,6 +22,8 @@ class Cheftacular
     end
 
     alias_method :yml_help, :cheftacular_yml_help
+
+    alias_method :cyh, :cheftacular_yml_help
   end
 
   class InitializationAction
@@ -28,11 +32,15 @@ class Cheftacular
     end
 
     alias_method :yml_help, :cheftacular_yml_help
+
+    alias_method :cyh, :cheftacular_yml_help
   end
 
   class StatelessAction
-    def cheftacular_yml_help command='', key_nesting_array=[]
-      key_to_check = ARGV[1]
+    def cheftacular_yml_help command='', key_nesting_array=[], list_keys_under_key=false
+      key_to_check  = ARGV[1]
+
+      list_keys_under_key = ARGV[2] == 'check'
 
       raise "This command requires a key to check the documentation, please enter one as the first argument" if key_to_check.nil?
 
@@ -40,14 +48,16 @@ class Cheftacular
 
       doc_hash = YAML::load(ERB.new(IO.read(File.open(File.expand_path("#{ @config['locs']['doc'] }/cheftacular_yml_help.yml")))).result)
 
-      traverse_documentation_hash(doc_hash, key_nesting_array)
+      traverse_documentation_hash(doc_hash, key_nesting_array, list_keys_under_key)
     end
 
     alias_method :yml_help, :cheftacular_yml_help
 
+    alias_method :cyh, :cheftacular_yml_help
+
     private
 
-    def traverse_documentation_hash doc_hash, key_array, index=0
+    def traverse_documentation_hash doc_hash, key_array, list_keys_under_key, index=0
       if doc_hash.has_key?(key_array[index])
         if doc_hash[key_array[index]].class == Hash && key_array.length-1 == index
           if doc_hash[key_array[index]]['key_description'].nil?
